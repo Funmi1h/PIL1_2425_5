@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Gestionnaire de tâches</title>
+   <link href ="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="{{url_for ('static', filename = 'style.css')}}">
+   <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <h1>Gestionnaire de Tâches</h1>
+    <div class="principal">
+    <form action="/add" method="post" class="form">
+        <input type="text" name="task" placeholder="Nouvelle tâche" required class="">
+        <button type="submit">Ajouter</button>
+    </form>
+    <ul>
+        {% for task in tachesListe %}
+            <li class="tache">
+                {{ task.content }} 
+                {% if task.completed %}
+                    <a href="{{ url_for('incomplete', task_id=loop.index0) }}">✅ </a>
+                {% else %}
+                    <a href="{{ url_for('complete', task_id=loop.index0) }}">Marquer comme complété</a>
+                {% endif %}
+                <a href="{{ url_for('delete', task_id=loop.index0) }}">🗑 Supprimer</a>
+                {% if task.important %}
+                    <a href=" {{ url_for('removeImportant', task_id=loop.index0) }}"><i class="fa-solid fa-star"></i>Important</a>
+                {% else%} 
+                    <a href="{{url_for('addImportant_task', task_id=loop.index0)}}">Ajouter comme une tache importante</a>
+                {% endif %}
+                Créer le {{task.date_of_creation}}
+                
+            </li>
+        {% endfor %}
+    </ul>
+    <h2>Taches Importantes</h2>
+    <ul>
+        {% for task in tachesImportants %}
+            <li>
+              {{task.content}}
+              <a href="{{url_for ('deleteImportant', task_id = loop.index0)}}">Retirer des importants</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <button aria-label="Cliquez ici pour ajotuter une tache" class="butonPlus">
+        <i class="fa-solid fa-plus fa-beat-fade" id ='addBtn'></i>
+    </button>
+</div>
+    
+</body>
+</html>

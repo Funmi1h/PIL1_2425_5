@@ -1,0 +1,68 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{background-color: rgba(148, 183, 219, 0.884);
+display:flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+li{
+    margin: 1em;
+    background-color: rgb(176, 207, 235);
+    border-radius: 2%;
+
+}
+li a {
+    text-decoration: none;
+    margin: 1.5em;
+    text-decoration: none;
+    color: #000;
+}
+input{
+    all :unset;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    width: 20em;
+    height: 6em;
+    border-top-left-radius: 5px;
+    border-bottom:solid 1px  ;
+    background-color: rgb(176, 207, 235);
+    text-align: center;
+   
+
+}
+.form{
+    display:none;
+    flex-direction: column;
+    width: max-content;
+    position: fixed;
+    left: 50%;
+    right: 50%;
+    justify-content: center;
+    align-items: center;
+    bottom: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 7em;
+
+}
+.form.active{display: flex;}
+#addBtn{
+    font-size: 3em;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 1em;
+}
+.butonPlus{
+    all: unset;
+}
+button{
+    all: unset;
+    font: size 2em;
+    cursor: pointer;
+}
