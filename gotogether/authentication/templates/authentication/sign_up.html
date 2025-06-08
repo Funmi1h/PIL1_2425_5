@@ -33,31 +33,31 @@
 
         <label for="id_email">Email</label>
             {{form.email}}
-            {% if form.first_name.errors %}
+            {% if form.email.errors %}
                 <small class="error-message">{{form.email.errors}}</small>
             {% endif %}
 
         <label for="id_numero_telephone">Numéro de téléphone</label>
             {{form.numero_telephone}}
-            {% if form.first_name.errors %}
+            {% if form.numero_telephone.errors %}
                 <small class="error-message">{{form.numero_telephone.errors}}</small>
             {% endif %}
 
         <label for="id_role">Role</label>
             {{form.role}}
-            {% if form.first_name.errors %}
+            {% if form.role.errors %}
                 <small class="error-message">{{form.role.errors}}</small>
             {% endif %}
         <label for="id_password">Mot de passe</label>
             {{form.password}}
-            {% if form.first_name.errors %}
+            {% if form.id_password.errors %}
                 <small class="error-message">{{form.password.errors}}</small>
             {% endif %}
 
-        <label for="id_password2">Confirmer le mot de passe</label>
-            {{form.password2}}
-            {% if form.first_name.errors %}
-                <small class="error-message">{{form.password2.errors}}</small>
+        <label for="confirm_password">Confirmer le mot de passe</label>
+            {{form.confirm_password}}
+            {% if form.confirm_password.errors %}
+                <small class="error-message">{{form.confirm_password.errors}}</small>
             {% endif %}
         <button type="submit">S'inscrire</button>
     </form>

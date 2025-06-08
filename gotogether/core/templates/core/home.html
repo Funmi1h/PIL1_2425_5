@@ -173,3 +173,16 @@
     }
   </style>
 </html>
+=======
+
+{% load static%}
+{% block content %}
+
+    <p>Bienvenue sue la page d'accueil </p>
+    <br>
+    <button> <a href="{% url 'login' %}">Se connecter</a></button>
+    <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
+
+
+{% endblock %}
+>>>>>>> 4f3be7151e807e4115aa256ea1b5b29573d0129d

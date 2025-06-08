@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'core',
+    'messagerie'
 ]
 
 MIDDLEWARE = [
@@ -92,7 +93,7 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'authentication.PasswordValidator',
+        'NAME': 'authentication.validators.PasswordValidator',
     },
 
 ]
@@ -130,10 +131,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'authentication.User'
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.models.ModelBackend', # Authentification par défaut
+    'django.contrib.auth.backends.ModelBackend', # Authentification par défaut
     'authentication.backends.EmailOrPhoneBackend',  # Authentification personnalisée
 ]
+
 
 STATICFILES_DIRS = [
     BASE_DIR / "static", 
 ] 
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'profil_user'
+

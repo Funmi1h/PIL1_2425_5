@@ -47,7 +47,7 @@ class SignUpForm(forms.ModelForm):
         
         model = get_user_model() # on utilise le modele utilisateur défini dans le projet
         # on definit les champs du formulaire
-        fields = ['last_name', 'first_name', 'email', 'numero_telephone', 'role', 'password']
+        fields = ['last_name', 'first_name', 'email', 'numero_telephone', 'role', 'password', 'confirm_password']
 
         widgets = {
             'last_name': forms.TextInput(attrs={'placeholder': 'Nom'}),
@@ -83,4 +83,4 @@ class SignUpForm(forms.ModelForm):
 
         # Vérification mot de passe identique
         if password and confirm_password and password != confirm_password:
-            self.add_error('confirm_password ', "Les mots de passe ne correspondent pas.")
+            self.add_error('confirm_password', "Les mots de passe ne correspondent pas.")
