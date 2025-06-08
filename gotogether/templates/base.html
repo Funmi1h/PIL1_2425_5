@@ -25,65 +25,69 @@
 <body class="d-flex flex-column min-vh-100 col-lg-10 text-center mx-auto">
     
     <!--Header -->
-    <header class=" text-center py-3 px-3  mb-4">
+    {% if request.path != '/auth/login/' and request.path != '/auth/signup/' and request.path != '/' and request.path != '/auth/sign_up/' and request.path != '/auth/logout/' %}
 
-        <!--NavBar -->
-        <nav class="navbar navbar-expand-lg w-100 bg-bleu-principal">
-            <div class="container-fluid ">
-                <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/logo.jpg'%}" alt=""></a>
-                <button class="navbar-toggler navbar-light " 
-                data-bs-toggle="collapse" 
-                data-bs-target="#menuMobile" 
-                aria-controls="menuMobile" 
-                aria-expanded="false" 
-                aria-label="Toggle navigation"
-                onclick="toggleIcon()">
-                <span><ion-icon name="filter-outline" id="burgerIcon"></ion-icon></span>
-                </button>
+        <header class=" text-center py-3 px-3  mb-4">
+                
 
-
-                <div class="navbar-collapse collapse text-start" id="menuMobile"  >
-
-                    <ul class="navbar-nav flex-column flex-lg-row  me-auto mb-2mb-lg-0 ">
-                        <li class="nav-item">
-                            <a href="{% url 'dashboard' %}" class="nav-link mx-4">Go board </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="" class="nav-link mx-4">Trouver ou proposer des trajets </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'message_accueil' %}" class="nav-link mx-4">Messages
-                            </a>
-                        </li>
-                    </ul>
-                    <hr class="d-lg-none">
+                <!--Navbar-->
+                <nav class="navbar navbar-expand-lg w-100 bg-bleu-principal">
+                <div class="container-fluid ">
+                    <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/logo.jpg'%}" alt=""></a>
+                    <button class="navbar-toggler navbar-light " 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#menuMobile" 
+                    aria-controls="menuMobile" 
+                    aria-expanded="false" 
+                    aria-label="Toggle navigation"
+                    onclick="toggleIcon()">
+                    <span><ion-icon name="filter-outline" id="burgerIcon"></ion-icon></span>
+                    </button>
 
 
-                    <ul class="navbar-nav flex-column flex-lg-row color-bleu-principal ms-3 mx-4 align-item-end">
+                    <div class="navbar-collapse collapse text-start" id="menuMobile"  >
 
-                                <!-- Profil utilisateur -->
-                                    <li class="nav-item dropdown mx-2">
-                                        <a class="nav-link dropdown-toggle d-flex align-items-center text-end" href="#" id="navbarUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-person-circle me-1"></i>
-                                            {{ user.first_name }}
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarUser">
-                                            <li><a class="dropdown-item" href="">Mon profil</a></li>
-                                            <li><a class="dropdown-item">Notifications</a></li>
-                                            <li><a class="dropdown-item" href="{% url 'logout' %}">Se déconnecter</a></li>
-                                        </ul>
-                                    </li>
+                        <ul class="navbar-nav flex-column flex-lg-row  me-auto mb-2mb-lg-0 ">
+                            <li class="nav-item">
+                                <a href="{% url 'dashboard' %}" class="nav-link mx-4">Go board </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="" class="nav-link mx-4">Trouver ou proposer des trajets </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'message_accueil' %}" class="nav-link mx-4">Messages
+                                </a>
+                            </li>
+                        </ul>
+                        <hr class="d-lg-none">
 
 
-                    </ul>
-                    
+                        <ul class="navbar-nav flex-column flex-lg-row color-bleu-principal ms-3 mx-4 align-item-end">
+
+                                    <!-- Profil utilisateur -->
+                                        <li class="nav-item dropdown mx-2">
+                                            <a class="nav-link dropdown-toggle d-flex align-items-center text-end" href="#" id="navbarUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-person-circle me-1"></i>
+                                                {{ user.first_name }}
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarUser">
+                                                <li><a class="dropdown-item" href="">Mon profil</a></li>
+                                                <li><a class="dropdown-item">Notifications</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'logout' %}">Se déconnecter</a></li>
+                                            </ul>
+                                        </li>
+
+
+                        </ul>
+                        
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
         
-    </header>
+            
+        </header>
     
-    
+    {% endif %}
 
        <main class="flex-grow-1">
 
