@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static%}
+
+
+{% block head %}
+
+<link rel="stylesheet" href="{% static 'authentication/style.css'%}">
+
+{% endblock %}
+{% block content %}
+    <h2>Inscription</h2>
+
+
+
+    <form action="" method="post">
+        {%csrf_token%}
+        {% if message %}
+            <li>{{message}}</li>
+        {% endif %}
+
+        <label for="id_first_name">Nom</label>
+            {{form.first_name}}
+            {% if form.first_name.errors %}
+                <small class="error-message">{{ form.first_name.errors.0 }}</small>
+            {% endif %}
+
+
+        <label for="id_last_name">Prénom</label>
+            {{form.last_name}}
+            {% if form.last_name.errors %}
+                <small class="error-message">{{form.last_name.errors}}</small>
+            {% endif %}
+
+        <label for="id_email">Email</label>
+            {{form.email}}
+            {% if form.first_name.errors %}
+                <small class="error-message">{{form.email.errors}}</small>
+            {% endif %}
+
+        <label for="id_numero_telephone">Numéro de téléphone</label>
+            {{form.numero_telephone}}
+            {% if form.first_name.errors %}
+                <small class="error-message">{{form.numero_telephone.errors}}</small>
+            {% endif %}
+
+        <label for="id_role">Role</label>
+            {{form.role}}
+            {% if form.first_name.errors %}
+                <small class="error-message">{{form.role.errors}}</small>
+            {% endif %}
+        <label for="id_password">Mot de passe</label>
+            {{form.password}}
+            {% if form.first_name.errors %}
+                <small class="error-message">{{form.password.errors}}</small>
+            {% endif %}
+
+        <label for="id_password2">Confirmer le mot de passe</label>
+            {{form.password2}}
+            {% if form.first_name.errors %}
+                <small class="error-message">{{form.password2.errors}}</small>
+            {% endif %}
+        <button type="submit">S'inscrire</button>
+    </form>
+
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load static%}
+
+{% block content %}
+    <p>Bienvenue sue la page d'accueil </p>
+    <br>
+    <button> <a href="{% url 'login' %}">Se connecter</a></button>
+    <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
+{% endblock %}
