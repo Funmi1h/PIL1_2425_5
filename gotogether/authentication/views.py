@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from . import forms
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
@@ -58,3 +58,19 @@ def signup(request):
 def profil_user(request):
     user = request.user
     return render(request, 'authentication/profil.html', {'user': user})
+
+
+
+
+
+
+#vue pour la déconnexion
+def logout_user(request):
+    logout(request)
+    return redirect('login')
+
+#vue pour le dashboard
+
+def dashboard(request):
+    user = request.user
+    return render (request,'authentication', context={'user' : user})
