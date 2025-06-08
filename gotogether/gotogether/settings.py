@@ -133,3 +133,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.models.ModelBackend', # Authentification par défaut
     'authentication.backends.EmailOrPhoneBackend',  # Authentification personnalisée
 ]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static", 
+] 
