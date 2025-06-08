@@ -73,4 +73,4 @@ def logout_user(request):
 
 def dashboard(request):
     user = request.user
-    return render (request,'authentication', context={'user' : user})
+    return render (request,'authentication/dashboard.html', context={'user' : user})
