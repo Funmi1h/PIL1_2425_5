@@ -84,3 +84,5 @@ class SignUpForm(forms.ModelForm):
         # Vérification mot de passe identique
         if password and confirm_password and password != confirm_password:
             self.add_error('confirm_password', "Les mots de passe ne correspondent pas.")
+
+        

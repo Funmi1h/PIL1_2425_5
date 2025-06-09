@@ -71,7 +71,7 @@
                                                 {{ user.last_name }}
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarUser">
-                                                <li><a class="dropdown-item" href="">Mon profil</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'profil_user' %}">Mon profil</a></li>
                                                 <li><a class="dropdown-item">Notifications</a></li>
                                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Se déconnecter</a></li>
                                             </ul>

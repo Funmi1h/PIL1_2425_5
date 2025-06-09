@@ -1,27 +1,25 @@
 {% extends 'base.html' %}
 {% load static%}
-{% extends 'base.html' %}
-{% load static%}
-<!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Go Together Acceuil</title>
+
+{% block head%}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/home_style.css' %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  </head>
-  <body>
+{% endblock %}
+
+
+{% block content%}
     <section class="container mt-5">
         <div class="row">
             <div class="col-md-6 text-center">
                 <h1>Bienvenue sur Go Together</h1>
                 <p>Votre plateforme de covoiturage étudiant</p>
-                <img src="{% static 'img/Group 1.svg' %}" alt="">
+                
             </div>
             <div class="col-md-6 mt-4">
-                <h1 style="text-align: center;">Go Together qu'est ce <br> que c'est ?</h1>
+                <h1 style="text-align: center;"> 
+                    <img src="{% static 'core/img/logo.svg' %}" alt="" class="logo">
+                    que c'est ?</h1>
                     <ul style="text-align: center;" class="list-unstyled">
                         <li class="mb-2">Go Together est une plateforme conçue pour rendre le covoiturage entre étudiants accessible à tous, avec des fonctionnalités pensées pour votre confort et votre sécurité.</li>
                         <li class="mb-2">Notre plateforme vous permet de trouver des trajets partagés facilement, de communiquer avec d'autres étudiants et de partager vos expériences de covoiturage.</li>
@@ -37,12 +35,12 @@
                     </div>
                      <div class="col-md-6">
                         <div class="card cadre-2">
-                            <img src="{% static 'img/City driver-pana.png' %}" alt="Voiture" class="img-fluid">
+                            <img src="{% static 'core/img/City-driver-pana.png' %}" alt="Voiture" class="img-fluid">
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div  class="card cadre-3">
-                          <p>Rejoignez une communaute de covoituriers actifs et bienveillants, prets a partager leurs trajets</p>
+                          <p>Rejoignez une communaute d'étudiants actifs et bienveillants, prêts a partager leurs trajets.</p>
                         </div>
                      </div>
                      <div class="col-md-6">
@@ -61,128 +59,18 @@
                     </div>
                      <div class="col-md-6">
                         <div class="card cadre-6">
-                            {% block content %}
+                            
                               <p>Rejoignez-nous dès aujourd'hui.</p>
                               <button> <a href="{% url 'login' %}">Se connecter</a></button>
                               <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
-                            {% endblock %}
+                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <h1>Hello, world!</h1>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-  </body>
-  <style>
-    .pop {
-  background-image: url('gotogether/core/static/img/Rectangle 2.png'); 
-}
-    .card-custom {
-      border-radius: 10px;
-      background-color: blueviolet;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 250px;
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-    }
-    .cadre-1 {
-      margin-top: 10px;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 250px;
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-      background-color: #92E3A9;
-      color: white;
-    }
-    .cadre-2 {
-      margin-top: 10px;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 250px;
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-      background-color: grey;
-      color: white;
-    }
-    .cadre-3 {
-      margin-top: 10px;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 250px;
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-      background-color: grey;
-      color: white;
-    }
-    .cadre-4 {
-      margin-top: 10px;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 250px;
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-      background-color: #4067E6;
-      color: white;
-    }
-    .cadre-5 {
-      margin-top: 10px;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 250px;
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-      background-color: #1792BA;
-      color: white;
-    }
-    .cadre-6 {
-      margin-top: 10px;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 250px;
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-      background-color: #4067E6;
-      color: white;
-    }
-    .card i {
-      color: black;
-    }
-  </style>
-</html>
-=======
-
-{% load static%}
-{% block content %}
-
-    <p>Bienvenue sue la page d'accueil </p>
-    <br>
-    <button> <a href="{% url 'login' %}">Se connecter</a></button>
-    <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
-
 
 {% endblock %}
->>>>>>> 4f3be7151e807e4115aa256ea1b5b29573d0129d
+

@@ -140,6 +140,6 @@ STATICFILES_DIRS = [
     BASE_DIR / "static", 
 ] 
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'profil_user'
+LOGIN_URL = '/auth/login'
+LOGIN_REDIRECT_URL = '/auth/dashboard/'
 

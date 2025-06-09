@@ -5,6 +5,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
+
+    username  = models.CharField(null= True, blank= True, max_length= 155, unique=True)
     #Liste des choix
     ROLES_CHOICES = [
         ('conducteur', 'Conducteur'),
@@ -49,3 +51,5 @@ class User(AbstractUser):
         verbose_name='Rôle',
         default='passager'  # Valeur par défaut
     )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']

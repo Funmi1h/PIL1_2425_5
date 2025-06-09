@@ -45,7 +45,7 @@ def signup(request):
             if password == confirm_password:
                 user.set_password(password)  # hasher le mot de passe
                 user.save()
-                return render(request, 'core/home.html', {'user': user})
+                return render(request, 'authentication/profil.html', {'user': user})
             else:
                 return render(request, 'authentication/sign_up.html', {'form': form, 'message': 'Les mots de passe ne correspondent pas.'})
         else:
