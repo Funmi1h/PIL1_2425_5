@@ -1,24 +1,16 @@
 body {
-        margin: 0;
-        padding: 40px;
-        font-family: Arial, sans-serif;;
+        margin: 50px;
+        padding: 50px;
+        font-family: Arial, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         text-align: center;
         max-width: 400px;
-        margin: 0 auto;
+        margin: 50px;
         border-radius: 30px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 20px 40px rgba(198, 27, 27, 0.1);
     }
-
-    .app-title {
-        color: white;
-        font-size: 28px;
-        font-weight: 300;
-        margin: 0 0 10px 0;
-        letter-spacing: 2px;
-    }
-
+    
     .page-title {
         color: white;
         font-size: 32px;
@@ -54,13 +46,13 @@ body {
     .signup-form input:focus,
     .signup-form select:focus {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 15px rgba(244, 239, 239, 0.1);
     }
 
     .signup-form input::placeholder,
     .signup-form select::placeholder {
         color: #999;
-        font-weight: 400;
+        font-weight: 300;
     }
 
     .submit-btn {
@@ -139,10 +131,20 @@ body {
     margin: 0;
     padding: 40px;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #4f6ef7, #6b5ce7);
-    color: white;
+    background: #6b88de;
     text-align: center;
     min-height: 100vh;
+}
+
+.login-container{
+    background: linear-gradient(135deg, #0d33db 0%, #0f3abc 100%);
+    border-radius: 30px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(223, 219, 219, 255);
+
 }
 
 /* Titres */
