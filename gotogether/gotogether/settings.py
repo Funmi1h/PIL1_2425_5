@@ -41,12 +41,7 @@ INSTALLED_APPS = [
     'authentication',
     'core',
     'messagerie',
-<<<<<<< HEAD
-    'algorithme'
-=======
-    'algorithme',
     'channels'
->>>>>>> 8b40d8c03d5d458563a0200ee9f8a7c3a53386be
 ]
 
 MIDDLEWARE = [
@@ -120,7 +115,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
 
 
