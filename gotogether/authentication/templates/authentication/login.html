@@ -1,25 +1,28 @@
-
 {% extends 'base.html' %}
 {% load static%}
 
-
 {% block head %}
-
+<link rel="stylesheet" href="{% static 'authentication/style.css'%}">
 {% endblock %}
 
 {% block content %}
-<h1>Connexion</h1>
+<h1 class="login-title contain">GO Together</h1>
+<h2 class="login-subtitle">Connexion</h2>
 
     {% if message %}
-        <p style="color: red;">{{ message }}</p>
+        <p class="error-message" >{{ message }}</p>
     {%  endif %}
    
-    <form action="" method="post"> <!--Cela spécifie que les données du formulaire seront envoyées au serveur par la methode HTTP POST--> 
-        {{form.as_p}}<!--Cette synthaxe permet d'afficher le formulaire généré dans django-->
+    <form class="login-form" action="" method="post"> 
+        {{form.as_p}}
         {% csrf_token %}
-        <button type="submit">Se connecter</button>
+        <button class="login-button" type="submit">Se connecter</button>
     </form>
-    <!--Gestion des erreurs dans le  formulaire-->
+
+    <a class="forgot-link" href="#">mot de passe oublié ?</a>
+    <p class="signup-text">Pas encore inscrit ?</p>
+    <a class="create-account" href="#">Créer un compte</a>
+
     {% if form.errors %}
         <ul class = "errorlist">
             {% for field in form %}
@@ -32,7 +35,5 @@
             {% endfor %}
         </ul>
     {% endif %}
-        
-
 
 {% endblock %}
