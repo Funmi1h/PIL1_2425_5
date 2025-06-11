@@ -1,0 +1,14 @@
+{% block content %}
+
+
+    <h2>Discussion avec {{ recipient_username }}</h2>
+
+    <div id="chat-log" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
+
+    <input id="chat-message-input" type="text" autocomplete="off" placeholder="Tape ton message...">
+    <button id="chat-message-submit"><ion-icon name="send" class="bg-bleu-principal"></ion-icon></button>
+
+    <script src="{% static 'messagerie/js/messages.js' %}" defer></script>
+
+
+{% endblock %}

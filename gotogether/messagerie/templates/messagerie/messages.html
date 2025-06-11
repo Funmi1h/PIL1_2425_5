@@ -1,8 +1,23 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
     <div class="container">
         <h1>Vos Messages</h1>
         <p>Commencez par discutez avec d'autres {{user.last_name}}</p>
+    
+        <div>
+            <ul class="all_users">
+               {% for each-user in all_users %}
+               {% if each-user != user %}
+                    <a href=""  class="each_user">
+                        {{ user.first_name}} {{ user.last_name}}
+                    </a>
+                    <br>
+                {% endif %}
+               {% endfor %}
+            </ul>
+        </div>
+
+
     </div>
 {% endblock %}

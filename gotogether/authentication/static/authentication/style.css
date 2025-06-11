@@ -10,14 +10,14 @@ body {
         border-radius: 30px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
-
-    .app-title {
-        color: white;
-        font-size: 28px;
-        font-weight: 300;
-        margin: 0 0 10px 0;
-        letter-spacing: 2px;
-    }
+  
+.app-title {
+  color: white;
+  font-size: 28px;
+  font-weight: 300;
+  margin: 0 0 10px 0;
+  letter-spacing: 2px;
+  }
 
     .page-title {
         color: white;
