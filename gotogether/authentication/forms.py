@@ -19,13 +19,19 @@ class LoginForm(forms.Form):
 class SignUpForm(forms.ModelForm):
 
     # on definit les champs du formulaire d'inscription
-    last_name = forms.CharField(required= True)
+    last_name = forms.CharField(required= True,
+        widget=forms.TextInput(attrs= {'placeholder':'Last name'}))
 
-    first_name = forms.CharField(required= True)
+    first_name = forms.CharField(required= True,
+        widget=forms.TextInput(attrs = {'placeholder' : 'First name'}),
+        label= 'First name',
+    )
     
-    email = forms.EmailField(required= True)
+    email = forms.EmailField(required= True, 
+        widget=forms.TextInput(attrs = { 'placeholder ' : 'Email'}))
     
-    numero_telephone = forms.CharField(required= True)
+    numero_telephone = forms.CharField(required= True,
+        widget=forms.TextInput(attrs = {'placeholder ' : 'Numéro de téléphone '}))
     
     role = forms.ChoiceField(
         choices=[('conducteur', 'Conducteur'), ('passager', 'Passager')],
@@ -62,7 +68,8 @@ class SignUpForm(forms.ModelForm):
             'email': 'E-mail',
             'numero_telephone': 'Numéro de téléphone',
             'role': 'Rôle',
-        }
+            'Mot_de_passe': 'Mot de passe',
+        } 
     # Surcharge de la méthode clean pour valider les données du formulaire
 
 

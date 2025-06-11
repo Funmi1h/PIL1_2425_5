@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'authentication',
     'core',
     'messagerie',
-    'channels'
+    'channels',
+    'algorithme'
 ]
 
 MIDDLEWARE = [
@@ -70,7 +71,6 @@ TEMPLATES = [
         },
     },
 ]
-# ASGI poarce qu'on veut utiliser les websockets
 
 ASGI_APPLICATION = 'gotogether.asgi.application'
 
@@ -144,13 +144,3 @@ STATICFILES_DIRS = [
 LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/auth/dashboard/'
 
-
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
