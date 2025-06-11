@@ -18,31 +18,31 @@
             <li class="message-error">{{ message }}</li>
         {% endif %}
 
-        <label for="id_first_name" class="form-label">Nom</label>
+        <label for="id_first_name" class="form-label" >Prénom</label>
         {{ form.first_name }}
         {% if form.first_name.errors %}
             <small class="error-message">{{ form.first_name.errors.0 }}</small>
         {% endif %}
 
-        <label for="id_last_name" class="form-label">Prénom</label>
+        <label for="id_last_name" class="form-label">Nom</label>
         {{ form.last_name }}
         {% if form.last_name.errors %}
             <small class="error-message">{{ form.last_name.errors.0 }}</small>
         {% endif %}
 
-        <label for="id_email" class="form-label">Email</label>
+        <label for="id_email" class="form-label">E-mail</label>
         {{ form.email }}
         {% if form.email.errors %}
             <small class="error-message">{{ form.email.errors }}</small>
         {% endif %}
 
-        <label for="id_numero_telephone" class="form-label">Numéro de téléphone</label>
+        <label for="id_numéro_telephone" class="form-label">Numéro de téléphone</label>
         {{ form.numero_telephone }}
         {% if form.numero_telephone.errors %}
             <small class="error-message">{{ form.numero_telephone.errors }}</small>
         {% endif %}
 
-        <label for="id_role" class="form-label">Role</label>
+        <label for="id_role" class="form-label">Rôle</label>
         {{ form.role }}
         {% if form.role.errors %}
             <small class="error-message">{{ form.role.errors }}</small>

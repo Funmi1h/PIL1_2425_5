@@ -1,0 +1,31 @@
+   {% extends 'base.html' %}
+{% load static %}
+
+   {% block head %}
+<link rel="stylesheet" href="{% static 'algorithme/client_conducteur_form.css' %}">
+<!-- Pour Leaflet ajout via cdn -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="{%static 'algorithme/js/client_form.js'%}"></script>
+
+{% endblock %}
+{% block content %}
+<h1>Formulaire Client</h1>
+   <form method="post">
+    {% csrf_token %}
+    <input type="text" id="address" placeholder="Entrez une adresse">
+<button onclick="searchLocation()">Rechercher</button>
+      <p>Veuillez valider votre position avant de soumettre le formulaire.</p>
+      <!-- Champs cachés pour stocker la latitude et la longitude -->
+   <input type="hidden" id="latitude" name="latitude_client">
+    <input type="hidden" id="longitude" name="longitude_client">
+    
+
+    {{ form.as_p }}  <!-- Affiche les champs du formulaire sous forme de paragraphes -->
+    <input type="submit" value="Enregistrer">
+      <button type="button" id="get-location">Valider ma position</button> <!-- Bouton pour obtenir la position -->
+      
+    <div id="map" style="height: 500px;"></div> <!-- Div pour l'affichage de la carte -->
+
+</form>
+    {% endblock %}

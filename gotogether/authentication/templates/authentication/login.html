@@ -6,8 +6,9 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="login-title contain">GO Together</h1>
-<h2 class="login-subtitle">Connexion</h2>
+<div class="login-container">
+    <h1 class="login-title">GO Together</h1>
+    <h2 class="login-subtitle">Connexion</h2>
 
     {% if message %}
         <p class="error-message">{{ message }}</p>
@@ -19,9 +20,7 @@
         <button class="login-button" type="submit">Se connecter</button>
     </form>
 
-    <a class="forgot-link" href="#">mot de passe oublié ?</a>
-    <p class="signup-text">Pas encore inscrit ?</p>
-    <a class="create-account" href="#">Créer un compte</a>
+    
 
     {% if form.errors %}
         <ul class = "errorlist">
@@ -35,5 +34,10 @@
             {% endfor %}
         </ul>
     {% endif %}
+
+    <a class="forgot-link" href="#">mot de passe oublié ?</a>
+    <p class="signup-text">Pas encore inscrit ?</p>
+    <a class="create-account" href="#">Créer un compte</a>
+</div>
 
 {% endblock %}
