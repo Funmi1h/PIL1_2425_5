@@ -1,4 +1,11 @@
 
+body{
+  font-family: 'Averia Libre', cursive;
+  background-color: #c7d0ec;
+}
+.text{
+   padding: 20px 20px 0 0;
+}
 .logo{
    width: 200px;
     height: 50px;
@@ -9,7 +16,7 @@
 }
 
 
-.card-custom {
+/*.card-custom {
       border-radius: 10px;
       background-color: blueviolet;
       padding: 20px;
@@ -19,7 +26,7 @@
       height: 250px;
       display: flex;
       flex-direction: column;
-    }
+    }*/
 
 
     .cadre-1 {
@@ -45,7 +52,6 @@
       height: 250px;
       display: flex;
       flex-direction: column;
-      background-color: grey;
       color: white;
     }
     .cadre-3 {
@@ -58,7 +64,6 @@
       height: 250px;
       display: flex;
       flex-direction: column;
-      background-color: grey;
       color: white;
     }
     .cadre-4 {
@@ -88,6 +93,8 @@
       color: white;
     }
     .cadre-6 {
+      width: 250px;
+      height: 250px;
       margin-top: 10px;
       border-radius: 10px;
       padding: 20px;
@@ -97,9 +104,114 @@
       height: 250px;
       display: flex;
       flex-direction: column;
-      background-color: #4067E6;
       color: white;
     }
     .card i {
       color: black;
     }
+    .mag0{
+      padding: 10px;
+    }
+    .mag1{
+      padding-right: 80px;
+      padding-bottom: none;
+      height: 300px;
+      width: 400px;
+    }
+    .mag2{
+      padding-right: 90px;
+      padding-bottom: 0;
+      padding-top: none;
+    }
+    .mag5{
+      height:300px;
+      width: 300px;
+      background: url('/static/core/img/Rectangle2.png');
+      background-size: cover;
+      background-position: center;
+    }
+    .mag51{
+      padding: 100px 70px 0 80px;
+      align-items: center;
+    }
+    .mag51 button{
+      border-radius: 10px;
+      gap: 10px;
+      width: 150px;
+      height: 30px;
+      column-gap: 10px;
+      background-color: white;
+      color: white;  
+    }
+
+    /* Responsive Design */
+@media (max-width: 480px) {
+  .mag1, .mag2, .mag5 {
+    width: 100%;
+    padding-right: 0;
+  }
+  .cadre-1, .cadre-2, .cadre-3, .cadre-4, .cadre-5, .cadre-6 {
+    width: 100%;
+    height: auto;
+  }
+  .card-custom {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/*responsive design pour smartphone */
+@media all and (max-width: 760px) {
+  .mag0{
+    order: 2!important;
+  }
+  .mag7{
+    order: 1!important;
+  }
+  .intro{
+    display: none;
+  }
+  .logo{
+    padding-bottom: 15px;
+    height: 100px;
+  }
+  .cest{
+  padding: 0 0 20px 150px;
+  }
+  ul.list-unstyled.text{
+    padding: 0 0 0 0;
+    font-size: 18px;
+    gap: 15px;
+  }
+  .cadre-1, .cadre-4, .cadre-5{
+    font-size: 25px;
+    text-align: left;
+  }
+  i.material-icons{
+    font-size: 50px;
+  }
+  div.card.cadre-1{order: 1!important;}
+  div.card.cadre-2{order: 2!important;}
+  div.card.cadre-3{order: 4!important;}
+  div.card.cadre-4{order: 3!important;}
+  div.card.cadre-5{order: 5!important;}
+  div.card.cadre-6{order: 6!important;}
+  .mag0 img{
+    display: none;
+  }
+  .mag5{
+    width: 300px;
+    height: 300px;
+  }
+  div.col-md-6.col-sm-12.mag0{
+    padding: 0 0 0 60px;
+  } 
+} 
+
+/*responsive design pour tablette */
+@media (min-width: 490px) and (max-width: 991.98px) {
+  .cadre-1, .cadre-4, .cadre-5{
+    font-size: 14px;
+    text-align: left;
+  }
+}

@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 {% load static%}
 
@@ -5,72 +6,83 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'core/home_style.css' %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Libre&display=swap" rel="stylesheet">
+
 {% endblock %}
 
 
 {% block content%}
     <section class="container mt-5">
         <div class="row">
-            <div class="col-md-6 text-center">
-                <h1>Bienvenue sur Go Together</h1>
-                <p>Votre plateforme de covoiturage étudiant</p>
-                
+            <div class="col-md-6 col-sm-12 mag0">
+                <div class="intro">
+                    <h1>Bienvenue sur Go Together</h1>
+                    <p>Votre plateforme de covoiturage étudiant </p>
+                </div>
+                <img src="{%static 'core/img/Location review-cuate.png' %}" alt="" class="img-fluid mag1">
+                <img src="{%static 'core/img/City-driver-pana.png'%}" alt="" class="img-fluid mag2">
+                <div class="mag5">
+                    <div class="mag51">
+                        <p>Rejoignez-nous dès aujourd'hui.</p>
+                        <button> <a href="{% url 'login' %}">Se connecter</a></button>
+                        <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6 mt-4">
-                <h1 style="text-align: center;"> 
-                    <img src="{% static 'core/img/logo.svg' %}" alt="" class="logo">
-                    que c'est ?</h1>
-                    <ul style="text-align: center;" class="list-unstyled">
+            <div class="col-md-6 col-sm-12 mag7">
+                <h1 style="text-align: left;">
+                    <div class="d-block d-md-none text-center mt-2">
+                        <p>Bienvenue sur Go together</p>
+                        <p>Votre plateforme de covoiturage etudiant</p>
+                    </div>
+                    <img src="{% static 'core/img/logo.svg' %}" alt="" class="logo"><span style="font-size: 30px"> Qu'est ce que <span class="cest">c'est ?</span</span></h1>
+                      <ul style="text-align: justify;" class="list-unstyled text">
                         <li class="mb-2">Go Together est une plateforme conçue pour rendre le covoiturage entre étudiants accessible à tous, avec des fonctionnalités pensées pour votre confort et votre sécurité.</li>
                         <li class="mb-2">Notre plateforme vous permet de trouver des trajets partagés facilement, de communiquer avec d'autres étudiants et de partager vos expériences de covoiturage.</li>
                         <li class="mb-2">Notre mission est de faciliter les déplacements des étudiants en leur offrant une solution de covoiturage simple, rapide et sécurisée. Que vous soyez conducteur ou passager, Go Together vous permet de trouver facilement un trajet qui correspond à vos besoins.</li>
-                    </ul>
-                <div class="row g-2">
-                     <div class="col-md-6">
+                      </ul>
+                <div class="row g-2" style="text-align: left;">
+                     <div class="col-md-6 col-sm-6 col-lg-6">
                         <div class="card cadre-1">
                           <i class="material-icons">search</i>
                           <p>Recherche intelligente</p>
                           <p>Trouvez facilement des trajets corrrrespondants a vos besoins grace a notre algorithme de matching avance</p>
                         </div>
                     </div>
-                     <div class="col-md-6">
+                     <div class="col-md-6 col-sm-6 col-lg-6">
                         <div class="card cadre-2">
-                            <img src="{% static 'core/img/City-driver-pana.png' %}" alt="Voiture" class="img-fluid">
+                            <img src="{% static 'core/img/Location review-bro.png' %}" alt="Voiture" class="img-fluid">
                         </div>
                      </div>
-                     <div class="col-md-6">
+                     <div class="col-md-6 col-sm-6 col-lg-6">
                         <div  class="card cadre-3">
-                          <p>Rejoignez une communaute d'étudiants actifs et bienveillants, prêts a partager leurs trajets.</p>
+                          <img src="{%static 'core/img/People talking-rafiki.png' %}" alt="">
                         </div>
                      </div>
-                     <div class="col-md-6">
+                     <div class="col-md-6 col-sm-6 col-lg-6">
                         <div class="card cadre-4">
                           <i class="material-icons">group</i>
                           <p>Communaute engagee</p>
                           <p>Rejoignez une communaute de covoituriers actifs et bienveillants, prets a partager leurs trajets</p>
                         </div>    
                      </div>
-                     <div class="col-md-6">
+                     <div class="col-md-6 col-sm-6 col-lg-6">
                         <div class="card cadre-5">
                             <i class="material-icons">security</i>
                             <p>Securite renforcee</p>
                             <p>Voyagez en toute securite grace a nos mesures de securite, incluant verification des profils et le suivi des trajets</p>
                         </div>
                     </div>
-                     <div class="col-md-6">
+                     <div class="col-md-6 col-sm-6 col-lg-6">
                         <div class="card cadre-6">
-                            
-                              <p>Rejoignez-nous dès aujourd'hui.</p>
-                              <button> <a href="{% url 'login' %}">Se connecter</a></button>
-                              <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
-                            
+                            <img src="{%static 'core/img/Safe-pana.png' %}" alt=""> 
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 
 {% endblock %}
-
