@@ -6,12 +6,15 @@
 <!-- Pour Leaflet ajout via cdn -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="{%static 'algorithme/js/client_form.js'%}"></script>
+<script src="{%static 'algorithme/js/formulaire_role.js'%}"></script>
 
 {% endblock %}
 {% block content %}
-<h1>Formulaire Client</h1>
-   <form method="post">
+<h1>Remplissez ceci </h1>
+    <label><input type="radio" name="role" value="conducteur" checked onchange="toggleForm()"> Conducteur</label>
+    <label><input type="radio" name="role" value="client" onchange="toggleForm()"> Client</label>
+<!-- Formulaire pour le conducteur -->
+   <form method="post" id="conducteur-form" style="display: block;">
     {% csrf_token %}
     <input type="text" id="address" placeholder="Entrez une adresse">
 <button onclick="searchLocation()">Rechercher</button>
@@ -19,6 +22,7 @@
       <!-- Champs cachés pour stocker la latitude et la longitude -->
    <input type="hidden" id="latitude" name="latitude_client">
     <input type="hidden" id="longitude" name="longitude_client">
+    
     
 
     {{ form.as_p }}  <!-- Affiche les champs du formulaire sous forme de paragraphes -->

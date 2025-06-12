@@ -1,7 +1,9 @@
 from django import forms
-from .models import Client, Conducteur
+from authentication.models import User
+from .models import Conducteur, Client
 
-
+client = User.objects.filter(role='passager')
+conducteur = User.objects.filter(role='conducteur') 
 
 class ConducteurForm(forms.ModelForm):
     class Meta:
