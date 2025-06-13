@@ -1,3 +1,14 @@
+//changement dynamique selon l'utilisateur
+        function toggleForm() {
+            var role = document.querySelector('input[name="role"]:checked').value;
+            document.getElementById('conducteur_form').style.display = (role === 'conducteur') ? 'block' : 'none';
+            document.getElementById('client_form').style.display = (role === 'client') ? 'block' : 'none';
+        }
+        window.onload = toggleForm;
+
+
+
+
 // Initialisation de la carte
 var map = L.map('map').setView([6.45, 2.35], 13); // Coordonnées pour Abomey-Calavi
 

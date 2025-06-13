@@ -51,5 +51,24 @@ class User(AbstractUser):
         verbose_name='Rôle',
         default='passager'  # Valeur par défaut
     )
+    latitude = models.FloatField(
+        verbose_name='Latitude',
+        null=True,
+        blank=True
+    )
+    longitude = models.FloatField(
+        verbose_name='Longitude',
+        null=True,
+        blank=True
+    )
+    nb_places = models.IntegerField(
+        verbose_name='Nombre de places',
+        null=True,
+        blank=True
+    )
+    adresse = models.CharField(max_length=255 ,
+         default='Abomey-Calavi',
+         verbose_name='Adresse'
+    )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
