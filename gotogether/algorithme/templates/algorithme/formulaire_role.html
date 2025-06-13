@@ -15,21 +15,70 @@
     <label><input type="radio" name="role" value="client" onchange="toggleForm()"> Client</label>
 <!-- Formulaire pour le conducteur -->
    <form method="post" id="conducteur-form" style="display: block;">
-    {% csrf_token %}
-    <input type="text" id="address" placeholder="Entrez une adresse">
-<button onclick="searchLocation()">Rechercher</button>
+         {% csrf_token %}
+         <input type="hidden" name="role" value="conducteur">
+            <div>
+               <label for="{{conducteur_form.adresse.id_for_label}}">{{conducteur_form.email.label }}</label>
+                  <div>
+                        {{conducteur_form.adresse}}
+                        <button onclick="searchLocation()">Choisir sur la carte </button>
+                  </div>
+               {% if conducteur_form.adresse.errors %}
+                  {% for error in conducteur_form.adresse.errors %}
+                        <span class="error">{{error}}</span>
+                  {% endfor %}
+               {% endif %}
+               <p> Veuillez cliquer sur rechercher pour identifier votre adresse</p>
+            </div>
+
+            <div>
+               <label for="{{conducteur_form.nb_places.id_for_label}}">{{conducteur_form.nb_places.label }}</label>
+               <div>
+                  {{conducteur_form.nb_places}}
+                     {% if conducteur_form.nb_places.errors %}
+                           {% for error in conducteur_form.nb_places.errors %}
+                                 <span class="error">{{error}}</span>
+                           {% endfor %}
+                     {% endif %}
+               </div>
+                  
+            </div>
       <p>Veuillez valider votre position avant de soumettre le formulaire.</p>
+      <input type="submit" value="Enregistrer">
+      <button type="button" id="get-location">Valider ma position</button> <!-- Bouton pour obtenir la position -->
+
+   </form>
+
+
+   <!-- Formulaire pour le client -->
+   <form method="post" id="client-form" style="display: block;">
+         {% csrf_token %}
+         <input type="hidden" name="role" value="client">
+            <div>
+               <label for="{{client_form.adresse.id_for_label}}">{{client_form.email.label }}</label>
+                  <div>
+                        {{client_form.adresse}}
+                        <button onclick="searchLocation()">Choisir sur la carte </button>
+                  </div>
+               {% if client_form.adresse.errors %}
+                  {% for error in client_form.adresse.errors %}
+                        <span class="error">{{error}}</span>
+                  {% endfor %}
+               {% endif %}
+               <p> Veuillez cliquer sur rechercher pour identifier votre adresse</p>
+            </div>
+                  
+      <p>Veuillez valider votre position avant de soumettre le formulaire.</p>
+      <input type="submit" value="Enregistrer">
+      <button type="button" id="get-location">Valider ma position</button> <!-- Bouton pour obtenir la position -->
       <!-- Champs cachés pour stocker la latitude et la longitude -->
-   <input type="hidden" id="latitude" name="latitude_client">
-    <input type="hidden" id="longitude" name="longitude_client">
+
+   <input type="hidden" id="latitude" name="latitude">
+   <input type="hidden" id="longitude" name="longitude">
     
     
 
-    {{ form.as_p }}  <!-- Affiche les champs du formulaire sous forme de paragraphes -->
-    <input type="submit" value="Enregistrer">
-      <button type="button" id="get-location">Valider ma position</button> <!-- Bouton pour obtenir la position -->
-      
-    <div id="map" style="height: 500px;"></div> <!-- Div pour l'affichage de la carte -->
+   <div id="map" style="height: 500px;"></div> <!-- Div pour l'affichage de la carte -->
 
 </form>
     {% endblock %}
