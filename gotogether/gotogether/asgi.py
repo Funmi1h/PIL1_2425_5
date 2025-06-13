@@ -8,6 +8,10 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
 import os
+from dotenv import load_dotenv
+load_dotenv()
+import django
+django.setup()
 from django.core.asgi import get_asgi_application
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.auth import AuthMiddlewareStack
@@ -16,6 +20,7 @@ import messagerie.routing
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gotogether.settings')
+
 # Serveur ASGI + Configuration
 application = ProtocolTypeRouter(
     {
