@@ -7,7 +7,9 @@
 
 {% block content %}
 <div class="login-container">
-    <h1 class="login-title">GO Together</h1>
+    <h1 class="app-title">
+        <img src="{% static 'images/logo.jpg' %}" alt="">
+    </h1>
     <h2 class="login-subtitle">Connexion</h2>
 
     {% if message %}
@@ -37,7 +39,7 @@
 
     <a class="forgot-link" href="#">mot de passe oublié ?</a>
     <p class="signup-text">Pas encore inscrit ?</p>
-    <a class="create-account" href="sign_up">Créer un compte</a>
+    <a class="create-account" href="{% url 'sign_up' %}">Créer un compte</a>
 </div>
 
 {% endblock %}

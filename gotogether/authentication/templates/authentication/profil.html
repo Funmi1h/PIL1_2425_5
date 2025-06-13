@@ -8,40 +8,40 @@
 
 {% block content %}
     <h2>Vos informations personnels {{user.last_name}}</h2>
-    
-<div class="container">
- <h1>Profil utilisateur</h1>
- <form>
- <div class="form-group">
- <label for="nom">Nom et prénom :</label>
- <input type="text" id="nom" name="nom" placeholder="Entrez votre nom complet"
-required>
- </div>
- <div class="form-group">
- <label for="photo">Photo de profil <span class="note">(facultatif)</span>
-:</label>
- <input type="file" id="photo" name="photo">
- </div>
- <div class="form-group">
- <label for="depart">Point de départ habituel :</label>
- <input type="text" id="depart" name="depart" placeholder="Ex: Cotonou, Akpakpa"
-required>
- </div>
- <div class="form-group">
- <label for="horaire_depart">Horaire de départ :</label>
- <input type="time" id="horaire_depart" name="horaire_depart" required>
- </div>
- <div class="form-group">
- <label for="horaire_arrivee">Horaire d'arrivée :</label>
- <input type="time" id="horaire_arrivee" name="horaire_arrivee" required>
- </div>
- <div class="form-group">
- <label for="marque">Marque du véhicule :</label>
- <input type="text" id="marque" name="marque" placeholder="Ex: Toyota, Peugeot">
- </div>
- <button> id="editProfileBtn"
- type="button">Modifier le profil</button>
- </form>
-</div>
-<script src= "{% static 'authentication/script.js' %}"></script>
-{% endblock% }
+        
+    <div class="container">
+    <h1>Profil utilisateur</h1>
+    <form>
+    <div class="form-group">
+    <label for="nom">Nom et prénom :</label>
+    <input type="text" id="nom" name="nom" placeholder="Entrez votre nom complet"
+    required>
+    </div>
+    <div class="form-group">
+    <label for="photo">Photo de profil <span class="note">(facultatif)</span>
+    :</label>
+    <input type="file" id="photo" name="photo">
+    </div>
+    <div class="form-group">
+    <label for="depart">Point de départ habituel :</label>
+    <input type="text" id="depart" name="depart" placeholder="Ex: Cotonou, Akpakpa"
+    required>
+    </div>
+    <div class="form-group">
+    <label for="horaire_depart">Horaire de départ :</label>
+    <input type="time" id="horaire_depart" name="horaire_depart" required>
+    </div>
+    <div class="form-group">
+    <label for="horaire_arrivee">Horaire d'arrivée :</label>
+    <input type="time" id="horaire_arrivee" name="horaire_arrivee" required>
+    </div>
+    <div class="form-group">
+    <label for="marque">Marque du véhicule :</label>
+    <input type="text" id="marque" name="marque" placeholder="Ex: Toyota, Peugeot">
+    </div>
+    <button> id="editProfileBtn"
+    type="button">Modifier le profil</button>
+    </form>
+    </div>
+    <script src= "{% static 'authentication/script.js' %}"></script>
+{% endblock %}

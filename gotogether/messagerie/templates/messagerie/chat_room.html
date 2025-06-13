@@ -1,14 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<style>
+    
+  #chat-log {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+  }
+
+  #chat-message-input {
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  #chat-message-submit {
+    background-color: #007bff; 
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    margin-top: 10px;
+    margin-left: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  #chat-message-submit:hover {
+    background-color: #0056b3;
+  }
+
+  .color-bleu-principal {
+    font-size: 20px;
+    vertical-align: middle;
+  }
+
+</style>
+ {% endblock %}   
 {% block content %}
+    <h3>{{recipient_firstname}}</h3>
+
+    <!--Les messages apparaitront dans la div ci dessous avec js-->
+    <div id="chat-log" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+    {% for message in messages %}
+        <p><strong>{{ message.sender.username }}</strong> : {{ message.content }}</p>
+    {% empty %}
+        <p>Aucun message pour l’instant.</p>
+    {% endfor %}
+    </div>
+<input id="chat-message-input" type="text" data-recipient="{{ recipient_id }}">    <button id="chat-message-submit"><ion-icon name="send" class="text-white"></ion-icon></button>
+
+ 
 
 
-    <h2>Discussion avec {{ recipient_username }}</h2>
 
-    <div id="chat-log" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;"></div>
 
-    <input id="chat-message-input" type="text" autocomplete="off" placeholder="Tape ton message...">
-    <button id="chat-message-submit"><ion-icon name="send" class="bg-bleu-principal"></ion-icon></button>
+<script>
+const recipientId = document.querySelector('#chat-message-input').dataset.recipient;
+  const roomName = "{{ room_name|escapejs }}";
 
-    <script src="{% static 'messagerie/js/messages.js' %}" defer></script>
+  const chatSocket = new WebSocket(
+    'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+  );
 
+  chatSocket.onopen = function(e) {
+    console.log("✅ Connexion WebSocket établie !");
+  };
+
+  chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const chatLog = document.querySelector('#chat-log');
+    chatLog.innerHTML += '<p>' + data.message + '</p>';
+    chatLog.scrollTop = chatLog.scrollHeight;  // auto-scroll
+  };
+
+  chatSocket.onerror = function(e) {
+    console.error("❌ Erreur WebSocket :", e);
+  };
+
+  chatSocket.onclose = function(e) {
+    console.warn("⚠️ WebSocket fermé :", e);
+  };
+
+  document.querySelector('#chat-message-submit').onclick = function() {
+    const messageInput = document.querySelector('#chat-message-input');
+    const message = messageInput.value;
+
+    if (chatSocket.readyState === WebSocket.OPEN) {
+      chatSocket.send(JSON.stringify({ 'message': message }));
+      messageInput.value = '';
+    } else {
+      console.error("🚫 WebSocket non ouverte :", chatSocket.readyState);
+      alert("La connexion n’est pas prête. Veuillez patienter ou recharger la page.");
+    }
+  };
+
+</script>
 
 {% endblock %}

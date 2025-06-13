@@ -7,13 +7,13 @@
     
         <div>
             <ul class="all_users">
-               {% for each-user in all_users %}
-               {% if each-user != user %}
-                    <a href=""  class="each_user">
-                        {{ user.first_name}} {{ user.last_name}}
-                    </a>
-                    <br>
-                {% endif %}
+               {% for each_user in all_users %}
+                {% if each_user != user %}
+                        <a href="{% url 'chat_room' each_user.id %}"  class="each_user">
+                            {{ each_user.first_name}} {{ each_user.last_name}}
+                        </a>
+                        <br>
+                    {% endif %}
                {% endfor %}
             </ul>
         </div>
