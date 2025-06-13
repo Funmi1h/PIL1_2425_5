@@ -144,3 +144,10 @@ STATICFILES_DIRS = [
 LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/auth/dashboard/'
 
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # pour le dev
+    },
+}
