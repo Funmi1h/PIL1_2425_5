@@ -1,5 +1,6 @@
-:root {
-    --primary-color: #007bff; /* Bleu Bootstrap par défaut */
+ /* Votre CSS intégré ici (comme précédemment) */
+    :root {
+    --primary-color: Blue; /* Bleu Bootstrap par défaut */
     --secondary-color: #6c757d; /* Gris Bootstrap */
     --light-bg: #f8f9fa; /* Couleur de fond clair */
     --text-color: #333;
@@ -71,7 +72,7 @@ body {
 
 #sidebar-wrapper .list-group-item.active {
     background-color: var(--primary-color);
-    color: white;
+    color:  gray ;
 }
 
 #sidebar-wrapper .list-group-item:hover {
