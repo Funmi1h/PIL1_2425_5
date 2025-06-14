@@ -1,16 +1,65 @@
+
+document.addEventListener("DOMContentLoaded", function () {
+    alert("Script chargé !");
+    console.log("✅ DOM chargé !");
+});
+
+console.log("✅ Script formulaire_demande.js chargé !");
+console.log("Leaflet.js est chargé :", typeof L !== "undefined");
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // Empêche la redirection
+
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Affiche le message sans changer de page
+            })
+            .catch(error => console.error("Erreur :", error));
+        });
+    });
+});
+
 //changement dynamique selon l'utilisateur
+
+       
+
         function toggleForm() {
-            var role = document.querySelector('input[name="role"]:checked').value;
-            document.getElementById('conducteur_form').style.display = (role === 'conducteur') ? 'block' : 'none';
-            document.getElementById('client_form').style.display = (role === 'client') ? 'block' : 'none';
-        }
-        window.onload = toggleForm;
+    var role = document.querySelector('input[name="role"]:checked');
+    if (!role) {
+        console.error("❌ Aucun rôle sélectionné !");
+        return;
+    }
+
+    var conducteurForm = document.getElementById("conducteur-form");
+    var passagerForm = document.getElementById("passager-form");
+
+    if (!conducteurForm || !passagerForm) {
+        console.error("❌ Formulaires non trouvés dans le DOM !");
+        return;
+    }
+
+    if (role.value === "conducteur") {
+        conducteurForm.style.display = "block";
+        passagerForm.style.display = "none";
+    } else {
+        conducteurForm.style.display = "none";
+        passagerForm.style.display = "block";
+    }
+}
+ window.onload = toggleForm;
 
 
 
 
 // Initialisation de la carte
-var map = L.map('map').setView([6.45, 2.35], 13); // Coordonnées pour Abomey-Calavi
+ // Coordonnées pour Abomey-Calavi
+var map = L.map('map').setView([6.45, 2.35], 13);
 
 // Ajout des tuiles OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -75,7 +124,17 @@ map.on('click', function(value) {
 
 // Recherche de l'adresse indiquée
 function searchLocation() {
-    var address = document.getElementById("address").value;
+    var role = document.querySelector('input[name="role"]:checked').value;
+    var address = "";
+
+    if (role === "conducteur") {
+        // Pour le conducteur
+        address = document.getElementById("id_addresse_conducteur").value;
+    } else if (role === "passager") {
+        // Pour le passager
+        address = document.getElementById("id_addresse_passager").value;
+    }
+    
     if (address) {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
             .then(response => response.json())
@@ -96,6 +155,17 @@ function searchLocation() {
         alert("Veuillez entrer une adresse.");
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ DOM chargé !");
+    
+    var radios = document.querySelectorAll('input[name="role"]');
+    radios.forEach(radio => {
+        radio.addEventListener("change", function () {
+            console.log("🔄 Rôle changé :", this.value);
+            toggleForm();
+        });
+    });
+});
 
 
 
