@@ -1,61 +1,52 @@
 {% extends 'base.html' %}
-{% load static%}
-
+{% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'authentication/profile.css' %}">
-
 {% endblock head %}
 
 {% block content %}
-    <h2>Vos informations personnels {{user.last_name}}</h2>
-        
-    <div class="profile-container">
-  <h2>Mon Profil</h2>
-  
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+<h2>Profil de {{ user.first_name }} {{ user.last_name }}</h2>
 
-    <div class="form-group">
-      <label>Nom</label>
-      <input type="text" name="last_name" value="{{ user.last_name }}" required />
+<div class="profile-container">
+    <div class="profile-left">
+        <div class="profile-photo">
+            {% if user.photo_profil %}
+                <img src="{{ user.photo_profil.url }}" alt="Photo de profil" class="profile-pic-preview">
+            {% else %}
+                <ion-icon name="person-circle-outline" class="text-white"></ion-icon>
+            {% endif %}
+            <a href="{% url 'update_photo_profil' %}" class="edit-photo-btn">
+                <i class="fa-solid fa-camera"></i> Modifier
+            </a>
+        </div>
+        <div class="profile-info">
+            <p><strong>Nom :</strong> {{ user.last_name }}</p>
+            <p><strong>Prénom :</strong> {{ user.first_name }}</p>
+            <p><strong>Email :</strong> {{ user.email }}</p>
+        </div>
     </div>
 
-    <div class="form-group">
-      <label>Prénom</label>
-      <input type="text" name="first_name" value="{{ user.first_name }}" required />
+    <div class="profile-right">
+        <div class="profile-details">
+            <p><strong>Adresse :</strong> {% if user.adresse %}{{ user.adresse }}{% else %}Vous n'avez spécifié aucune adresse.{% endif %}</p>
+            <p><strong>Horaires :</strong></p>
+            <p><strong>Départ :</strong> {% if user.heure_depart %}{{ user.heure_depart }}{% else %}Non spécifié{% endif %}</p>
+            <p><strong>Arrivée :</strong> {% if user.heure_arrivee %}{{ user.heure_arrivee }}{% else %}Non spécifié{% endif %}</p>
+            {% if user.role == "conducteur" %}
+                <p><strong>Véhicule :</strong> {{ user.marque_voiture }}</p>
+                <p><strong>Places disponibles :</strong> {{ user.nb_places }}</p>
+            {% endif %}
+        </div>
+        <div class="profile-actions">
+            <a href="{% url 'changer_profil' %}" class="edit-profile-btn">
+                <i class="fa-solid fa-pen"></i> Modifier le profil
+            </a>
+            <a href="{% url 'upload_password' %}" class="change-password-btn">
+                <i class="fa-solid fa-lock"></i> Changer le mot de passe
+            </a>
+        </div>
     </div>
-
-    <div class="form-group">
-      <label>Photo de profil</label>
-      <input type="file" name="profile_picture" />
-      {% if user.profile_picture %}
-        <img src="{{ user.profile_picture.url }}" class="profile-pic-preview" />
-      {% endif %}
-    <button> <a href="{% url 'update_photo_profil' %}">Changer la photo de profil</a></button>
-    </div>
-
-    <div class="form-group">
-      <label>Point de départ habituel</label>
-      <input type="text" name="starting_point" value="{{ user.adresse }}" required />
-    </div>
-
-    <div class="form-group">
-      <label>Horaires habituels</label>
-      <input type="time" name="departure_time" value="{{ user.heure_depart }}" required />
-      <input type="time" name="arrival_time" value="{{ user.heure_arrivee }}" required />
-    </div>
-
-    {% if user.role == "conducteur" %}
-      <div class="form-group">
-        <label>Véhicule</label>
-        <input type="text" name="car_make" placeholder="Marque" value="{{ user.car_make }}" />
-        <input type="text" name="car_model" placeholder="Modèle" value="{{ user.car_model }}" />
-        <input type="number" name="car_seats" placeholder="Places disponibles" min="1" value="{{ user.car_seats }}" />
-      </div>
-    {% endif %}
-<button><a href="{% url 'upload_password' %}">Changer votre mot de passe</a></button>
-    <button type="submit">Enregistrer les modifications</button>
-  </form>
 </div>
-    <script src= "{% static 'authentication/script.js' %}"></script>
+
+<script src="{% static 'authentication/script.js' %}"></script>
 {% endblock %}

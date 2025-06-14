@@ -26,7 +26,7 @@ class LoginView(LoginView):
                 user = authenticate(request, username=identifiant, password=password)
                 if user is not None:
                     login(request, user)
-                    return render(request, 'core/home.html', {'user': user})
+                    return render(request, 'authentication/dashboard.html', {'user': user})
                 else:
                     return render(request, self.template_name, {'form': form, 'message': 'Identifiant ou mot de passe incorrect.'})
             else:
@@ -95,7 +95,7 @@ def upload_password(request):
     return render(request, 'authentication/update_password.html', context={'form': form, 'user':user})
 
 
-# mettre ajour la photo de profil
+# mettre a jour la photo de profil
 @login_required
 def upload_profile_photo(request):
     form = forms.UploadProfilePhotoForm() 
@@ -111,5 +111,13 @@ def upload_profile_photo(request):
 # Mettre a jour le profil
 @login_required
 def modifier_profil(request):
-    user_profil = 
     user = request.user
+    if request.method == 'POST':
+        form = forms.ProfilForm(request.POST, request.FILES, instance = user)
+        if form.is_valid():
+            form.save()
+            return redirect('profil_user')
+    else:
+        form = forms.ProfilForm(instance=user)
+
+    return render(request, 'authentication/modifier_profile.html', {'user': user, 'form': form})        

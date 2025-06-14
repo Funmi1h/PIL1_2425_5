@@ -99,20 +99,20 @@ class SignUpForm(forms.ModelForm):
 
 class UploadProfilePhotoForm(forms.ModelForm):
     class Meta:
-        model = get_user_model
+        model = get_user_model()
         fields= ['photo_profil']
-        widgets = {'photo_profil': forms.FileInput(attrs={'class': 'form-control'})},
+        widgets = {'photo_profil': forms.FileInput(attrs={'class': 'form-control'})}
 
 
 
 # Formulaire pour le profil 
 
-class ProfilForm():
+class ProfilForm(forms.ModelForm):
     class Meta:
-        model = get_user_model
-        fields = ['fisrt_name', 'last_name', 'email', 'numero_telephone', 'role', 'heure_depart', 'heure_arrivee', 'adresse', 'marque_voiture']
+        model = get_user_model()
+        fields = ['first_name', 'last_name', 'email', 'numero_telephone', 'role', 'heure_depart', 'heure_arrivee', 'adresse', 'marque_voiture']
         labels = {
-            'fisrt_name': 'Prénom',
+            'first_name': 'Prénom',
             'last_name' : 'Nom',
             'email': 'E-mail',
             'numero_telephone': 'Numéro de téléphone',
@@ -129,8 +129,8 @@ class ProfilForm():
             'email': forms.EmailInput(attrs={'placeholder': 'Adresse e-mail'}),
             'numero_telephone': forms.TextInput(attrs={'placeholder': 'Numéro de téléphone'}),
             'role': forms.RadioSelect(),
-            'heure_depart' : forms.TimeField(),
-            'heure_arrivee': forms.TimeField(),
-            'adresse': forms.CharField(),
-            'marque_voiture' : forms.CharField(),            
+            'heure_depart' : forms.TimeInput(attrs={'type': 'time'}),
+            'heure_arrivee': forms.TimeInput(attrs={'type': 'time'}),
+            'adresse': forms.TextInput(),
+            'marque_voiture' : forms.TextInput(),            
         }
