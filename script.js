@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="card-body">
                             <h5 class="card-title">Trajet: Cotonou <i class="fas fa-arrow-right"></i> Parakou</h5>
                             <p class="card-text">Date: 15/07/2025 à 08:00</p>
-                            <p class="card-text">Conducteur: Jean OGOU</p>
+                            <p class="card-text">Conducteur: Jean Dupont</p>
                             <button class="btn btn-sm btn-success">Voir le trajet</button>
                         </div>
                     </div>
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="card-body">
                             <h5 class="card-title">Trajet: Abomey-Calavi <i class="fas fa-arrow-right"></i> Cotonou</h5>
                             <p class="card-text">Date: 16/07/2025 à 14:00</p>
-                            <p class="card-text">Conducteur: Sophie IFE</p>
+                            <p class="card-text">Conducteur: Sophie Martin</p>
                             <button class="btn btn-sm btn-success">Voir le trajet</button>
                         </div>
                     </div>
