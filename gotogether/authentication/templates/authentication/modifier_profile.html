@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'authentication/profile.css' %}" />
+    <link rel="stylesheet" href="{% static 'authentication/css/profile.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -51,8 +51,12 @@
             <a href="{% url 'upload_password' %}" class="change-password-btn">
                 <i class="fa-solid fa-lock"></i> Changer le mot de passe
             </a>
+            <br>
+            <a href="" class="edit-profile-btn"><button type="submit"  class="enregistrermodif">Enregistrer les modifications</button></a>
         </div>
     </div>
+
+
 </form>
 
 

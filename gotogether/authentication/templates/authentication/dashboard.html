@@ -1,185 +1,66 @@
-
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-
+    <link rel="stylesheet" href="{% static 'authentication/css/dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
-<h1>Retrouves tout dans ton coin personnel {{ user.first_name }}
-   
+<div class="dashboard row">
+    <div class=" col-lg-5">
+        <h1 class="color-bleu-principal">Bienvenue dans ton coin personnel, {{ user.first_name }} 👋</h1>
+        <p class="text-muted">Partages tes trajets, trouves des compagnons de route, et restes connecté.</p>
 
-    <div class="d-flex" id="wrapper">
-        
-        <div id="page-content-wrapper">
-           
+        <!-- Actions principales -->
+        <div class="mb-4">
+            <a href="#" class="btn btn-primary me-2 mb-3">🔍 Rechercher un trajet</a>
+            
+            <a href="#" class="btn btn-primary me-2 mb-3">➕ Proposer un trajet</a>
+        </div>
 
-            <div class="container-fluid px-4" id="main-content-sections">
-                <div id="menu-section" class="content-section">
-                    <div class="row my-4">
-                        <div class="col-lg-12">
-                            <div class="p-4 rounded shadow-sm bg-white mb-4 welcome-section">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h3 class="fs-4">Content de vous voir, <span id="welcome-user-name">{{user.first_name}}</span>!</h3>
-                                    <img src="OIP (1).webp" alt="Illustration" class="img-fluid welcome-illustration">
-                                </div>
-                                <p class="text-muted">Explorez et planifiez votre prochain covoiturage.</p>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                                    <input type="text" class="form-control form-control-lg" placeholder="Où allez-vous?" id="searchInput">
-                                    <button class="btn btn-primary" id="mainSearchButton"><i class="fas fa-search"></i></button>
-                                </div>
-                                <button class="btn btn-outline-primary me-2" id="searchTripButton">Rechercher un trajet</button>
-                                <button class="btn btn-outline-secondary" id="createTripButton">Créer votre propre trajet</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row my-4">
-                        <div class="col-lg-12">
-                            <div class="p-4 rounded shadow-sm bg-white upcoming-trips-section">
-                                <h3 class="fs-4 mb-3">Trajets à venir</h3>
-                                <div id="upcomingTripsContainer">
-                                    <div class="alert alert-info text-center" role="alert">
-                                        <i class="fas fa-info-circle me-2"></i>Vous n'avez aucun trajet à venir.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row my-4">
-                        <div class="col-lg-12">
-                            <div class="p-4 rounded shadow-sm bg-white popular-destinations-section">
-                                <h3 class="fs-4 mb-3">Lieu de Départ Populaires</h3>
-                                <div class="row row-cols-1 row-cols-md-3 g-4">
-                                    <div class="col">
-                                        <div class="card h-100 destination-card">
-                                            <img src="Palais de marina.webp" class="card-img-top" alt="La Marina">
-                                            <div class="card-body">
-                                                <h5 class="card-title">La Marina</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="card h-100 destination-card">
-                                            <img src="Etoile rouge.webp" class="card-img-top" alt="Etoile Rouge">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Etoile Rouge</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="card h-100 destination-card">
-                                            <img src="Fidjrossè.webp" class="card-img-top" alt="Fidjrossè">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Fidjrossè</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="card h-100 destination-card">
-                                            <img src="Echangeur Godomey.webp" class="card-img-top" alt="Godomey">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Godomey</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="card h-100 destination-card">
-                                            <img src="porto.webp" class="card-img-top" alt="Porto-Novo">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Porto-Novo</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="card h-100 destination-card">
-                                            <img src="topka.webp" class="card-img-top" alt="Topka">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Topka</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="recherche-section" class="content-section" style="display: none;">
-                    <div class="p-4 rounded shadow-sm bg-white mb-4">
-                        <h3 class="fs-4 mb-3">Rechercher un Trajet</h3>
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-5">
-                                <label for="departureLocation" class="form-label">Lieu de départ</label>
-                                <input type="text" class="form-control" id="departureLocation" placeholder="Ex: Cotonou">
-                            </div>
-                            <div class="col-md-5">
-                                <label for="arrivalLocation" class="form-label">Lieu d'arrivée</label>
-                                <input type="text" class="form-control" id="arrivalLocation" placeholder="Ex: Abomey-Calavi">
-                            </div>
-                            <div class="col-md-2">
-                                <button class="btn btn-primary w-100" id="executeSearchButton"><i class="fas fa-search me-2"></i>Rechercher</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div id="searchResults" class="mt-4">
-                            <p class="text-muted text-center">Entrez vos critères de recherche ci-dessus pour trouver des trajets.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="mes-trajets-section" class="content-section" style="display: none;">
-                    <div class="p-4 rounded shadow-sm bg-white mb-4">
-                        <h3 class="fs-4 mb-3">Mes Trajets</h3>
-                        <p class="text-muted">Gérez vos trajets en tant que passager ou conducteur.</p>
-                        <ul class="nav nav-tabs mb-3" id="myTripsTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="passenger-tab" data-bs-toggle="tab" data-bs-target="#passengerTrips" type="button" role="tab" aria-controls="passengerTrips" aria-selected="true">En tant que Passager</button>
+        <!-- Trajets à venir -->
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">🛣️ Mes trajets à venir</div>
+            <div class="card-body">
+                {% if upcoming_trips %}
+                    <ul class="list-group">
+                        {% for trip in upcoming_trips %}
+                            <li class="list-group-item">
+                                <strong>{{ trip.depart }}</strong> → <strong>{{ trip.arrivee }}</strong>
+                                le {{ trip.date|date:"d/m/Y" }} à {{ trip.heure }}
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="driver-tab" data-bs-toggle="tab" data-bs-target="#driverTrips" type="button" role="tab" aria-controls="driverTrips" aria-selected="false">En tant que Conducteur</button>
-                            </li>
-                        </ul>
-                        <div class="tab-content" id="myTripsTabContent">
-                            <div class="tab-pane fade show active" id="passengerTrips" role="tabpanel" aria-labelledby="passenger-tab">
-                                <div class="alert alert-info text-center" role="alert">
-                                    <i class="fas fa-info-circle me-2"></i>Vous n'avez aucun trajet réservé en tant que passager.
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="driverTrips" role="tabpanel" aria-labelledby="driver-tab">
-                                <button class="btn btn-success mb-3" id="addDriverTripButton"><i class="fas fa-plus me-2"></i>Proposer un nouveau trajet</button>
-                                <div class="alert alert-warning text-center" role="alert">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>Vous n'avez proposé aucun trajet en tant que conducteur.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-               
-
-                <div id="historique-section" class="content-section">
-                    <div class="p-4 rounded shadow-sm bg-white history-section">
-                        <h3 class="fs-4 mb-3">Historique des trajets</h3>
-                        <button class="btn btn-outline-primary mt-3" id="viewAllHistoryButton">Voir tout l'historique</button>
-                    </div>
-                </div>
-
-
-
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">Aucun trajet prévu pour le moment.</div>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+    <div class=" col-lg-7">
+        <!-- Suggestions de trajets -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
+            <div class="card-body">
+                {% if nearby_trips %}
+                    <ul class="list-group">
+                        {% for trip in nearby_trips %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    {{ trip.user.first_name }} propose un trajet 
+                                    <strong>{{ trip.depart }}</strong> → <strong>{{ trip.arrivee }}</strong>
+                                    le {{ trip.date|date:"d/m/Y" }} à {{ trip.heure }}
+                                </div>
+                                <a href="{}" class="btn btn-sm btn-outline-primary">💬 Message</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-warning">Pas encore de trajets proposés autour de toi.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
