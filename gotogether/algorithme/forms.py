@@ -1,28 +1,46 @@
 from django import forms
 from authentication.models import User
-from .models import Conducteur, Client
 
-client = User.objects.filter(role='passager')
-conducteur = User.objects.filter(role='conducteur') 
+
 
 class ConducteurForm(forms.ModelForm):
     class Meta:
-        model = Conducteur
-        fields = ['latitude_conducteur', 'longitude_conducteur', 'nb_places', 'adresse']
+        model = User
+        # On suppose que le modèle User a les champs 'adresse' et 'nb_places'
+        fields = ['adresse', 'nb_places']
         widgets = {
-            'latitude_conducteur': forms.NumberInput(attrs={'step': 'any'}),
-            'longitude_conducteur': forms.NumberInput(attrs={'step': 'any'}),
-            'nb_places': forms.NumberInput(attrs={'min': 1, 'max': 5}),
-            'adresse': forms.TextInput(attrs={'placeholder': 'Indiquez votre adresse'}),
+            'adresse': forms.TextInput(attrs={'placeholder': 'Adresse ou repère' , 'id' : 'id_addresse_conducteur'}),
+            'nb_places': forms.TextInput(attrs={'placeholder': 'Nombre de places'}),
         }
+        adresse = forms.CharField(
+            max_length= 100,
+            label= 'Entrez votre adresse' , 
+            widget= 
+                forms.TextInput(attrs={'placeholder':'Adresse ou repère'})
+        )
+        
+        nb_places = forms.IntegerField(
+            label= 'nombre de places du véhicule', 
+            widget= forms.TextInput(attrs={'placeholder':'nombre de places'})
+        ) 
+
+        
+        
 
 
-class ClientForm(forms.ModelForm):
+class PassagerForm(forms.ModelForm):
     class Meta:
-        model = Client
-        fields = ['latitude_client', 'longitude_client', 'adresse']
+        model = User
+        # On suppose que le modèle User a le champ 'adresse'
+        fields = ['adresse']
         widgets = {
-            'latitude_client': forms.NumberInput(attrs={'step': 'any'}),
-            'longitude_client': forms.NumberInput(attrs={'step': 'any'}),
-            'adresse': forms.TextInput(attrs={'placeholder': 'Indiquez votre adresse'}),
+            'adresse': forms.TextInput(attrs={'placeholder': 'Adresse ou repère' ,  'id' : 'id_addresse_passager'})
         }
+
+        adresse = forms.CharField(
+            max_length= 100,
+            label= 'Entrez votre adresse' , 
+            widget= forms.TextInput(attrs={'placeholder':'Adresse ou repère' })
+        ) 
+
+    

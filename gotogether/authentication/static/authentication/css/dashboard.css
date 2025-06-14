@@ -1,0 +1,43 @@
+.dashboard {
+    padding: 20px;
+    max-width: 1000px;
+  
+}
+
+.dashboard h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+
+}
+
+
+
+.dashboard .btn {
+    margin-right: 10px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 10px 15px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert {
+    margin-top: 10px;
+}

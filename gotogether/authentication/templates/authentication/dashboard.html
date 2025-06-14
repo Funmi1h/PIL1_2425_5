@@ -1,10 +1,66 @@
-{# dashboard.html #}
 {% extends 'base.html' %}
-
+{% load static %}
 {% block head %}
-    <title>Dashboard - Go Together</title>
+    <link rel="stylesheet" href="{% static 'authentication/css/dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
-<h1>Retrouves tout dans ton coin personnel {{ user.last_name }}</h1>
+<div class="dashboard row">
+    <div class=" col-lg-5">
+        <h1 class="color-bleu-principal">Bienvenue dans ton coin personnel, {{ user.first_name }} 👋</h1>
+        <p class="text-muted">Partages tes trajets, trouves des compagnons de route, et restes connecté.</p>
+
+        <!-- Actions principales -->
+        <div class="mb-4">
+            <a href="#" class="btn btn-primary me-2 mb-3">🔍 Rechercher un trajet</a>
+            
+            <a href="#" class="btn btn-primary me-2 mb-3">➕ Proposer un trajet</a>
+        </div>
+
+        <!-- Trajets à venir -->
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">🛣️ Mes trajets à venir</div>
+            <div class="card-body">
+                {% if upcoming_trips %}
+                    <ul class="list-group">
+                        {% for trip in upcoming_trips %}
+                            <li class="list-group-item">
+                                <strong>{{ trip.depart }}</strong> → <strong>{{ trip.arrivee }}</strong>
+                                le {{ trip.date|date:"d/m/Y" }} à {{ trip.heure }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">Aucun trajet prévu pour le moment.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class=" col-lg-7">
+        <!-- Suggestions de trajets -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
+            <div class="card-body">
+                {% if nearby_trips %}
+                    <ul class="list-group">
+                        {% for trip in nearby_trips %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    {{ trip.user.first_name }} propose un trajet 
+                                    <strong>{{ trip.depart }}</strong> → <strong>{{ trip.arrivee }}</strong>
+                                    le {{ trip.date|date:"d/m/Y" }} à {{ trip.heure }}
+                                </div>
+                                <a href="{}" class="btn btn-sm btn-outline-primary">💬 Message</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-warning">Pas encore de trajets proposés autour de toi.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
