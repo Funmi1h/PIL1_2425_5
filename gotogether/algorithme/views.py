@@ -1,60 +1,70 @@
 from django.shortcuts import render
 from .utils import find_conducteurs_les_plus_proches
-from .models import Client, Conducteur
 from authentication.models import User
 from django.http import JsonResponse
-from .forms import ConducteurForm, ClientForm
+from .forms import ConducteurForm, PassagerForm
 
 # Create your views here.
 
-client = User.objects.filter(role='passager') 
-conducteur = User.objects.filter(role='conducteur') 
+#passager = User.objects.filter(role='passager') 
+#conducteur = User.objects.filter(role='conducteur') 
+
+
+
 
 def formulaire_view(request):
     conducteur_form = ConducteurForm()
-    client_form = ClientForm()
+    passager_form = PassagerForm()
+    if not request.user.numero_telephone and not request.user.email:
+        return render(request, "algorithme/infos_incompletes.html", {
+            "message": "Complète ton profil pour accéder au formulaire."
+        })
     if request.method == "POST":
         # Si la requête est de type POST, on traite les données du formulaire
         role = request.POST.get("role")
         if role == "conducteur":
+            
             form = ConducteurForm(request.POST)
             if form.is_valid():
-                # Si le formulaire est valide, on enregistre les données
-                conducteur.user.latitude = request.POST.get("latitude")
-                conducteur.user.longitude = request.POST.get("longitude")
-                conducteur.user.save()  # Enregistre les coordonnées du conducteur
-                # Enregistre le conducteur dans la base de données
                 conducteur = form.save(commit=False)  # Crée une instance de Conducteur sans l'enregistrer
-                conducteur.user = request.user  # Associe l'utilisateur connecté au conducteur
+                # Si le formulaire est valide, on enregistre les données
+                user = request.user
+                user.latitude = request.POST.get("latitude")
+                user.longitude = request.POST.get("longitude")
+                user.save()  # Enregistre l'utilisateur avec les nouvelles coordonnées
+                conducteur.user = user  # Associe l'utilisateur connecté au conducteur
                 conducteur.save()  # Enregistre le conducteur
                 # Enregistre le formulaire de conducteur
-                form.save()
+                
                 return JsonResponse({"message": "Demande enregistré avec succès!"})
         elif role == "passager":
-            form = ClientForm(request.POST)
+            form = PassagerForm(request.POST)
             if form.is_valid():
+                passager = form.save(commit=False)  # Crée une instance de Client sans l'enregistrer
                 # Si le formulaire est valide, on enregistre les données du client
-                client.user.latitude = request.POST.get("latitude")
-                client.user.longitude = request.POST.get("longitude")
-                client.user.save()  # Enregistre les coordonnées du client
-                # Enregistre le client dans la base de données
-                client = form.save(commit=False)  # Crée une instance de Client sans l'enregistrer
-                client.user = request.user  # Associe l'utilisateur connecté au client
-                client.save()  # Enregistre le client
+                user = request.user
+                user.latitude = request.POST.get("latitude")
+                user.longitude = request.POST.get("longitude")
+                user.save()
+
+                passager.user = user  # Associe l'utilisateur connecté au passager
+                
+               
+                passager.save()  # Enregistre le client
                 # Enregistre le formulaire de client
                 # Si le formulaire est valide, on enregistre les données
-                form.save()
+                
                 return JsonResponse({"message": "Demande enregistré avec succès!"})
 
 
         
 
     
-    return render(request, "formulaire_role.html", {"conducteur_form": conducteur_form} , {"client_form": client_form})
+    return render(request, "algorithme/formulaire_role.html", {"conducteur_form": conducteur_form , "passager_form": passager_form})
 
 
 
-def conducteurs_proches(request):
+"""def conducteurs_proches(request):
     if request.method == "POST":
         # Récupère les données du client depuis la requête POST
         client_latitude = float(request.POST.get("latitude_client"))
@@ -69,4 +79,4 @@ def conducteurs_proches(request):
         # Retourne les conducteurs proches sous forme de JSON
         return JsonResponse(conducteurs_proches, safe=False)
     
-    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)"""

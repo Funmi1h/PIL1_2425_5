@@ -22,5 +22,6 @@ urlpatterns = [
     path('auth/', include('authentication.urls') ),
     path('', include('core.urls')),
     path('messages/', include('messagerie.urls')),
+    path('algorithme/', include('algorithme.urls')),
 
 ]

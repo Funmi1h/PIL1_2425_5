@@ -1,17 +1,22 @@
 from django import forms
 from authentication.models import User
-from .models import Conducteur, Client
 
-client = User.objects.filter(role='passager')
-conducteur = User.objects.filter(role='conducteur') 
+
 
 class ConducteurForm(forms.ModelForm):
     class Meta:
-        model = conducteur
+        model = User
+        # On suppose que le modèle User a les champs 'adresse' et 'nb_places'
+        fields = ['adresse', 'nb_places']
+        widgets = {
+            'adresse': forms.TextInput(attrs={'placeholder': 'Adresse ou repère' , 'id' : 'id_addresse_conducteur'}),
+            'nb_places': forms.TextInput(attrs={'placeholder': 'Nombre de places'}),
+        }
         adresse = forms.CharField(
             max_length= 100,
             label= 'Entrez votre adresse' , 
-            widget= forms.TextInput(attrs={'placeholder':'Adresse ou repère'})
+            widget= 
+                forms.TextInput(attrs={'placeholder':'Adresse ou repère'})
         )
         
         nb_places = forms.IntegerField(
@@ -23,14 +28,19 @@ class ConducteurForm(forms.ModelForm):
         
 
 
-class ClientForm(forms.ModelForm):
+class PassagerForm(forms.ModelForm):
     class Meta:
-        model = client
+        model = User
+        # On suppose que le modèle User a le champ 'adresse'
+        fields = ['adresse']
+        widgets = {
+            'adresse': forms.TextInput(attrs={'placeholder': 'Adresse ou repère' ,  'id' : 'id_addresse_passager'})
+        }
 
         adresse = forms.CharField(
             max_length= 100,
             label= 'Entrez votre adresse' , 
-            widget= forms.TextInput(attrs={'placeholder':'Adresse ou repère'})
+            widget= forms.TextInput(attrs={'placeholder':'Adresse ou repère' })
         ) 
 
-        
+    

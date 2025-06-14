@@ -1,27 +1,31 @@
-   {% extends 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
-   {% block head %}
-<link rel="stylesheet" href="{% static 'algorithme/client_conducteur_form.css' %}">
+{% block head %}
+<!--<link rel="stylesheet" href="{% static 'algorithme/client_conducteur_form.css' %}">-->
 <!-- Pour Leaflet ajout via cdn -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="{%static 'algorithme/js/formulaire_role.js'%}"></script>
+
 
 {% endblock %}
 {% block content %}
+{% if form.errors %}
+    <pre>{{ form.errors }}</pre>
+{% endif %}
 <h1>Remplissez ceci </h1>
-    <label><input type="radio" name="role" value="conducteur" checked onchange="toggleForm()"> Conducteur</label>
-    <label><input type="radio" name="role" value="client" onchange="toggleForm()"> Client</label>
+    <label><input type="radio" name="role" value="conducteur" checked > Conducteur</label>
+    <label><input type="radio" name="role" value="passager" > Client</label>
+    <div id="map" style="height: 500px;"></div> <!-- Div pour l'affichage de la carte -->
 <!-- Formulaire pour le conducteur -->
    <form method="post" id="conducteur-form" style="display: block;">
          {% csrf_token %}
          <input type="hidden" name="role" value="conducteur">
             <div>
-               <label for="{{conducteur_form.adresse.id_for_label}}">{{conducteur_form.email.label }}</label>
+               <label for="{{conducteur_form.adresse.id_for_label}}">{{conducteur_form.adresse.label }}</label>
                   <div>
                         {{conducteur_form.adresse}}
-                        <button onclick="searchLocation()">Choisir sur la carte </button>
+                        <button type="button" onclick="searchLocation()">Choisir sur la carte </button>
                   </div>
                {% if conducteur_form.adresse.errors %}
                   {% for error in conducteur_form.adresse.errors %}
@@ -49,19 +53,18 @@
 
    </form>
 
-
-   <!-- Formulaire pour le client -->
-   <form method="post" id="client-form" style="display: block;">
+ Formulaire pour le client 
+   <form method="post" id="passager-form" style="display: block;">
          {% csrf_token %}
-         <input type="hidden" name="role" value="client">
+         <input type="hidden" name="role" value="passager">
             <div>
-               <label for="{{client_form.adresse.id_for_label}}">{{client_form.email.label }}</label>
+               <label for="{{passager_form.adresse.id_for_label}}">{{passager_form.adresse.label }}</label>
                   <div>
-                        {{client_form.adresse}}
+                        {{passager_form.adresse}}
                         <button onclick="searchLocation()">Choisir sur la carte </button>
                   </div>
-               {% if client_form.adresse.errors %}
-                  {% for error in client_form.adresse.errors %}
+               {% if passager_form.adresse.errors %}
+                  {% for error in passager_form.adresse.errors %}
                         <span class="error">{{error}}</span>
                   {% endfor %}
                {% endif %}
@@ -71,6 +74,7 @@
       <p>Veuillez valider votre position avant de soumettre le formulaire.</p>
       <input type="submit" value="Enregistrer">
       <button type="button" id="get-location">Valider ma position</button> <!-- Bouton pour obtenir la position -->
+
       <!-- Champs cachés pour stocker la latitude et la longitude -->
 
    <input type="hidden" id="latitude" name="latitude">
@@ -78,7 +82,8 @@
     
     
 
-   <div id="map" style="height: 500px;"></div> <!-- Div pour l'affichage de la carte -->
-
+   
+   
+   <script src="{%static 'algorithme/js/formulaire_demande.js'%}" defer></script>
 </form>
     {% endblock %}
