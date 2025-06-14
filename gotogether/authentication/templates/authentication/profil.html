@@ -36,13 +36,13 @@
 
     <div class="form-group">
       <label>Point de départ habituel</label>
-      <input type="text" name="starting_point" value="{{ user.starting_point }}" required />
+      <input type="text" name="starting_point" value="{{ user.adresse }}" required />
     </div>
 
     <div class="form-group">
       <label>Horaires habituels</label>
-      <input type="time" name="departure_time" value="{{ user.departure_time }}" required />
-      <input type="time" name="arrival_time" value="{{ user.arrival_time }}" required />
+      <input type="time" name="departure_time" value="{{ user.heure_depart }}" required />
+      <input type="time" name="arrival_time" value="{{ user.heure_arrivee }}" required />
     </div>
 
     {% if user.role == "conducteur" %}

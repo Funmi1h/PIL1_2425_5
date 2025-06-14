@@ -1,8 +1,53 @@
+// script.js
+
 document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
-    // Gère le basculement de la sidebar
-=======
->>>>>>> 0e3528d (Dashboard réalisé)
+    // ----------------------------------------------------
+    // Variables globales (ou à simuler depuis le backend)
+    // ----------------------------------------------------
+    // Simule les données utilisateur stockées localement
+    let currentUser = JSON.parse(localStorage.getItem('currentUser')) || {
+        name: 'Utilisateur', // Nom par défaut si non connecté
+        email: 'utilisateur@example.com',
+        phone: '+229 00 00 00 00',
+        profilePic: 'OIP.webp' // Chemin de l'image de profil par défaut
+    };
+
+    // ----------------------------------------------------
+    // Éléments du DOM à mettre à jour
+    // ----------------------------------------------------
+    const userNameDisplays = document.querySelectorAll('#user-name-display, #welcome-user-name, #inbox-user-name, #profile-page-name');
+    const profileAvatars = document.querySelectorAll('#profile-avatar, #currentProfilePic, #profile-page-avatar');
+    const userEmailDisplay = document.getElementById('userEmail');
+    const userPhoneDisplay = document.getElementById('userPhone');
+    const profilEmailDisplay = document.getElementById('profile-page-email');
+    const profilPhoneDisplay = document.getElementById('profile-page-phone');
+    const settingsUserNameInput = document.getElementById('userName');
+    const profilePictureInput = document.getElementById('profilePicture');
+    const settingsForm = document.getElementById('settings-form');
+
+    // ----------------------------------------------------
+    // Fonction pour mettre à jour l'interface utilisateur avec les données de l'utilisateur
+    // ----------------------------------------------------
+    function updateUIWithUserData() {
+        userNameDisplays.forEach(element => {
+            element.textContent = currentUser.name;
+        });
+        profileAvatars.forEach(img => {
+            img.src = currentUser.profilePic;
+        });
+        if (userEmailDisplay) userEmailDisplay.value = currentUser.email;
+        if (userPhoneDisplay) userPhoneDisplay.value = currentUser.phone;
+        if (profilEmailDisplay) profilEmailDisplay.textContent = currentUser.email;
+        if (profilPhoneDisplay) profilPhoneDisplay.textContent = currentUser.phone;
+        if (settingsUserNameInput) settingsUserNameInput.value = currentUser.name;
+    }
+
+    // Appel initial pour charger les données au démarrage
+    updateUIWithUserData();
+
+    // ----------------------------------------------------
+    // 1. Gestion du basculement de la sidebar
+    // ----------------------------------------------------
     var el = document.getElementById('wrapper');
     var toggleButton = document.getElementById('menu-toggle');
 
@@ -12,145 +57,286 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-<<<<<<< HEAD
-    // Données de conversations (simulées)
-    const conversations = [
-        {
-            id: 'conv-1',
-            name: 'Jean',
-            avatar: 'OIP(3).webp',
-            lastMessage: 'Rendez-vous confirmé pour demain.',
-            time: '15:30',
-            unread: 2,
-            messages: [
-                { sender: 'Jean', content: 'Bonjour Sophie, Comment allez-vous ?', time: '15:20', type: 'received' },
-                { sender: 'Sophia', content: 'Très bien, merci ! Et vous ?', time: '15:22', type: 'sent' },
-                { sender: 'Jean', content: 'Parfait ! Juste pour confirmer notre rendez-vous demain à 10h ?', time: '15:25', type: 'received' },
-                { sender: 'Sophia', content: 'Oui, tout à fait ! C\'est bien noté.', time: '15:26', type: 'sent' },
-                { sender: 'Jean', content: 'Super. A demain alors !', time: '15:30', type: 'received' }
-            ]
-        },
-        {
-            id: 'conv-2',
-            name: 'Service Support',
-            avatar: 'OIP(3).webp',
-            lastMessage: 'Votre ticket a été mis à jour.',
-            time: 'Hier',
-            unread: 0,
-            messages: [
-                { sender: 'Sophia', content: 'Bonjour, j\'ai un problème avec mon compte.', time: 'Hier 10:00', type: 'sent' },
-                { sender: 'Service Support', content: 'Bonjour Sophie, quel est votre problème ?', time: 'Hier 10:15', type: 'received' },
-                { sender: 'Service Support', content: 'Votre ticket #12345 a été mis à jour. Veuillez consulter notre centre d\'aide.', time: 'Hier 11:00', type: 'received' }
-            ]
-        },
-        {
-            id: 'conv-3',
-            name: 'Équipe Marketing',
-            avatar: 'OIP(3).webp',
-            lastMessage: 'Nouvelle campagne à lancer.',
-            time: '2 Jours',
-            unread: 0,
-            messages: [
-                { sender: 'Équipe Marketing', content: 'Salut l\'équipe ! Nous avons une nouvelle campagne à lancer la semaine prochaine.', time: 'Il y a 2 jours', type: 'received' },
-                { sender: 'Sophia', content: 'Super, j\'ai hâte de voir ça !', time: 'Il y a 2 jours', type: 'sent' }
-            ]
+    // ----------------------------------------------------
+    // 2. Gestion de l'affichage des sections de contenu
+    // ----------------------------------------------------
+
+    const sidebarLinks = document.querySelectorAll('#sidebar-wrapper .list-group-item');
+    const dropdownLinks = document.querySelectorAll('#navbarDropdown + .dropdown-menu .dropdown-item');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    function showSection(sectionId) {
+        contentSections.forEach(section => {
+            section.style.display = 'none';
+            section.classList.remove('active');
+        });
+
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            targetSection.classList.add('active');
         }
-    ];
 
-    const conversationsList = document.getElementById('conversations-list');
-    const messageArea = document.querySelector('.message-area');
-    const messageHeader = document.querySelector('.message-area .message-header');
-    const messageBody = document.querySelector('.message-area .message-body');
-    const messageReplyBox = document.querySelector('.message-area .message-reply-box');
-    const mainTitle = document.querySelector('#page-content-wrapper .fs-2'); // Titre principal du contenu
-
-    // Fonction pour rendre la liste des conversations
-    function renderConversations() {
-        conversationsList.innerHTML = '';
-        conversations.forEach(conv => {
-            const conversationDiv = document.createElement('a');
-            conversationDiv.href = '#';
-            conversationDiv.classList.add('list-group-item', 'list-group-item-action', 'bg-transparent', 'second-text', 'fw-bold', 'd-flex', 'align-items-center', 'conversation-item');
-            conversationDiv.dataset.conversationId = conv.id;
-
-            let unreadBadge = '';
-            if (conv.unread > 0) {
-                unreadBadge = `<span class="badge bg-primary rounded-pill ms-auto">${conv.unread}</span>`;
+        sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.targetSection === sectionId.replace('-section', '')) {
+                link.classList.add('active');
             }
-
-            conversationDiv.innerHTML = `
-                <img src="${conv.avatar}" alt="${conv.name}" class="rounded-circle me-3">
-                <div class="flex-grow-1">
-                    <h6 class="mb-0 fw-bold">${conv.name}</h6>
-                    <p class="mb-0 text-muted small">${conv.lastMessage}</p>
-                </div>
-                <small class="text-muted float-end">${conv.time}</small>
-                ${unreadBadge}
-            `;
-            conversationsList.appendChild(conversationDiv);
         });
     }
 
-    // Fonction pour afficher une conversation spécifique
-    function displayConversation(conversationId) {
-        const selectedConv = conversations.find(conv => conv.id === conversationId);
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const targetSection = this.dataset.targetSection;
+            if (targetSection) {
+                showSection(targetSection + '-section');
+            }
+        });
+    });
 
-        if (selectedConv) {
-            // Mise à jour de la classe active dans la sidebar
-            document.querySelectorAll('.conversation-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`[data-conversation-id="${conversationId}"]`).classList.add('active');
+    dropdownLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const targetAction = this.dataset.targetAction;
+            if (targetAction) {
+                showSection(targetAction + '-section');
+            }
+        });
+    });
 
-            // Mettre à jour le titre principal avec le nom de l'expéditeur
-            mainTitle.textContent = selectedConv.name;
+    showSection('menu-section');
 
-            // Mettre à jour l'en-tête du message
-            messageHeader.innerHTML = `
-                <img src="${selectedConv.avatar}" alt="${selectedConv.name}" class="rounded-circle me-3 sender-avatar">
-                <div>
-                    <h4 class="mb-0">${selectedConv.name}</h4>
-                    <p class="text-muted mb-0 small">${selectedConv.time}</p>
-                </div>
-                <div class="ms-auto message-actions">
-                    <button class="btn btn-outline-secondary btn-sm me-2"><i class="fas fa-reply"></i> Répondre</button>
-                    <button class="btn btn-outline-secondary btn-sm me-2"><i class="fas fa-share"></i> Transférer</button>
-                    <button class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i> Supprimer</button>
-                </div>
-            `;
+    // ----------------------------------------------------
+    // 3. Fonctionnalités des boutons spécifiques (incluant les nouvelles)
+    // ----------------------------------------------------
 
-            // Afficher les messages de la conversation
-            messageBody.innerHTML = '';
-            selectedConv.messages.forEach(msg => {
-                const messageClass = msg.type === 'sent' ? 'text-end' : 'text-start';
-                const messageBubbleClass = msg.type === 'sent' ? 'bg-primary text-white' : 'bg-light text-dark';
-                const senderNameClass = msg.type === 'sent' ? 'd-none' : 'small text-muted mb-1'; // Cache le nom de l'expéditeur pour les messages envoyés
+    // Bouton de recherche principal (dans la section "Menu")
+    const mainSearchInput = document.getElementById('searchInput');
+    const mainSearchButton = document.getElementById('mainSearchButton');
+    const searchTripButton = document.getElementById('searchTripButton');
 
-                messageBody.innerHTML += `
-                    <div class="d-flex ${msg.type === 'sent' ? 'justify-content-end' : 'justify-content-start'} mb-3">
-                        <div class="message-bubble p-3 rounded-3 ${messageBubbleClass}" style="max-width: 75%;">
-                            <div class="${senderNameClass}">${msg.sender}</div>
-                            <p class="mb-1">${msg.content}</p>
-                            <small class="text-white-50 float-end">${msg.time}</small>
-=======
-    // Gestion de l'affichage des trajets à venir (exemple simple)
-    // Ici, vous feriez normalement un appel API pour récupérer les trajets
-    const upcomingTripsContainer = document.querySelector('.upcoming-trips-section');
+    if (mainSearchButton) {
+        mainSearchButton.addEventListener('click', function() {
+            const destination = mainSearchInput.value.trim();
+            if (destination) {
+                alert(`Recherche rapide de trajets vers : ${destination}`);
+                showSection('recherche-section');
+                document.getElementById('arrivalLocation').value = destination;
+            } else {
+                alert('Veuillez entrer une destination pour la recherche.');
+            }
+        });
+    }
+
+    if (searchTripButton) {
+        searchTripButton.addEventListener('click', function() {
+            showSection('recherche-section');
+        });
+    }
+
+    // Bouton "Créer votre propre trajet" (dans la section "Menu")
+    const createTripButton = document.getElementById('createTripButton');
+    if (createTripButton) {
+        createTripButton.addEventListener('click', function() {
+            alert("Redirection ou affichage du formulaire pour créer un nouveau trajet.");
+        });
+    }
+
+    // Bouton "Rechercher" dans la section "Rechercher un Trajet"
+    const executeSearchButton = document.getElementById('executeSearchButton');
+    const departureLocationInput = document.getElementById('departureLocation');
+    const arrivalLocationInput = document.getElementById('arrivalLocation');
+    const searchResultsDiv = document.getElementById('searchResults');
+
+    if (executeSearchButton) {
+        executeSearchButton.addEventListener('click', function() {
+            const departure = departureLocationInput.value.trim();
+            const arrival = arrivalLocationInput.value.trim();
+
+            if (departure || arrival) {
+                searchResultsDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        Recherche de trajets de <strong>${departure || 'N\'importe où'}</strong> à <strong>${arrival || 'N\'importe où'}</strong>...
+                    </div>
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Trajet: Cotonou <i class="fas fa-arrow-right"></i> Parakou</h5>
+                            <p class="card-text">Date: 15/07/2025 à 08:00</p>
+                            <p class="card-text">Conducteur: Jean OGOU</p>
+                            <button class="btn btn-sm btn-success">Voir le trajet</button>
+                        </div>
+                    </div>
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Trajet: Abomey-Calavi <i class="fas fa-arrow-right"></i> Cotonou</h5>
+                            <p class="card-text">Date: 16/07/2025 à 14:00</p>
+                            <p class="card-text">Conducteur: Sophie IFE</p>
+                            <button class="btn btn-sm btn-success">Voir le trajet</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                searchResultsDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        Veuillez spécifier au moins un lieu de départ ou d'arrivée.
+                    </div>
+                `;
+            }
+        });
+    }
+
+    // Bouton "Proposer un nouveau trajet" (dans la section "Mes Trajets" - onglet Conducteur)
+    const addDriverTripButton = document.getElementById('addDriverTripButton');
+    if (addDriverTripButton) {
+        addDriverTripButton.addEventListener('click', function() {
+            alert("Affichage du formulaire pour proposer un nouveau trajet en tant que conducteur.");
+        });
+    }
+
+    // Boutons "Détails" dans l'historique des trajets
+    document.querySelectorAll('.history-section button[data-action="view-details"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const tripId = this.dataset.tripId;
+            alert(`Affichage des détails du trajet #${tripId}`);
+        });
+    });
+
+    // Bouton "Voir tout l'historique"
+    const viewAllHistoryButton = document.getElementById('viewAllHistoryButton');
+    if (viewAllHistoryButton) {
+        viewAllHistoryButton.addEventListener('click', function() {
+            alert("Redirection vers une page dédiée à l'historique complet des trajets.");
+        });
+    }
+
+    // Boutons "Modifier" et "Supprimer" dans "Mes véhicules"
+    document.querySelectorAll('.vehicles-section button[data-action="edit-vehicle"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const vehicleId = this.dataset.vehicleId;
+            alert(`Modification du véhicule #${vehicleId}`);
+        });
+    });
+
+    document.querySelectorAll('.vehicles-section button[data-action="delete-vehicle"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const vehicleId = this.dataset.vehicleId;
+            if (confirm(`Êtes-vous sûr de vouloir supprimer le véhicule #${vehicleId} ?`)) {
+                alert(`Véhicule #${vehicleId} supprimé (simulation).`);
+                this.closest('.col-md-6.mb-3').remove();
+            }
+        });
+    });
+
+    // Bouton "Ajouter un véhicule"
+    const addVehicleButton = document.getElementById('addVehicleButton');
+    if (addVehicleButton) {
+        addVehicleButton.addEventListener('click', function() {
+            alert("Affichage du formulaire pour ajouter un nouveau véhicule.");
+        });
+    }
+
+    // ----------------------------------------------------
+    // Gestion du formulaire de Paramètres (y compris la photo de profil)
+    // ----------------------------------------------------
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            // Met à jour les informations de l'utilisateur
+            currentUser.name = settingsUserNameInput.value.trim();
+            currentUser.phone = userPhoneDisplay.value.trim();
+            // L'email reste en lecture seule dans cet exemple
+
+            // Si une nouvelle photo a été sélectionnée
+            if (profilePictureInput.files && profilePictureInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentUser.profilePic = e.target.result; // Stocke l'URL de l'image en base64
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser)); // Sauvegarde
+                    updateUIWithUserData(); // Met à jour l'interface
+                    alert("Paramètres et photo de profil mis à jour (simulation).");
+                };
+                reader.readAsDataURL(profilePictureInput.files[0]); // Lit le fichier comme URL de données
+            } else {
+                localStorage.setItem('currentUser', JSON.stringify(currentUser)); // Sauvegarde si pas de nouvelle photo
+                updateUIWithUserData(); // Met à jour l'interface
+                alert("Paramètres enregistrés (simulation).");
+            }
+        });
+    }
+
+    // Bouton "Changer de mot de passe" (Paramètres)
+    const changePasswordButton = document.getElementById('changePasswordButton');
+    if (changePasswordButton) {
+        changePasswordButton.addEventListener('click', function() {
+            alert("Redirection vers la page de changement de mot de passe ou affichage d'un modal.");
+        });
+    }
+
+    // ----------------------------------------------------
+    // Logique de Connexion/Déconnexion Simulé
+    // ----------------------------------------------------
+
+    // Fonction de connexion simulée (quand l'utilisateur se connecte)
+    function simulateLogin(userName, userEmail, userPhone = '', profilePic = 'OIP.webp') {
+        currentUser = {
+            name: userName,
+            email: userEmail,
+            phone: userPhone,
+            profilePic: profilePic
+        };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateUIWithUserData();
+        alert(`Bienvenue, ${userName} ! Vous êtes connecté.`);
+        showSection('menu-section'); // Revenir au dashboard après connexion
+    }
+
+    // Boutons de Déconnexion
+    const confirmLogoutButton = document.getElementById('confirmLogoutButton');
+    const cancelLogoutButton = document.getElementById('cancelLogoutButton');
+
+    if (confirmLogoutButton) {
+        confirmLogoutButton.addEventListener('click', function() {
+            localStorage.removeItem('currentUser'); // Supprime les données utilisateur
+            currentUser = { // Réinitialise à l'utilisateur par défaut
+                name: 'Utilisateur',
+                email: 'utilisateur@example.com',
+                phone: '+229 00 00 00 00',
+                profilePic: 'OIP.webp'
+            };
+            updateUIWithUserData();
+            alert("Vous avez été déconnecté.");
+            // Dans une vraie application, vous redirigeriez vers la page de connexion
+            // window.location.href = '/login.html';
+            showSection('menu-section'); // Pour la démo, on revient au menu principal
+        });
+    }
+
+    if (cancelLogoutButton) {
+        cancelLogoutButton.addEventListener('click', function() {
+            showSection('menu-section');
+        });
+    }
+
+    // ----------------------------------------------------
+    // 4. Gestion des trajets à venir (Exemple dynamique)
+    // ----------------------------------------------------
+    const upcomingTripsContainer = document.getElementById('upcomingTripsContainer');
     const upcomingTripsData = [
-        // { from: 'Paris', to: 'Lyon', date: 'Le 15 juillet 2025 à 10:00', driver: 'Jean Dupont' },
-        // { from: 'Marseille', to: 'Nice', date: 'Le 20 juillet 2025 à 14:30', driver: 'Sophie Martin' }
-    ]; // Simulation de données vides ou remplies
+        // { from: 'Cotonou', to: 'Porto-Novo', date: 'Le 20 juin 2025 à 09:00', driver: 'Paul Dubois' },
+        // { from: 'Parakou', to: 'Cotonou', date: 'Le 25 juin 2025 à 16:30', driver: 'Marie Leroy' }
+    ];
 
     function renderUpcomingTrips() {
         if (upcomingTripsData.length === 0) {
             upcomingTripsContainer.innerHTML = `
-                <h3 class="fs-4 mb-3">Trajets à venir</h3>
                 <div class="alert alert-info text-center" role="alert">
                     <i class="fas fa-info-circle me-2"></i>Vous n'avez aucun trajet à venir.
                 </div>
             `;
         } else {
-            let tripsHtml = '<h3 class="fs-4 mb-3">Trajets à venir</h3>';
+            let tripsHtml = '';
             upcomingTripsData.forEach(trip => {
                 tripsHtml += `
                     <div class="card mb-3">
@@ -158,112 +344,25 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h5 class="card-title">${trip.from} <i class="fas fa-arrow-right"></i> ${trip.to}</h5>
                             <p class="card-text">${trip.date}</p>
                             <p class="card-text"><small class="text-muted">Avec ${trip.driver}</small></p>
-                            <button class="btn btn-sm btn-outline-primary">Détails</button>
->>>>>>> 0e3528d (Dashboard réalisé)
+                            <button class="btn btn-sm btn-outline-primary">Détails du trajet</button>
                         </div>
                     </div>
                 `;
             });
-<<<<<<< HEAD
-            messageBody.scrollTop = messageBody.scrollHeight; // Scroll to bottom
-
-            // S'assurer que le champ de réponse est visible
-            messageReplyBox.style.display = 'block';
-
-            // Marquer la conversation comme lue (si applicable)
-            selectedConv.unread = 0;
-            renderConversations(); // Re-rendre la liste pour mettre à jour le badge
-
-        } else {
-            // Afficher un message par défaut si aucune conversation n'est sélectionnée
-            messageHeader.innerHTML = '<h4 class="mb-0">Sélectionnez une conversation</h4>';
-            messageBody.innerHTML = '<p class="text-center text-muted mt-5">Cliquez sur une conversation pour afficher les messages.</p>';
-            messageReplyBox.style.display = 'none';
-            mainTitle.textContent = 'Boîte de réception';
-        }
-    }
-
-    // Gestionnaire d'événements pour cliquer sur une conversation
-    conversationsList.addEventListener('click', function(event) {
-        const target = event.target.closest('.conversation-item');
-        if (target) {
-            const conversationId = target.dataset.conversationId;
-            displayConversation(conversationId);
-        }
-    });
-
-    // Initialiser le dashboard en affichant la première conversation par défaut (ou un message vide)
-    if (conversations.length > 0) {
-        renderConversations();
-        displayConversation(conversations[0].id); // Affiche la première conversation par défaut
-    } else {
-        renderConversations(); // Pour afficher les badges si des conversations sont ajoutées plus tard
-        displayConversation(null); // Affiche le message "Sélectionnez une conversation"
-    }
-
-    // Logique pour le bouton "Envoyer" dans la boîte de réponse
-    const sendButton = messageReplyBox.querySelector('.btn-primary');
-    const replyTextArea = document.getElementById('messageReply');
-
-    if (sendButton && replyTextArea) {
-        sendButton.addEventListener('click', function() {
-            const messageContent = replyTextArea.value.trim();
-            const currentConversationId = document.querySelector('.conversation-item.active')?.dataset.conversationId;
-
-            if (messageContent && currentConversationId) {
-                const currentConversation = conversations.find(conv => conv.id === currentConversationId);
-                if (currentConversation) {
-                    const now = new Date();
-                    const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-                    currentConversation.messages.push({
-                        sender: 'Sophie Dupont', // Simuler l'utilisateur actuel
-                        content: messageContent,
-                        time: timeString,
-                        type: 'sent'
-                    });
-                    currentConversation.lastMessage = messageContent; // Mettre à jour le dernier message
-                    currentConversation.time = timeString; // Mettre à jour l'heure du dernier message
-
-                    replyTextArea.value = ''; // Vider le champ de texte
-                    displayConversation(currentConversationId); // Recharger la conversation pour afficher le nouveau message
-                    renderConversations(); // Re-rendre la liste pour mettre à jour le dernier message et l'heure
-                }
-            } else {
-                alert('Veuillez écrire un message.');
-=======
             upcomingTripsContainer.innerHTML = tripsHtml;
         }
     }
 
-    renderUpcomingTrips(); // Appel initial pour afficher l'état des trajets
+    renderUpcomingTrips();
 
-    // Exemple de gestion de la recherche de trajet (très basique, pour démonstration)
-    const searchInput = document.querySelector('.welcome-section input[type="text"]');
-    const searchButton = document.querySelector('.welcome-section .input-group .btn-primary');
-
-    if (searchButton && searchInput) {
-        searchButton.addEventListener('click', function() {
-            const destination = searchInput.value.trim();
-            if (destination) {
-                alert(`Recherche de trajets vers : ${destination}`);
-                // Ici, vous implémenteriez la logique de redirection ou d'affichage des résultats de recherche
-            } else {
-                alert('Veuillez entrer une destination.');
->>>>>>> 0e3528d (Dashboard réalisé)
-            }
-        });
-    }
-
-<<<<<<< HEAD
-    // Amélioration de la barre de défilement des messages (optionnel, nécessite du CSS personnalisé)
-    // messageBody.style.overflowY = 'auto';
-    // messageBody.style.maxHeight = 'calc(100vh - 400px)'; // Hauteur maximale pour le défilement
-=======
-    // Ici, vous pouvez ajouter plus de logique JavaScript pour :
-    // 1. Charger dynamiquement l'historique des trajets depuis une API.
-    // 2. Gérer l'ajout/modification/suppression de véhicules.
-    // 3. Implémenter des fonctionnalités de messagerie, notifications, etc.
-    // 4. Validation de formulaires.
-    // 5. Interactivité des cartes (si vous intégrez une API cartographique comme Google Maps).
->>>>>>> 0e3528d (Dashboard réalisé)
+    // ----------------------------------------------------
+    // Simulation de connexion pour tester la personnalisation
+    // ----------------------------------------------------
+    // Vous pouvez appeler cette fonction après une "connexion réussie"
+    // Par exemple, si vous aviez un bouton de connexion:
+    // document.getElementById('loginButton').addEventListener('click', function() {
+    //     simulateLogin('Nouveau Utilisateur', 'nouvel.user@domaine.com', '+229 66 77 88 99');
+    // });
+    // Ou pour tester, décommentez la ligne suivante pour simuler une connexion au chargement
+    // simulateLogin('Jean Dupont', 'jean.dupont@email.com', '+229 95 12 34 56', 'https://via.placeholder.com/80/0000FF/FFFFFF?text=JD');
 });
