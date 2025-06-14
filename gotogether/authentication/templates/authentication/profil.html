@@ -5,7 +5,7 @@
 {% endblock head %}
 
 {% block content %}
-<h2>Profil de {{ user.first_name }} {{ user.last_name }}</h2>
+<h2>Profil de {{ user.first_name }}</h2>
 
 <div class="profile-container">
     <div class="profile-left">
@@ -39,7 +39,7 @@
         </div>
         <div class="profile-actions">
             <a href="{% url 'changer_profil' %}" class="edit-profile-btn">
-                <i class="fa-solid fa-pen"></i> Modifier le profil
+                <i class="fa-solid fa-pen"></i> Éditer mon profil
             </a>
             <a href="{% url 'upload_password' %}" class="change-password-btn">
                 <i class="fa-solid fa-lock"></i> Changer le mot de passe

@@ -5,6 +5,9 @@ from django.contrib.auth import login, authenticate, logout, update_session_auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from .models import User
+import requests
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 
 
 class LoginView(LoginView):
@@ -121,3 +124,23 @@ def modifier_profil(request):
         form = forms.ProfilForm(instance=user)
 
     return render(request, 'authentication/modifier_profile.html', {'user': user, 'form': form})        
+
+
+
+
+@require_GET
+def geocode_proxy(request):
+    query = request.GET.get('q', '')  # Récupère le paramètre 'q' de l'URL (ex: ?q=cotonou)
+    if not query:
+        return JsonResponse({'error': 'Missing query'}, status=400)  # Si pas de q, on renvoie une erreur
+    
+    url = 'https://nominatim.openstreetmap.org/search'  # URL de l'API OpenStreetMap Nominatim
+    params = {
+        'q': query,           # La requête d'adresse
+        'format': 'json',     # On veut le résultat en JSON
+        'addressdetails': 1,  # Détails sur l'adresse
+        'limit': 5,           # Limite à 5 résultats
+    }
+    response = requests.get(url, params=params)  # Envoie la requête HTTP GET vers Nominatim
+    data = response.json()                        # Parse la réponse JSON
+    return JsonResponse(data, safe=False)         # Renvoie la réponse JSON au front

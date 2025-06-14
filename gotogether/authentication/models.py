@@ -70,7 +70,6 @@ class User(AbstractUser):
         blank=True
     )
     adresse = models.CharField(max_length=255 ,
-         default='Abomey-Calavi',
          verbose_name='Adresse',
          null= True, 
          blank= True

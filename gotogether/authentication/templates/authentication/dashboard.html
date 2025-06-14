@@ -15,67 +15,9 @@
    
 
     <div class="d-flex" id="wrapper">
-        <div class="bg-light border-end" id="sidebar-wrapper">
-            <div class="image_Logo">
-                <img src="1000710502.jpg" alt="Logo" class="imagej">
-            </div>
-            <div class="list-group list-group-flush my-3">
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text active" data-target-section="menu">
-                    <i class="fas fa-tachometer-alt me-2"></i>Menu
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold" data-target-section="recherche">
-                    <i class="fas fa-search me-2"></i>Rechercher
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold" data-target-section="mes-trajets">
-                    <i class="fas fa-route me-2"></i>Mes trajets
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold" data-target-section="boite-de-reception">
-                    <i class="fas fa-inbox me-2"></i>Boîte de réception
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold" data-target-section="historique">
-                    <i class="fas fa-history me-2"></i>Historique
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold" data-target-section="mes-vehicules">
-                    <i class="fas fa-car-side me-2"></i>Mes véhicules
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold" data-target-section="parametres">
-                    <i class="fas fa-user-cog me-2"></i>Paramètres
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold" data-target-section="deconnexion">
-                    <i class="fas fa-power-off me-2"></i>Déconnexion
-                </a>
-            </div>
-        </div>
+        
         <div id="page-content-wrapper">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
-                    <h2 class="fs-2 m-0">Menu</h2>
-                </div>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle second-text fw-bold" href="#" id="navbarDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="OIP(3).webp" alt="Avatar" class="rounded-circle me-2" id="profile-avatar" style="width: 30px; height: 30px; object-fit: cover;">
-                                <span id="user-name-display">Utilisateur</span>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#" data-target-action="profil">Profil</a></li>
-                                <li><a class="dropdown-item" href="#" data-target-action="parametres">Paramètres</a></li>
-                                <li><a class="dropdown-item" href="#" data-target-action="deconnexion">Déconnexion</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+           
 
             <div class="container-fluid px-4" id="main-content-sections">
                 <div id="menu-section" class="content-section">
@@ -83,7 +25,7 @@
                         <div class="col-lg-12">
                             <div class="p-4 rounded shadow-sm bg-white mb-4 welcome-section">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h3 class="fs-4">Content de vous voir, <span id="welcome-user-name">Utilisateur</span>!</h3>
+                                    <h3 class="fs-4">Content de vous voir, <span id="welcome-user-name">{{user.first_name}}</span>!</h3>
                                     <img src="OIP (1).webp" alt="Illustration" class="img-fluid welcome-illustration">
                                 </div>
                                 <p class="text-muted">Explorez et planifiez votre prochain covoiturage.</p>
@@ -230,88 +172,7 @@
                     </div>
                 </div>
 
-                <div id="mes-vehicules-section" class="content-section">
-                    <div class="p-4 rounded shadow-sm bg-white vehicles-section">
-                        <h3 class="fs-4 mb-3">Mes véhicules</h3>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="card vehicle-card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Suzuki Celerio</h5>
-                                        <p class="card-text">Immatriculation: CD 4967</p>
-                                        <p class="card-text">Places: 4</p>
-                                        <button class="btn btn-sm btn-warning me-2" data-action="edit-vehicle" data-vehicle-id="1">Modifier</button>
-                                        <button class="btn btn-sm btn-danger" data-action="delete-vehicle" data-vehicle-id="1">Supprimer</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="card vehicle-card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Suzuki Dziré</h5>
-                                        <p class="card-text">Immatriculation: CF 0431</p>
-                                        <p class="card-text">Places: 3</p>
-                                        <button class="btn btn-sm btn-warning me-2" data-action="edit-vehicle" data-vehicle-id="2">Modifier</button>
-                                        <button class="btn btn-sm btn-danger" data-action="delete-vehicle" data-vehicle-id="2">Supprimer</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <button class="btn btn-primary mt-3" id="addVehicleButton"><i class="fas fa-plus me-2"></i>Ajouter un véhicule</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div id="parametres-section" class="content-section" style="display: none;">
-                    <div class="p-4 rounded shadow-sm bg-white mb-4">
-                        <h3 class="fs-4 mb-3">Paramètres du Compte</h3>
-                        <form id="settings-form">
-                            <div class="mb-3">
-                                <label for="userName" class="form-label">Nom d'utilisateur</label>
-                                <input type="text" class="form-control" id="userName" value="Sophia">
-                            </div>
-                            <div class="mb-3">
-                                <label for="userEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="userEmail" value="sophia@example.com" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="userPhone" class="form-label">Téléphone</label>
-                                <input type="tel" class="form-control" id="userPhone" value="+229 97 00 00 00">
-                            </div>
-                            <div class="mb-3">
-                                <label for="profilePicture" class="form-label">Photo de profil</label>
-                                <input type="file" class="form-control" id="profilePicture" accept="image/*">
-                                <small class="text-muted">Choisissez une nouvelle image pour votre profil.</small>
-                                <div class="mt-2">
-                                    <img src="OIP.webp" alt="Photo de profil actuelle" id="currentProfilePic" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-                            <button type="button" class="btn btn-outline-secondary ms-2" id="changePasswordButton">Changer de mot de passe</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="profil-section" class="content-section" style="display: none;">
-                    <div class="p-4 rounded shadow-sm bg-white mb-4 text-center">
-                        <h3 class="fs-4 mb-3">Mon Profil</h3>
-                        <img src="OIP.webp" alt="Photo de profil" id="profile-page-avatar" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
-                        <h4 id="profile-page-name">Utilisateur</h4>
-                        <p class="text-muted" id="profile-page-email">utilisateur@example.com</p>
-                        <p class="text-muted" id="profile-page-phone">+229 97 00 00 00</p>
-                        <button class="btn btn-primary mt-3" data-target-section="parametres">Modifier le profil</button>
-                    </div>
-                </div>
-
-                <div id="deconnexion-section" class="content-section" style="display: none;">
-                    <div class="p-4 rounded shadow-sm bg-white mb-4">
-                        <h3 class="fs-4 mb-3">Déconnexion</h3>
-                        <p>Êtes-vous sûr de vouloir vous déconnecter ?</p>
-                        <button class="btn btn-danger" id="confirmLogoutButton">Oui, me déconnecter</button>
-                        <button class="btn btn-secondary ms-2" id="cancelLogoutButton">Annuler</button>
-                    </div>
-                </div>
 
             </div>
         </div>

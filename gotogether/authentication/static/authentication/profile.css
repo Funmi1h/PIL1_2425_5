@@ -117,3 +117,23 @@
     color: #333;
     }
 }
+
+
+/* Pour  l'apparition de la carte */
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+#map {
+  width: 100%;
+  height: 400px;
+  animation: slideDown 1s ease-out forwards;
+  display: none; /* Masquer la carte initialement */
+}
