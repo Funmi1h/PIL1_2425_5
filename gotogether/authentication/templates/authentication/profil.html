@@ -9,39 +9,53 @@
 {% block content %}
     <h2>Vos informations personnels {{user.last_name}}</h2>
         
-    <div class="container">
-    <h1>Profil utilisateur</h1>
-    <form>
+    <div class="profile-container">
+  <h2>Mon Profil</h2>
+  
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
     <div class="form-group">
-    <label for="nom">Nom et prénom :</label>
-    <input type="text" id="nom" name="nom" placeholder="Entrez votre nom complet"
-    required>
+      <label>Nom</label>
+      <input type="text" name="last_name" value="{{ user.last_name }}" required />
     </div>
+
     <div class="form-group">
-    <label for="photo">Photo de profil <span class="note">(facultatif)</span>
-    :</label>
-    <input type="file" id="photo" name="photo">
+      <label>Prénom</label>
+      <input type="text" name="first_name" value="{{ user.first_name }}" required />
     </div>
+
     <div class="form-group">
-    <label for="depart">Point de départ habituel :</label>
-    <input type="text" id="depart" name="depart" placeholder="Ex: Cotonou, Akpakpa"
-    required>
+      <label>Photo de profil</label>
+      <input type="file" name="profile_picture" />
+      {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" class="profile-pic-preview" />
+      {% endif %}
+    <button> <a href="{% url 'update_photo_profil' %}">Changer la photo de profil</a></button>
     </div>
+
     <div class="form-group">
-    <label for="horaire_depart">Horaire de départ :</label>
-    <input type="time" id="horaire_depart" name="horaire_depart" required>
+      <label>Point de départ habituel</label>
+      <input type="text" name="starting_point" value="{{ user.adresse }}" required />
     </div>
+
     <div class="form-group">
-    <label for="horaire_arrivee">Horaire d'arrivée :</label>
-    <input type="time" id="horaire_arrivee" name="horaire_arrivee" required>
+      <label>Horaires habituels</label>
+      <input type="time" name="departure_time" value="{{ user.heure_depart }}" required />
+      <input type="time" name="arrival_time" value="{{ user.heure_arrivee }}" required />
     </div>
-    <div class="form-group">
-    <label for="marque">Marque du véhicule :</label>
-    <input type="text" id="marque" name="marque" placeholder="Ex: Toyota, Peugeot">
-    </div>
-    <button> id="editProfileBtn"
-    type="button">Modifier le profil</button>
-    </form>
-    </div>
+
+    {% if user.role == "conducteur" %}
+      <div class="form-group">
+        <label>Véhicule</label>
+        <input type="text" name="car_make" placeholder="Marque" value="{{ user.car_make }}" />
+        <input type="text" name="car_model" placeholder="Modèle" value="{{ user.car_model }}" />
+        <input type="number" name="car_seats" placeholder="Places disponibles" min="1" value="{{ user.car_seats }}" />
+      </div>
+    {% endif %}
+<button><a href="{% url 'upload_password' %}">Changer votre mot de passe</a></button>
+    <button type="submit">Enregistrer les modifications</button>
+  </form>
+</div>
     <script src= "{% static 'authentication/script.js' %}"></script>
 {% endblock %}

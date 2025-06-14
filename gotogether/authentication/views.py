@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from . import forms
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from .models import User
+
 
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
@@ -55,6 +59,7 @@ def signup(request):
         form = forms.SignUpForm()
     return render(request, 'authentication/sign_up.html', {'form': form})
 
+@login_required
 def profil_user(request):
     user = request.user
     return render(request, 'authentication/profil.html', {'user': user})
@@ -70,7 +75,41 @@ def logout_user(request):
     return redirect('login')
 
 #vue pour le dashboard
-
+@login_required
 def dashboard(request):
     user = request.user
     return render (request,'authentication/dashboard.html', context={'user' : user})
+
+
+# vue pour changer le mot de passe
+@login_required
+def upload_password(request):
+    form = PasswordChangeForm(request.user)
+    user = request.user #on recupere l'utilisateur connecté
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST) 
+        if form.is_valid():
+            user= form.save()
+            update_session_auth_hash(request, user) # pour éviter la déconnexion
+            return redirect('profil_user')
+    return render(request, 'authentication/update_password.html', context={'form': form, 'user':user})
+
+
+# mettre ajour la photo de profil
+@login_required
+def upload_profile_photo(request):
+    form = forms.UploadProfilePhotoForm() 
+    user = request.user 
+    if request.method == 'POST':
+        form = forms.UploadProfilePhotoForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+           form.save()
+           return redirect ('profil_user')
+    return render (request, 'authentication/update_photo_profil.html', context={'form': form})
+    
+
+# Mettre a jour le profil
+@login_required
+def modifier_profil(request):
+    user_profil = 
+    user = request.user

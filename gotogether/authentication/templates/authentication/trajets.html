@@ -1,0 +1,119 @@
+
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'authentication/trajets.css' %}">
+{% endblock %}
+
+{% block content %}
+  
+   <!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Go Together – Choisissez vos trajets</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+ 
+</head>
+<body>
+
+  <!-- En-tête -->
+  <header>
+    <div class="container d-flex justify-content-between align-items-center">
+      <h1 class="h4 text-success m-0">Go Together</h1>
+      <nav class="d-flex gap-3">
+        <a href="#" class="navbar-link">Accueil</a>
+        <a href="#" class="navbar-link">Mes trajets</a>
+        <a href="#" class="navbar-link">Profil</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Titre principal -->
+  <div class="container">
+    <div class="hero-title">Choisissez vos trajets</div>
+  </div>
+
+  <!-- Formulaire + Carte -->
+  <section class="container mb-5">
+    <div class="row g-4">
+      <!-- Formulaire à gauche -->
+      <div class="col-md-5">
+        <form class="search-form">
+          <div class="mb-3">
+            <label class="form-label text-success">Départ</label>
+            <input type="text" class="form-control" placeholder="Ex : Zogbo, Cotonou" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-success">Destination</label>
+            <input type="text" class="form-control" placeholder="Ex : UAC (IFRI)" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-success">Point de rendez-vous</label>
+            <input type="text" class="form-control" placeholder="Ex : Station Total Zongo" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-success">Date du trajet</label>
+            <input type="date" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-success">Heure de départ</label>
+            <input type="time" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-success">Nombre de places</label>
+            <input type="number" class="form-control" min="1" required />
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success">Rechercher</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Carte à droite -->
+      <div class="col-md-7">
+        <div class="map-placeholder">
+          Carte interactive à venir ici...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Exemples de trajets -->
+  <section class="container mb-5">
+    <h4 class="text-success mb-4">Exemples de trajets vers l’UAC (IFRI)</h4>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card p-3">
+          <h5 class="card-title">Zogbo ➜ UAC (IFRI)</h5>
+          <p class="card-text">15 juin 2025 – 2 places disponibles</p>
+          <button class="btn btn-success btn-sm">Réserver</button>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-3">
+          <h5 class="card-title">Ste Rita ➜ UAC (IFRI)</h5>
+          <p class="card-text">15 juin 2025 – 3 places disponibles</p>
+          <button class="btn btn-success btn-sm">Réserver</button>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-3">
+          <h5 class="card-title">Godomey ➜ UAC (IFRI)</h5>
+          <p class="card-text">15 juin 2025 – 1 place disponible</p>
+          <button class="btn btn-success btn-sm">Réserver</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pied de page -->
+  <footer>
+    <div class="container">
+      © 2025 Go Together – Tous droits réservés
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

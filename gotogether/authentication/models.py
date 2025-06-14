@@ -33,7 +33,8 @@ class User(AbstractUser):
     heure_depart = models.TimeField(
         null=True,
         blank=True,
-        verbose_name='Heure de départ'
+        verbose_name='Heure de départ', 
+       
     )
 
 
@@ -42,7 +43,9 @@ class User(AbstractUser):
     heure_arrivee = models.TimeField(
         null=True,
         blank=True,
-        verbose_name='Heure d\'arrivée'
+        verbose_name='Heure d\'arrivée',
+        
+
     )
     #Champ pour le role de l'utilisateur
     role = models.CharField(
@@ -68,7 +71,15 @@ class User(AbstractUser):
     )
     adresse = models.CharField(max_length=255 ,
          default='Abomey-Calavi',
-         verbose_name='Adresse'
+         verbose_name='Adresse',
+         null= True, 
+         blank= True
     )
+
+    marque_voiture = models.CharField(max_length= 100,
+         null= True, 
+         blank = True)
+
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
