@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from messagerie.models import Message
+from messagerie.models import Message, Conversation  # ← conversation importée ici
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
@@ -9,12 +9,8 @@ User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
-    @database_sync_to_async
-    def save_message(self, sender, content, room_name):
-        return Message.objects.create(sender=sender, content=content, room=room_name)
-
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_name = self.scope['url_route']['kwargs']['room_name']  # ex: "2_5"
         self.room_group_name = f"chat_{self.room_name}"
 
         await self.channel_layer.group_add(
@@ -52,10 +48,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'error': 'Utilisateur non trouvé'}))
             return
 
+        # 🔄 Récupérer ou créer la conversation selon les deux participants
+        user_ids = self.room_name.split("_")
+        try:
+            id_1, id_2 = int(user_ids[0]), int(user_ids[1])
+        except (ValueError, IndexError):
+            await self.send(text_data=json.dumps({'error': 'Nom de salle invalide'}))
+            return
+
+        conversation = await sync_to_async(
+            lambda: Conversation.objects.filter(participants__id=id_1)
+                                        .filter(participants__id=id_2)
+                                        .distinct().first()
+        )()
+
+        if not conversation:
+            conversation = await sync_to_async(Conversation.objects.create)()
+            await sync_to_async(conversation.participants.add)(sender, recipient)
+
+        # ✅ Créer le message
         await sync_to_async(Message.objects.create)(
             sender=sender,
             recipient=recipient,
-            content=message
+            content=message,
+            conversation=conversation
         )
 
         await self.channel_layer.group_send(
@@ -63,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
-                'sender': sender.first_name  # ou sender.email si tu préfères
+                'sender': sender.first_name
             }
         )
 

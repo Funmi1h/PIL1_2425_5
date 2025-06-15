@@ -1,14 +1,55 @@
 {% extends 'base.html' %}
 {% load static %}
+
+
+
+
+
 {% block head %}
 <style>
-    
   #chat-log {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
+    width: 100%;
+    max-width: 600px;
+    height: 350px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 15px;
+    overflow-y: scroll;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .chat-message {
+    max-width: 75%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
     font-size: 14px;
-    color: #333;
+    position: relative;
+    border: 1px solid #cce5ff;
+    background-color: #e9f5ff;
+  }
+
+  .chat-message.me {
+    background-color: #d1e7ff;
+    margin-left: auto;
+    border-left: 4px solid #0d6efd;
+    text-align: right;
+  }
+
+  .chat-message.other {
+    background-color: #f1f1f1;
+    margin-right: auto;
+    border-right: 4px solid #0d6efd;
+    text-align: left;
+  }
+
+  .message-info {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 5px;
+    display: block;
   }
 
   #chat-message-input {
@@ -16,72 +57,70 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    margin-top: 10px;
     font-size: 14px;
+    margin-right: 5px;
   }
 
   #chat-message-submit {
-    background-color: #007bff; 
+    background-color: #0d6efd;
     border: none;
     color: white;
     padding: 10px 16px;
-    margin-top: 10px;
-    margin-left: 5px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
   }
 
   #chat-message-submit:hover {
-    background-color: #0056b3;
+    background-color: #0b5ed7;
   }
-
-  .color-bleu-principal {
-    font-size: 20px;
-    vertical-align: middle;
-  }
-
 </style>
- {% endblock %}   
+{% endblock %}
+
+
 {% block content %}
-    <h3>{{recipient_firstname}}</h3>
+<h3 class="text-center mb-4">{{ recipient_firstname }}</h3>
 
-    <!--Les messages apparaitront dans la div ci dessous avec js-->
-    <div id="chat-log" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
-    {% for message in messages %}
-        <p><strong>{{ message.sender.username }}</strong> : {{ message.content }}</p>
-    {% empty %}
-        <p>Aucun message pour l’instant.</p>
-    {% endfor %}
+<div id="chat-log">
+  {% for message in messages %}
+    <div class="chat-message {% if message.sender == request.user %}me{% else %}other{% endif %}">
+      <p>{{ message.content }}</p>
+      <span class="message-info">{{ message.timestamp }} {% if message.is_read %}✔{% endif %}</span>
     </div>
-<input id="chat-message-input" type="text" data-recipient="{{ recipient_id }}">    <button id="chat-message-submit"><ion-icon name="send" class="text-white"></ion-icon></button>
+  {% empty %}
+    <p id="empty-message">Aucun message pour l’instant.</p>
+  {% endfor %}
+</div>
 
- 
-
-
-
+<div class="d-flex justify-content-center">
+  <input id="chat-message-input" type="text" class="form-control" placeholder="Tape ton message..." data-recipient="{{ recipient_id }}">
+  <button id="chat-message-submit">
+    <ion-icon name="send" class="text-white"></ion-icon>
+  </button>
+</div>
 
 <script>
-const recipientId = document.querySelector('#chat-message-input').dataset.recipient;
+  const recipientId = document.querySelector('#chat-message-input').dataset.recipient;
   const roomName = "{{ room_name|escapejs }}";
-
-  const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
-  );
-
-  chatSocket.onopen = function(e) {
-    console.log("✅ Connexion WebSocket établie !");
-  };
+  const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/');
 
   chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    const chatLog = document.querySelector('#chat-log');
-    chatLog.innerHTML += '<p>' + data.message + '</p>';
-    chatLog.scrollTop = chatLog.scrollHeight;  // auto-scroll
-  };
+    const empty = document.getElementById('empty-message');
+    if (empty) empty.remove();
 
-  chatSocket.onerror = function(e) {
-    console.error("❌ Erreur WebSocket :", e);
+    const chatLog = document.querySelector('#chat-log');
+    const isMe = data.is_sender_current_user;
+    const className = isMe ? 'me' : 'other';
+
+    const newMessage = `
+      <div class="chat-message ${className}">
+        <p>${data.message}</p>
+        <span class="message-info">${data.timestamp} ${data.is_read ? '✔' : ''}</span>
+      </div>
+    `;
+    chatLog.insertAdjacentHTML('beforeend', newMessage);
+    chatLog.scrollTop = chatLog.scrollHeight;
   };
 
   chatSocket.onclose = function(e) {
@@ -89,18 +128,22 @@ const recipientId = document.querySelector('#chat-message-input').dataset.recipi
   };
 
   document.querySelector('#chat-message-submit').onclick = function() {
-    const messageInput = document.querySelector('#chat-message-input');
-    const message = messageInput.value;
-
-    if (chatSocket.readyState === WebSocket.OPEN) {
-      chatSocket.send(JSON.stringify({ 'message': message }));
-      messageInput.value = '';
-    } else {
-      console.error("🚫 WebSocket non ouverte :", chatSocket.readyState);
-      alert("La connexion n’est pas prête. Veuillez patienter ou recharger la page.");
+    const input = document.querySelector('#chat-message-input');
+    const message = input.value;
+    if (chatSocket.readyState === WebSocket.OPEN && message.trim() !== '') {
+      chatSocket.send(JSON.stringify({
+        message: message,
+        recipient_id: recipientId
+      }));
+      input.value = '';
     }
   };
 
+  document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.querySelector('#chat-message-submit').click();
+    }
+  });
 </script>
-
 {% endblock %}

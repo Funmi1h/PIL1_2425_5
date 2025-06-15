@@ -32,6 +32,7 @@ def chat_room(request, id):
     room_name = f"{min(user.id, recipient.id)}_{max(user.id, recipient.id)}"
 
     return render(request, 'messagerie/chat_room.html', {
+        'user': user,
         'recipient_firstname': recipient.first_name,
         'recipient_id' : recipient.id,
         'me_firstname': user.first_name,
@@ -39,3 +40,6 @@ def chat_room(request, id):
         'messages': messages, 
 
     })
+
+@login_required
+def delete_message(reque)
