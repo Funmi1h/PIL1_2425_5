@@ -4,7 +4,7 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="{% static 'authentication/style.css'%}">
+<link rel="stylesheet" href="{% static 'authentication/css/style.css'%}">
 
 {% endblock %}
 {% block content %}
@@ -65,5 +65,5 @@
         <button type="submit" class="submit-btn">S'inscrire</button>
     </form>
 
-    <a href="login" class="login-link">Déjà un compte? Se connecter</a>
+    <a href="{% url 'login' %}" class="login-link">Déjà un compte? Se connecter</a>
 {% endblock %}

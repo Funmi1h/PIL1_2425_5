@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
-<link rel="stylesheet" href="{% static 'authentication/profile.css' %}">
+<link rel="stylesheet" href="{% static 'authentication/css/profile.css' %}">
 {% endblock head %}
 
 {% block content %}
@@ -28,14 +28,23 @@
 
     <div class="profile-right">
         <div class="profile-details">
+            <p><strong>Rôle:</strong>{{ user.role }}</p>
+
+            <a href="{% url 'update_role' %}" class="edit-profile-btn">Modifier votre rôle </a>
+
             <p><strong>Adresse :</strong> {% if user.adresse %}{{ user.adresse }}{% else %}Vous n'avez spécifié aucune adresse.{% endif %}</p>
             <p><strong>Horaires :</strong></p>
             <p><strong>Départ :</strong> {% if user.heure_depart %}{{ user.heure_depart }}{% else %}Non spécifié{% endif %}</p>
             <p><strong>Arrivée :</strong> {% if user.heure_arrivee %}{{ user.heure_arrivee }}{% else %}Non spécifié{% endif %}</p>
+           
+           
+           
             {% if user.role == "conducteur" %}
                 <p><strong>Véhicule :</strong> {{ user.marque_voiture }}</p>
                 <p><strong>Places disponibles :</strong> {{ user.nb_places }}</p>
             {% endif %}
+
+
         </div>
         <div class="profile-actions">
             <a href="{% url 'changer_profil' %}" class="edit-profile-btn">

@@ -134,3 +134,12 @@ class ProfilForm(forms.ModelForm):
             'adresse': forms.TextInput(),
             'marque_voiture' : forms.TextInput(),            
         }
+
+
+#Formulaire pour modifier le role
+
+class UploadRoleForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields= ['role']
+        widgets = {'role': forms.RadioSelect(attrs={'class': 'form-control'})}

@@ -19,15 +19,21 @@
                 <i class="fa-solid fa-camera"></i> Modifier
             </a>
         </div>
+
+
         <div class="profile-info">
             <p><strong>Nom :</strong> {{ form.last_name }}</p>
             <p><strong>Prénom :</strong> {{ form.first_name }}</p>
             <p><strong>Email :</strong> {{ form.email }}</p>
         </div>
+
+
     </div>
 
     <div class="profile-right">
         <div class="profile-details">
+            <p><strong>Rôle:</strong>{{form.role}}</p>
+
             <p><strong>Adresse :</strong> 
                 <input type="text" id="id_adresse" placeholder="Votre emplacement habituel">
                 <input type="hidden" id="id_latitude" name="latitude" />

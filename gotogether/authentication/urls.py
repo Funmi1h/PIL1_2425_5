@@ -27,8 +27,8 @@ urlpatterns = [
         template_name='auth/password_reset_complete.html'
     ), name='password_reset_complete'),
 
-    path('geocode_proxy/', views.geocode_proxy, name='geocode_proxy')
-
+    path('geocode_proxy/', views.geocode_proxy, name='geocode_proxy'),
+    path('auth/update_role/', views.update_role, name= 'update_role')
     
 ]
 

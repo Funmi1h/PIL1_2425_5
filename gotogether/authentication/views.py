@@ -144,3 +144,15 @@ def geocode_proxy(request):
     response = requests.get(url, params=params)  # Envoie la requête HTTP GET vers Nominatim
     data = response.json()                        # Parse la réponse JSON
     return JsonResponse(data, safe=False)         # Renvoie la réponse JSON au front
+
+@login_required
+def update_role(request):
+    user = request.user
+    if request.method == "POST":
+        form= forms.UploadRoleForm(request.POST, instance= user)
+        if form.is_valid():
+            form.save()
+            return redirect('profil_user')
+    else:
+        form = forms.UploadRoleForm(instance= user)
+    return render (request, 'authentication/update_role.html', {'form': form, 'user':user})
