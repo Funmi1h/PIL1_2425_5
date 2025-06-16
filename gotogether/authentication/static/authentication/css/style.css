@@ -243,3 +243,7 @@ body {
     border-radius: 8px;
     margin: 5px 0;
 }
+.app-title img{
+    width: 250px;
+    height: 80px;
+}
