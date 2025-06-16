@@ -8,7 +8,7 @@ from .models import User
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-
+from algorithme.utils import generate_suggestions_passagers
 
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
@@ -156,3 +156,13 @@ def update_role(request):
     else:
         form = forms.UploadRoleForm(instance= user)
     return render (request, 'authentication/update_role.html', {'form': form, 'user':user})
+
+
+
+
+@login_required
+
+def suggestions_pour_passager(request):
+    user = request.user
+    suggestions_passagers = generate_suggestions_passagers(user)
+    return render (request, 'authentication/dashboard.html', {'suggestions_passagers': suggestions_passagers})

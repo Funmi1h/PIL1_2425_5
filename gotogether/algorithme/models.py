@@ -26,13 +26,14 @@ class Conducteur(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='conducteur_profile')
     infos_recomandations = models.CharField(null= True, blank= True, max_length= 155, unique=True , default='RAS')
 
-
     def _str_(self):
         return f"Profil Conducteur de {self.user.username} ({self.marque_voiture})"
 
 class TrajetOffert(models.Model):
     conducteur = models.ForeignKey(Conducteur, on_delete=models.CASCADE, related_name='trajets_offerts')
-    
+    class TrajetOffert(models.Model):
+    # ... autres champs ...
+        prix_par_passager = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
     # Informations de départ du trajet
     adresse_depart = models.CharField(max_length=255)
     latitude_depart = models.FloatField()
@@ -68,3 +69,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             elif instance.role == 'conducteur':
                 Conducteur.objects.create(user=instance)
     
+
+
+
+
