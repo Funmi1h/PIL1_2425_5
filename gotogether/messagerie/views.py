@@ -95,7 +95,7 @@ def edit_message(request, message_id):
 
     return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 
-
+@login_required
 def reply_message(request):
     if request.method == 'POST':
         content = request.POST.get('content')
@@ -117,7 +117,6 @@ def reply_message(request):
             return JsonResponse({'error': str(e)}, status=400)
         
 
-from .models import Message
 
 
 
