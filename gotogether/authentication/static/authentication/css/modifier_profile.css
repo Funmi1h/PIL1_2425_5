@@ -1,0 +1,136 @@
+.profile-container {
+  display: flex;
+  gap: 40px;
+  background: #f9f9f9;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 900px;
+  margin: 20px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.profile-left, .profile-right {
+  flex: 1;
+}
+
+.profile-photo {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 20px;
+}
+
+.profile-photo img.profile-pic-preview {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #ffcc00;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+}
+
+.profile-photo ion-icon {
+  font-size: 180px;
+  color: #ccc;
+  display: block;
+  text-align: center;
+}
+
+.edit-photo-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #ffcc00;
+  color: #222;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+  transition: background 0.3s ease;
+}
+
+.edit-photo-btn:hover {
+  background: #e6b800;
+}
+
+.profile-info p {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.profile-details p {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+.profile-details strong {
+  color: #555;
+}
+
+input[type="text"], input[type="hidden"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus {
+  border-color: #ffcc00;
+  outline: none;
+  box-shadow: 0 0 6px #ffcc00aa;
+}
+
+.profile-actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.change-password-btn, .edit-profile-btn button {
+  background-color: #ffcc00;
+  color: #222;
+  padding: 12px 18px;
+  font-weight: 700;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+  transition: background-color 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+}
+
+.change-password-btn:hover, .edit-profile-btn button:hover {
+  background-color: #e6b800;
+}
+
+#map {
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.1);
+}
+
+#validerEmplacement {
+  background-color: #ffcc00;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #222;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
+  transition: background-color 0.3s ease;
+}
+
+#validerEmplacement:hover {
+  background-color: #e6b800;
+}
