@@ -250,6 +250,9 @@ function showNotification(text) {
   
 </script>
 
+
+
+
 <script>
   function getCSRFToken() {
   const name = 'csrftoken';
@@ -261,7 +264,7 @@ function showNotification(text) {
   const deleteMessageUrlBase = "{% url 'delete_message' 0 %}".slice(0, -2);
 
   document.addEventListener("click", function (e) {
-    // 🗑️ SUPPRIMER
+    // POUR SUPPRIMER
     if (e.target.classList.contains("btn-delete")) {
       const messageId = e.target.dataset.id;
       fetch(`${deleteMessageUrlBase}${messageId}/`, {
@@ -281,7 +284,7 @@ function showNotification(text) {
       .catch(err => console.error('Erreur:', err));
     }
 
-    // ✏️ MODIFIER
+    // POUR MODIFIER
     if (e.target.classList.contains("btn-edit")) {
       const messageId = e.target.dataset.id;
       const oldContent = e.target.dataset.content;

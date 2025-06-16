@@ -6,9 +6,11 @@ from authentication.models import User
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        # On suppose que le modèle User a les champs 'adresse' et 'nb_places'
-        fields = ['adresse', 'nb_places']
+        # Les champs dont on a besoin
+        fields = ['adresse', 'nb_places' , 'latitude' , 'longitude']
         widgets = {
+            'latitude': forms.NumberInput(attrs={'step': 'any'}),
+            'longitude': forms.NumberInput(attrs={'step': 'any'}),
             'adresse': forms.TextInput(attrs={'placeholder': 'Adresse ou repère'}),
             'nb_places': forms.TextInput(attrs={'placeholder': 'Nombre de places'}),
         }
@@ -36,25 +38,58 @@ class UserForm(forms.ModelForm):
             self.fields['adresse'].initial = "Cotonou, Bénin"
 
         
-        
+class RechercheConducteurForm(forms.Form):
+    adresse_depart = forms.CharField(
+        label="Votre adresse de départ",
+        max_length=255,
+        widget=forms.TextInput(attrs={'placeholder': 'Entrez votre adresse de départ'})
+    )
+    latitude_depart = forms.DecimalField(
+        max_digits=30,
+        decimal_places=20,
+        required=False,
+        widget=forms.HiddenInput(attrs={'step': 'any'})
+    )
+    longitude_depart = forms.DecimalField(
+        max_digits=30,
+        decimal_places=20,
+        required=False,
+        widget=forms.HiddenInput(attrs={'step': 'any'})
+    )
+
+    heure_depart = forms.TimeField(
+        label="Heure de départ souhaitée",
+        required=False,
+        widget=forms.TimeInput(attrs={'type': 'time'})
+    )
+    heure_arrivee = forms.TimeField(
+        label="Heure d'arrivée souhaitée (optionnel)",
+        required=False,
+        widget=forms.TimeInput(attrs={'type': 'time'})
+    )
+
+    adresse_arrivee = forms.CharField(
+        label="Votre adresse d'arrivée (optionnel)",
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Entrez votre adresse d\'arrivée'})
+    )
+    latitude_arrivee = forms.DecimalField(
+        max_digits=30,
+        decimal_places=20,
+        required=False,
+        widget=forms.HiddenInput(attrs={'step': 'any'})
+    )
+    longitude_arrivee = forms.DecimalField(
+        max_digits=30,
+        decimal_places=20,
+        required=False,
+        widget=forms.HiddenInput(attrs={'step': 'any'})
+    )
 
 
-"""class PassagerForm(forms.ModelForm):
-    class Meta:
-        model = User
-        # On suppose que le modèle User a le champ 'adresse'
-        fields = ['adresse']
-        widgets = {
-            'adresse': forms.TextInput(attrs={'placeholder': 'Adresse ou repère' ,  'id' : 'id_addresse_passager'})
-        }
 
-        adresse = forms.CharField(
-            max_length= 100,
-            label= 'Entrez votre adresse' , 
-            widget= forms.TextInput(attrs={'placeholder':'Adresse ou repère' })
-        ) 
 
-    """
 def clean(self):
         cleaned_data = super().clean()
         role = cleaned_data.get('role')

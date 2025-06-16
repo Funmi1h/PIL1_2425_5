@@ -76,17 +76,23 @@ def delete_message(request, message_id):
         return JsonResponse({'status': 'deleted'})
     return JsonResponse({'status': 'error', 'detail': 'Méthode non autorisée'}, status=405)
 
+
+
 @login_required
 def edit_message(request, message_id):
     if request.method == 'POST':
-        new_content = request.POST.get('new_content')
         try:
-            message = Message.objects.get(id=message_id, sender=request.user)
-            message.content = new_content
-            message.save()
-            return JsonResponse({'status': 'updated', 'new_content': new_content})
+            msg = Message.objects.get(id=message_id, sender=request.user)
         except Message.DoesNotExist:
-            return JsonResponse({'error': 'Message non trouvé'}, status=404)
+            return JsonResponse({'error': 'Message introuvable ou non autorisé'}, status=404)
+
+        new_content = request.POST.get('new_content')
+        if new_content:
+            msg.content = new_content
+            msg.save()
+            return JsonResponse({'status': 'updated', 'new_content': msg.content})
+        return JsonResponse({'error': 'Contenu vide'}, status=400)
+
     return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 
 
