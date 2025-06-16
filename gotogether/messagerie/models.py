@@ -20,6 +20,10 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now_add= True)
     is_read = models.BooleanField(default= False)
     is_delete = models.BooleanField(default=False)
-    
+    reply_to = models.ForeignKey('self', null= True, blank= True, related_name='replies_to', on_delete= models.CASCADE)
+
+    def __str__(self):
+        return f"{self.sender}  envoie a {self.recipient} : {self.content}"
+
 
 
