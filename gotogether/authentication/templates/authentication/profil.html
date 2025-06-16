@@ -1,47 +1,61 @@
 {% extends 'base.html' %}
-{% load static%}
-
+{% load static %}
 {% block head %}
-<link rel="stylesheet" href="{% static 'authentication/profile.css' %}">
-
+<link rel="stylesheet" href="{% static 'authentication/css/profile.css' %}">
 {% endblock head %}
 
 {% block content %}
-    <h2>Vos informations personnels {{user.last_name}}</h2>
-        
-    <div class="container">
-    <h1>Profil utilisateur</h1>
-    <form>
-    <div class="form-group">
-    <label for="nom">Nom et prénom :</label>
-    <input type="text" id="nom" name="nom" placeholder="Entrez votre nom complet"
-    required>
+<h2>Profil de {{ user.first_name }}</h2>
+
+<div class="profile-container">
+    <div class="profile-left">
+        <div class="profile-photo">
+            {% if user.photo_profil %}
+                <img src="{{ user.photo_profil.url }}" alt="Photo de profil" class="profile-pic-preview">
+            {% else %}
+                <ion-icon name="person-circle-outline" class="text-white"></ion-icon>
+            {% endif %}
+            <a href="{% url 'update_photo_profil' %}" class="edit-photo-btn">
+                <i class="fa-solid fa-camera"></i> Modifier
+            </a>
+        </div>
+        <div class="profile-info">
+            <p><strong>Nom :</strong> {{ user.last_name }}</p>
+            <p><strong>Prénom :</strong> {{ user.first_name }}</p>
+            <p><strong>Email :</strong> {{ user.email }}</p>
+        </div>
     </div>
-    <div class="form-group">
-    <label for="photo">Photo de profil <span class="note">(facultatif)</span>
-    :</label>
-    <input type="file" id="photo" name="photo">
+
+    <div class="profile-right">
+        <div class="profile-details">
+            <p><strong>Rôle:</strong>{{ user.role }}</p>
+
+            <a href="{% url 'update_role' %}" class="edit-profile-btn">Modifier votre rôle </a>
+
+            <p><strong>Adresse :</strong> {% if user.adresse %}{{ user.adresse }}{% else %}Vous n'avez spécifié aucune adresse.{% endif %}</p>
+            <p><strong>Horaires :</strong></p>
+            <p><strong>Départ :</strong> {% if user.heure_depart %}{{ user.heure_depart }}{% else %}Non spécifié{% endif %}</p>
+            <p><strong>Arrivée :</strong> {% if user.heure_arrivee %}{{ user.heure_arrivee }}{% else %}Non spécifié{% endif %}</p>
+           
+           
+           
+            {% if user.role == "conducteur" %}
+                <p><strong>Véhicule :</strong> {{ user.marque_voiture }}</p>
+                <p><strong>Places disponibles :</strong> {{ user.nb_places }}</p>
+            {% endif %}
+
+
+        </div>
+        <div class="profile-actions">
+            <a href="{% url 'changer_profil' %}" class="edit-profile-btn">
+                <i class="fa-solid fa-pen"></i> Éditer mon profil
+            </a>
+            <a href="{% url 'upload_password' %}" class="change-password-btn">
+                <i class="fa-solid fa-lock"></i> Changer le mot de passe
+            </a>
+        </div>
     </div>
-    <div class="form-group">
-    <label for="depart">Point de départ habituel :</label>
-    <input type="text" id="depart" name="depart" placeholder="Ex: Cotonou, Akpakpa"
-    required>
-    </div>
-    <div class="form-group">
-    <label for="horaire_depart">Horaire de départ :</label>
-    <input type="time" id="horaire_depart" name="horaire_depart" required>
-    </div>
-    <div class="form-group">
-    <label for="horaire_arrivee">Horaire d'arrivée :</label>
-    <input type="time" id="horaire_arrivee" name="horaire_arrivee" required>
-    </div>
-    <div class="form-group">
-    <label for="marque">Marque du véhicule :</label>
-    <input type="text" id="marque" name="marque" placeholder="Ex: Toyota, Peugeot">
-    </div>
-    <button> id="editProfileBtn"
-    type="button">Modifier le profil</button>
-    </form>
-    </div>
-    <script src= "{% static 'authentication/script.js' %}"></script>
+</div>
+
+<script src="{% static 'authentication/script.js' %}"></script>
 {% endblock %}

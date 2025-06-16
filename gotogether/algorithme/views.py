@@ -1,60 +1,64 @@
 from django.shortcuts import render
 from .utils import find_conducteurs_les_plus_proches
-from .models import Client, Conducteur
 from authentication.models import User
 from django.http import JsonResponse
-from .forms import ConducteurForm, ClientForm
+from .forms import UserForm
+import logging
+from django.contrib.auth.decorators import *
 
 # Create your views here.
 
-client = User.objects.filter(role='passager') 
-conducteur = User.objects.filter(role='conducteur') 
+#passager = User.objects.filter(role='passager') 
+#conducteur = User.objects.filter(role='conducteur') 
+
+logger = logging.getLogger(__name__)
+
+
+@login_required # S'assurer que l'utilisateur est connecté
 
 def formulaire_view(request):
-    conducteur_form = ConducteurForm()
-    client_form = ClientForm()
+
+    # Tente de récupérer l'instance de l'utilisateur connecté pour pré-remplir le formulaire ou mettre à jour.
+    user_instance = request.user
+    is_conducteur = False
+    if hasattr(User, 'role') and User.role == 'conducteur':
+        is_conducteur = True
     if request.method == "POST":
-        # Si la requête est de type POST, on traite les données du formulaire
-        role = request.POST.get("role")
-        if role == "conducteur":
-            form = ConducteurForm(request.POST)
-            if form.is_valid():
-                # Si le formulaire est valide, on enregistre les données
-                conducteur.user.latitude = request.POST.get("latitude")
-                conducteur.user.longitude = request.POST.get("longitude")
-                conducteur.user.save()  # Enregistre les coordonnées du conducteur
-                # Enregistre le conducteur dans la base de données
-                conducteur = form.save(commit=False)  # Crée une instance de Conducteur sans l'enregistrer
-                conducteur.user = request.user  # Associe l'utilisateur connecté au conducteur
-                conducteur.save()  # Enregistre le conducteur
-                # Enregistre le formulaire de conducteur
+        # Instanciez le formulaire avec les données POST et l'instance de l'utilisateur Cela permet à form.save() de Mettre à Jour l'utilisateur existant
+        form = UserForm(request.POST, instance=user_instance)
+
+        print("🧪 Utilisateur connecté :", request.user.username)
+        print("🧪 Données reçues (POST) :", request.POST)
+        if form.is_valid():
+            try :
                 form.save()
-                return JsonResponse({"message": "Demande enregistré avec succès!"})
-        elif role == "passager":
-            form = ClientForm(request.POST)
-            if form.is_valid():
-                # Si le formulaire est valide, on enregistre les données du client
-                client.user.latitude = request.POST.get("latitude")
-                client.user.longitude = request.POST.get("longitude")
-                client.user.save()  # Enregistre les coordonnées du client
-                # Enregistre le client dans la base de données
-                client = form.save(commit=False)  # Crée une instance de Client sans l'enregistrer
-                client.user = request.user  # Associe l'utilisateur connecté au client
-                client.save()  # Enregistre le client
-                # Enregistre le formulaire de client
-                # Si le formulaire est valide, on enregistre les données
-                form.save()
-                return JsonResponse({"message": "Demande enregistré avec succès!"})
+                logger.info(f"✅ Profil utilisateur ({request.user.username}) mis à jour avec succès.")
+                return JsonResponse({"message": "Profil mis à jour avec succès!"})
+            except Exception as e:
+                logger.error(f"❌ Erreur lors de la sauvegarde du profil utilisateur: {e}")
+                return JsonResponse({"error": "Erreur lors de la mise à jour du profil."}, status=500)
+        else:
+            print("❌ Erreurs formulaire profil utilisateur:", form.errors)
+            return JsonResponse({"error": "Formulaire invalide", "details": form.errors}, status=400)    
+
+    else: # Requête GET
+        # Le formulaire est pré-rempli avec les données de l'utilisateur connecté
+        form = UserForm(instance=user_instance)
+    """else:
+        initial_data = {
+            'adresse': "Cotonou, Bénin" 
+        }
+        form = ConducteurForm(initial=initial_data, is_conducteur=is_conducteur) """
 
 
         
 
     
-    return render(request, "formulaire_role.html", {"conducteur_form": conducteur_form} , {"client_form": client_form})
+    return render(request, "algorithme/formulaire_role.html", {"user_form": form , "is_conducteur":is_conducteur })
 
 
 
-def conducteurs_proches(request):
+"""def conducteurs_proches(request):
     if request.method == "POST":
         # Récupère les données du client depuis la requête POST
         client_latitude = float(request.POST.get("latitude_client"))
@@ -69,4 +73,4 @@ def conducteurs_proches(request):
         # Retourne les conducteurs proches sous forme de JSON
         return JsonResponse(conducteurs_proches, safe=False)
     
-    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)"""

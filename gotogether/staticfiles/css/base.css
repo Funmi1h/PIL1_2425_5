@@ -1,0 +1,90 @@
+body {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  
+  text-align: left;
+}
+nav{
+    color: white;
+}
+
+.color-bleu-principal{
+    color:#4067E6 !important;
+}
+
+.bg-bleu-principal{
+    background-color: #4067E6;
+}
+
+
+
+ion-icon {
+    color: black !important; 
+}
+.navbar-toggler:focus, .navbar-toggler:active {
+    outline: none; 
+    box-shadow: none; 
+}
+/*LE LOGO */
+.navbar-brand img{
+    width: 200px;
+    height: 50px;
+}
+
+#burgerIcon {
+    color: #4067E6 !important; /* Change la couleur des traits de l'icône */
+    font-size: 24px; 
+    font-weight: bolder;
+}
+
+.navbar-toggler {
+    background-color: white !important; /* Rend le bouton blanc */
+    border: none; /* Supprime les bordures */
+}
+
+.navbar a, 
+.navbar .nav-link, 
+.navbar .dropdown-toggle, 
+.navbar .dropdown-item {
+    color: white !important; /* Change tous les textes en blanc */
+}
+
+
+.dropdown-menu {
+    background-color: #4067E6 !important; 
+    border: none;
+}
+
+
+.navbar .dropdown-item{
+    color: white !important;
+}
+
+/*effet de hover sur les nav-link*/
+
+.nav-link, .dropdown-item{
+    position: relative;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+.nav-link::after, .dropdown-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0%;
+    height: 2px;
+    background-color: white; /* Change selon ta couleur */
+    transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover::after, .dropdown-item:hover::after  {
+    width: 100%;
+}
+
+.dropdown-item:hover{
+    background-color: transparent;
+}

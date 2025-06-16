@@ -1,7 +1,14 @@
 from django.shortcuts import render, redirect
 from . import forms
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from .models import User
+import requests
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+
 
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
@@ -22,7 +29,7 @@ class LoginView(LoginView):
                 user = authenticate(request, username=identifiant, password=password)
                 if user is not None:
                     login(request, user)
-                    return render(request, 'core/home.html', {'user': user})
+                    return render(request, 'authentication/dashboard.html', {'user': user})
                 else:
                     return render(request, self.template_name, {'form': form, 'message': 'Identifiant ou mot de passe incorrect.'})
             else:
@@ -55,6 +62,7 @@ def signup(request):
         form = forms.SignUpForm()
     return render(request, 'authentication/sign_up.html', {'form': form})
 
+@login_required
 def profil_user(request):
     user = request.user
     return render(request, 'authentication/profil.html', {'user': user})
@@ -70,7 +78,81 @@ def logout_user(request):
     return redirect('login')
 
 #vue pour le dashboard
-
+@login_required
 def dashboard(request):
     user = request.user
     return render (request,'authentication/dashboard.html', context={'user' : user})
+
+
+# vue pour changer le mot de passe
+@login_required
+def upload_password(request):
+    form = PasswordChangeForm(request.user)
+    user = request.user #on recupere l'utilisateur connecté
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST) 
+        if form.is_valid():
+            user= form.save()
+            update_session_auth_hash(request, user) # pour éviter la déconnexion
+            return redirect('profil_user')
+    return render(request, 'authentication/update_password.html', context={'form': form, 'user':user})
+
+
+# mettre a jour la photo de profil
+@login_required
+def upload_profile_photo(request):
+    form = forms.UploadProfilePhotoForm() 
+    user = request.user 
+    if request.method == 'POST':
+        form = forms.UploadProfilePhotoForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+           form.save()
+           return redirect ('profil_user')
+    return render (request, 'authentication/update_photo_profil.html', context={'form': form})
+    
+
+# Mettre a jour le profil
+@login_required
+def modifier_profil(request):
+    user = request.user
+    if request.method == 'POST':
+        form = forms.ProfilForm(request.POST, request.FILES, instance = user)
+        if form.is_valid():
+            form.save()
+            return redirect('profil_user')
+    else:
+        form = forms.ProfilForm(instance=user)
+
+    return render(request, 'authentication/modifier_profile.html', {'user': user, 'form': form})        
+
+
+
+
+@require_GET
+def geocode_proxy(request):
+    query = request.GET.get('q', '')  # Récupère le paramètre 'q' de l'URL (ex: ?q=cotonou)
+    if not query:
+        return JsonResponse({'error': 'Missing query'}, status=400)  # Si pas de q, on renvoie une erreur
+    
+    url = 'https://nominatim.openstreetmap.org/search'  # URL de l'API OpenStreetMap Nominatim
+    params = {
+        'q': query,           # La requête d'adresse
+        'format': 'json',     # On veut le résultat en JSON
+        'addressdetails': 1,  # Détails sur l'adresse
+        'limit': 5,           # Limite à 5 résultats
+    }
+    response = requests.get(url, params=params)  # Envoie la requête HTTP GET vers Nominatim
+    data = response.json()                        # Parse la réponse JSON
+    return JsonResponse(data, safe=False)         # Renvoie la réponse JSON au front
+
+@login_required
+def update_role(request):
+    user = request.user
+    if request.method == "POST":
+        form= forms.UploadRoleForm(request.POST, instance= user)
+        if form.is_valid():
+            form.save()
+            return redirect('profil_user')
+    else:
+        form = forms.UploadRoleForm(instance= user)
+    return render (request, 'authentication/update_role.html', {'form': form, 'user':user})

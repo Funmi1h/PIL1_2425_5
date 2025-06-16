@@ -93,3 +93,53 @@ class SignUpForm(forms.ModelForm):
             self.add_error('confirm_password', "Les mots de passe ne correspondent pas.")
 
         
+
+
+# Formulaire pour changer la photo de profil
+
+class UploadProfilePhotoForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields= ['photo_profil']
+        widgets = {'photo_profil': forms.FileInput(attrs={'class': 'form-control'})}
+
+
+
+# Formulaire pour le profil 
+
+class ProfilForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ['first_name', 'last_name', 'email', 'numero_telephone', 'role', 'heure_depart', 'heure_arrivee', 'adresse', 'marque_voiture']
+        labels = {
+            'first_name': 'Prénom',
+            'last_name' : 'Nom',
+            'email': 'E-mail',
+            'numero_telephone': 'Numéro de téléphone',
+            'role' : 'Role',
+            'heure_depart' : 'Heure de départ habituel ',
+            'heure_arrivee': 'Heure d\'arrivée habituel',
+            'adresse': 'Emplacement habituel',
+            'marque_voiture' : 'Marque de la voiture ',            
+        }
+
+        widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'Prénom'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Nom'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Adresse e-mail'}),
+            'numero_telephone': forms.TextInput(attrs={'placeholder': 'Numéro de téléphone'}),
+            'role': forms.RadioSelect(),
+            'heure_depart' : forms.TimeInput(attrs={'type': 'time'}),
+            'heure_arrivee': forms.TimeInput(attrs={'type': 'time'}),
+            'adresse': forms.TextInput(),
+            'marque_voiture' : forms.TextInput(),            
+        }
+
+
+#Formulaire pour modifier le role
+
+class UploadRoleForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields= ['role']
+        widgets = {'role': forms.RadioSelect(attrs={'class': 'form-control'})}

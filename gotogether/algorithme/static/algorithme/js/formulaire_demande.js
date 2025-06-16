@@ -1,16 +1,46 @@
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ DOM chargé !");
+});
+
+console.log("✅ Script formulaire_demande.js chargé !");
+console.log("Leaflet.js est chargé :", typeof L !== "undefined");
+
 //changement dynamique selon l'utilisateur
+
+       
+
         function toggleForm() {
-            var role = document.querySelector('input[name="role"]:checked').value;
-            document.getElementById('conducteur_form').style.display = (role === 'conducteur') ? 'block' : 'none';
-            document.getElementById('client_form').style.display = (role === 'client') ? 'block' : 'none';
-        }
-        window.onload = toggleForm;
+    var role = document.querySelector('input[name="role"]:checked');
+    if (!role) {
+        console.error("❌ Aucun rôle sélectionné !");
+        return;
+    }
+
+    var conducteurForm = document.getElementById("conducteur-form");
+    var passagerForm = document.getElementById("passager-form");
+
+    if (!conducteurForm || !passagerForm) {
+        console.error("❌ Formulaires non trouvés dans le DOM !");
+        return;
+    }
+
+    if (role.value === "conducteur") {
+        conducteurForm.style.display = "block";
+        passagerForm.style.display = "none";
+    } else {
+        conducteurForm.style.display = "none";
+        passagerForm.style.display = "block";
+    }
+}
+ window.onload = toggleForm;
 
 
 
 
 // Initialisation de la carte
-var map = L.map('map').setView([6.45, 2.35], 13); // Coordonnées pour Abomey-Calavi
+ // Coordonnées pour Abomey-Calavi
+var map = L.map('map').setView([6.45, 2.35], 13);
 
 // Ajout des tuiles OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -65,17 +95,69 @@ userPositionButton.onAdd = function(map) {
 userPositionButton.addTo(map);
 
 //Récupération des coordonnées du formulaire
-var latitudeField = document.getElementById("latitude");
-var longitudeField = document.getElementById("longitude");
+//var latitudeField = document.getElementById("latitude");
+//var longitudeField = document.getElementById("longitude");
 
-map.on('click', function(value) {
-    latitudeField.value = value.latlng.lat;
-    longitudeField.value = value.latlng.lng;
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ DOM chargé !");
+    
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // Empêche la redirection
+
+            var latitude = document.getElementById("latitude").value;
+            var longitude = document.getElementById("longitude").value;
+
+            if (!latitude || !longitude) {
+                alert("❌ Veuillez valider votre position avant de soumettre le formulaire !");
+                return;
+            }
+
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || "✅ Soumission réussie !");
+            })
+            .catch(async error => {
+            const responseText = await error.text?.();
+            console.error("❌ Erreur JS détaillée :", error, responseText);
+                alert("❌ Une erreur est survenue ! Détails dans la console.");
+            });
+        });
+    });
 });
 
+
+map.on('click', function(value) {
+    var latitudeField = document.getElementById("latitude");
+    var longitudeField = document.getElementById("longitude");
+
+    if (latitudeField && longitudeField) {
+        latitudeField.value = value.latlng.lat;
+        longitudeField.value = value.latlng.lng;
+        console.log("✅ Coordonnées mises à jour :", value.latlng.lat, value.latlng.lng);
+    } else {
+        console.error("❌ Champs latitude/longitude introuvables !");
+    }
+});
+
+
 // Recherche de l'adresse indiquée
+
 function searchLocation() {
-    var address = document.getElementById("address").value;
+    console.log(document.getElementById("addresse"));
+
+       var address = document.getElementById("addresse").value;
+    
+    if (!address.trim()) {
+        alert("Veuillez entrer une adresse.");
+        return;}
+    
     if (address) {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
             .then(response => response.json())
@@ -96,6 +178,17 @@ function searchLocation() {
         alert("Veuillez entrer une adresse.");
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ DOM chargé !");
+    
+    var radios = document.querySelectorAll('input[name="role"]');
+    radios.forEach(radio => {
+        radio.addEventListener("change", function () {
+            console.log("🔄 Rôle changé :", this.value);
+            toggleForm();
+        });
+    });
+});
 
 
 
