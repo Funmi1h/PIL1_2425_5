@@ -1,14 +1,57 @@
 {% extends 'base.html' %}
 {% load static %}
+
+
+
+
+
 {% block head %}
+
+
 <style>
-    
   #chat-log {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
+    width: 100%;
+    max-width: 600px;
+    height: 350px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 15px;
+    overflow-y: scroll;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .chat-message {
+    max-width: 75%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
     font-size: 14px;
-    color: #333;
+    position: relative;
+    border: 1px solid #cce5ff;
+    background-color: #e9f5ff;
+  }
+
+  .chat-message.me {
+    background-color: #d1e7ff;
+    margin-left: auto;
+    border-left: 4px solid #0d6efd;
+    text-align: right;
+  }
+
+  .chat-message.other {
+    background-color: #f1f1f1;
+    margin-right: auto;
+    border-right: 4px solid #0d6efd;
+    text-align: left;
+  }
+
+  .message-info {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 5px;
+    display: block;
   }
 
   #chat-message-input {
@@ -16,91 +59,307 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    margin-top: 10px;
     font-size: 14px;
+    margin-right: 5px;
   }
 
   #chat-message-submit {
-    background-color: #007bff; 
+    background-color: #0d6efd;
     border: none;
     color: white;
     padding: 10px 16px;
-    margin-top: 10px;
-    margin-left: 5px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
   }
 
   #chat-message-submit:hover {
-    background-color: #0056b3;
+    background-color: #0b5ed7;
   }
 
-  .color-bleu-principal {
-    font-size: 20px;
-    vertical-align: middle;
-  }
+
+  .message-content-wrapper {
+  position: relative;
+}
+
+
+.notification-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #444;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  font-weight: 600;
+  opacity: 0.9;
+  z-index: 9999;
+  animation: fadeinout 3s forwards;
+}
+
+@keyframes fadeinout {
+  0% { opacity: 0; }
+  10% { opacity: 0.9; }
+  90% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
 
 </style>
- {% endblock %}   
+
+
+
+{% endblock %}
+
+
 {% block content %}
-    <h3>{{recipient_firstname}}</h3>
 
-    <!--Les messages apparaitront dans la div ci dessous avec js-->
-    <div id="chat-log" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
-    {% for message in messages %}
-        <p><strong>{{ message.sender.username }}</strong> : {{ message.content }}</p>
-    {% empty %}
-        <p>Aucun message pour l’instant.</p>
-    {% endfor %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">{{ recipient_firstname }}</h3>
+  <a href="{% url 'message_accueil' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="fa fa-times"></i>
+  </a>
+</div>
+
+
+<div id="chat-log">
+  {% for message in messages %}
+
+
+    <div class="chat-message {% if message.sender == request.user %}me{% else %}other{% endif %}">
+  
+  <div class="d-flex justify-content-between align-items-start">
+    <p class="mb-1">{{ message.content }}</p>
+
+    
+    <div class="dropdown">
+      <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-ellipsis-v"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <button class="dropdown-item btn-reply" data-id="{{ message.id }}" data-content="{{ message.content }}">↪️ Répondre</button>
+        </li>
+
+        {% if message.sender == request.user %}
+          <li>
+            <button class="dropdown-item btn-edit" data-id="{{ message.id }}" data-content="{{ message.content }}">Modifier</button>
+
+          </li>
+          <li>
+            <button class="dropdown-item btn-delete" data-id="{{ message.id }}">Supprimer</button>
+          </li>
+        {% endif %}
+      </ul>
     </div>
-<input id="chat-message-input" type="text" data-recipient="{{ recipient_id }}">    <button id="chat-message-submit"><ion-icon name="send" class="text-white"></ion-icon></button>
+   
+  </div>
 
- 
+  <span class="message-info">{{ message.timestamp }} {% if message.is_read %}✔{% endif %}</span>
+
+</div>
+
+  {% empty %}
+    <p id="empty-message">Aucun message pour l’instant.</p>
+  {% endfor %}
+</div>
+
+
+<!--Div pour l'input de message et le boutton d'envoi-->
+<div class="d-flex justify-content-center">
+  <div id="reply-preview" style="display: none; font-size: 12px; color: gray; margin-bottom: 8px;"></div>
+  <input id="chat-message-input" type="text" class="form-control" placeholder="Tape ton message..." data-recipient="{{ recipient_id }}">
+  <!--Boutton por envoyer le message -->
+  <button id="chat-message-submit">
+    <ion-icon name="send" class="text-white"></ion-icon>
+  </button>
+</div>
 
 
 
 
 <script>
-const recipientId = document.querySelector('#chat-message-input').dataset.recipient;
+
+
+
+  const recipientId = document.querySelector('#chat-message-input').dataset.recipient;
   const roomName = "{{ room_name|escapejs }}";
+  const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/');
 
-  const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
-  );
+chatSocket.onmessage = function(e) {
+  const data = JSON.parse(e.data);
+  const empty = document.getElementById('empty-message');
+  if (empty) empty.remove();
 
-  chatSocket.onopen = function(e) {
-    console.log("✅ Connexion WebSocket établie !");
-  };
+  const chatLog = document.querySelector('#chat-log');
+  const isMe = data.is_sender_current_user;
+  const className = isMe ? 'me' : 'other';
 
-  chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    const chatLog = document.querySelector('#chat-log');
-    chatLog.innerHTML += '<p>' + data.message + '</p>';
-    chatLog.scrollTop = chatLog.scrollHeight;  // auto-scroll
-  };
+  const newMessage = `
+    <div class="chat-message ${className}">
+      <p>${data.message}</p>
+      <span class="message-info">${data.timestamp} ${data.is_read ? '✔' : ''}</span>
+    </div>
+  `;
+  chatLog.insertAdjacentHTML('beforeend', newMessage);
+  chatLog.scrollTop = chatLog.scrollHeight;
 
-  chatSocket.onerror = function(e) {
-    console.error("❌ Erreur WebSocket :", e);
-  };
+  // Notification seulement si ce n’est pas toi qui envoie
+  if (!isMe) {
+    showNotification(`Nouveau message de ${data.sender || 'contact'}`);
+  }
+};
+
+// Fonction pour afficher une notification simple
+function showNotification(text) {
+  const notif = document.createElement('div');
+  notif.className = 'notification-toast';
+  notif.innerText = text;
+  document.body.appendChild(notif);
+
+  setTimeout(() => {
+    notif.remove();
+  }, 3000);
+}
+
 
   chatSocket.onclose = function(e) {
     console.warn("⚠️ WebSocket fermé :", e);
   };
 
   document.querySelector('#chat-message-submit').onclick = function() {
-    const messageInput = document.querySelector('#chat-message-input');
-    const message = messageInput.value;
-
-    if (chatSocket.readyState === WebSocket.OPEN) {
-      chatSocket.send(JSON.stringify({ 'message': message }));
-      messageInput.value = '';
-    } else {
-      console.error("🚫 WebSocket non ouverte :", chatSocket.readyState);
-      alert("La connexion n’est pas prête. Veuillez patienter ou recharger la page.");
+    const input = document.querySelector('#chat-message-input');
+    const message = input.value;
+    if (chatSocket.readyState === WebSocket.OPEN && message.trim() !== '') {
+      chatSocket.send(JSON.stringify({
+        message: message,
+        recipient_id: recipientId
+      }));
+      input.value = '';
     }
   };
 
+  document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.querySelector('#chat-message-submit').click();
+    }
+  });
+
+  
 </script>
+
+
+
+
+<script>
+  function getCSRFToken() {
+  const name = 'csrftoken';
+  return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1];
+}
+
+
+  // On récupère l'URL de suppression avec un id fictif (0), on enlève le "0/" à la fin pour garder la base
+  const deleteMessageUrlBase = "{% url 'delete_message' 0 %}".slice(0, -2);
+
+  document.addEventListener("click", function (e) {
+    // POUR SUPPRIMER
+    if (e.target.classList.contains("btn-delete")) {
+      const messageId = e.target.dataset.id;
+      fetch(`${deleteMessageUrlBase}${messageId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'deleted') {
+          e.target.closest(".chat-message").remove();
+        } else if (data.error) {
+          alert(data.error);
+        }
+      })
+      .catch(err => console.error('Erreur:', err));
+    }
+
+    // POUR MODIFIER
+    if (e.target.classList.contains("btn-edit")) {
+      const messageId = e.target.dataset.id;
+      const oldContent = e.target.dataset.content;
+      const newContent = prompt("Modifie ton message :", oldContent);
+      if (newContent && newContent !== oldContent) {
+        fetch(`/messagerie/edit/${messageId}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `new_content=${encodeURIComponent(newContent)}`
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'updated') {
+            const messageEl = e.target.closest(".chat-message");
+            messageEl.querySelector("p").innerText = data.new_content;
+          } else if (data.error) {
+            alert(data.error);
+          }
+        })
+        .catch(err => console.error('Erreur:', err));
+      }
+    }
+
+    // Pour RÉPONDRE
+    if (e.target.classList.contains("btn-reply")) {
+      const replyText = e.target.dataset.content;
+      const replyBox = document.getElementById("reply-preview");
+      replyBox.innerText = `↪️ Répondre à : ${replyText}`;
+      replyBox.style.display = 'block';
+      replyBox.dataset.replyToId = e.target.dataset.id;
+    }
+  });
+
+
+
+  document.querySelector('#chat-message-submit').addEventListener('click', function () {
+  const input = document.querySelector('#chat-message-input');
+  const content = input.value.trim();
+  const recipientId = input.dataset.recipient;
+  const replyBox = document.getElementById('reply-preview');
+  const replyToId = replyBox.dataset.replyToId || null;
+
+  if (!content) return;
+
+  fetch('/messagerie/reply_message', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCSRFToken(),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      content: content,
+      recipient_id: recipientId,
+      reply_to_id: replyToId
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'replied') {
+        input.value = '';
+        replyBox.style.display = 'none';
+        replyBox.dataset.replyToId = '';
+        replyBox.innerText = '';
+      } else if (data.error) {
+        alert(data.error);
+      }
+    })
+    .catch(err => console.error("Erreur lors de l'envoi :", err));
+});
+</script>
+
+
+
 
 {% endblock %}

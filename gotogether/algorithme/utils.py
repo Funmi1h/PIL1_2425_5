@@ -14,12 +14,6 @@ def Haversine(lat1, lon1, lat2, lon2):
         (sin(dlat / 2))**2 + cos(lat1)*cos(lat2)* (sin(dlon / 2 ))**2
     ) ) 
     return distance
-    
-def get_distance(client_latitude, client_longitude, conducteur_latitude, conducteur_longitude):
-    """
-    Calcule la distance entre le client et le conducteur en utilisant la formule de Haversine.
-    """
-    return Haversine(client_latitude, client_longitude, conducteur_latitude, conducteur_longitude)
 
 def find_conducteurs_les_plus_proches(client_latitude, client_longitude, conducteurs):
     """
@@ -27,15 +21,16 @@ def find_conducteurs_les_plus_proches(client_latitude, client_longitude, conduct
     """
     conducteurs_proches = []
     top_5_conducteurs = []      # Nombre de conducteurs à retourner
-    for conducteur in conducteurs():
-        distance = get_distance(client_latitude, client_longitude, conducteur.latitude_conducteur, conducteur.longitude_conducteur)
-        conducteurs_proches.append((conducteur, distance))
+    for conducteur in conducteurs:
+        distance = Haversine(client_latitude, client_longitude, float(conducteur.latitude) , float(conducteur.longitude))
+
+        conducteurs_proches.append({'user' : conducteur, 'distance' : distance})
     # Trier les conducteurs par distance
-    conducteurs_proches.sort(key=lambda x: x[1])
+    conducteurs_proches.sort(key=lambda x: x['distance'])
     # Retourner les 5 conducteurs les plus proches
-    for conducteur, distance in conducteurs_proches[:5]:
+    """ for conducteur, distance in conducteurs_proches[:5]:
         top_5_conducteurs.append({
             'conducteur': conducteur,
             'distance': distance
-        })
-    return top_5_conducteurs
+        }) """
+    return conducteurs_proches

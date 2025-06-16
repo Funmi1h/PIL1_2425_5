@@ -1,13 +1,41 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from authentication.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Message, Conversation
+from django.http import JsonResponse
+
+
+
+
+@login_required
+def get_last_message(user1, user2):
+    return Message.objects.filter(
+        sender=user1, recipient=user2
+    ).union(
+        Message.objects.filter(sender=user2, recipient=user1)
+    ).order_by('-timestamp').first()
+
 
 @login_required
 def message_accueil(request):
-    all_users = User.objects.all()
     user = request.user
-    return render(request, 'messagerie/messages.html', context={'user': user, 'all_users': all_users})
+    all_users = User.objects.exclude(id=user.id)
+
+    user_data = []
+    for other_user in all_users:
+        conv = Conversation.objects.filter(participants=user).filter(participants=other_user).distinct().first()
+        if conv:
+            last_message = Message.objects.filter(conversation=conv).order_by('-timestamp').first()
+        else:
+            last_message = None
+        user_data.append({
+            'user': other_user,
+            'last_message': last_message
+        })
+
+    return render(request, 'messagerie/messages.html', {
+        'user_data': user_data
+    })
 
 
 
@@ -39,3 +67,57 @@ def chat_room(request, id):
         'messages': messages, 
 
     })
+
+@login_required
+def delete_message(request, message_id):
+    if request.method == 'POST':
+        message = get_object_or_404(Message, id=message_id, sender=request.user)
+        message.delete()
+        return JsonResponse({'status': 'deleted'})
+    return JsonResponse({'status': 'error', 'detail': 'Méthode non autorisée'}, status=405)
+
+
+
+@login_required
+def edit_message(request, message_id):
+    if request.method == 'POST':
+        try:
+            msg = Message.objects.get(id=message_id, sender=request.user)
+        except Message.DoesNotExist:
+            return JsonResponse({'error': 'Message introuvable ou non autorisé'}, status=404)
+
+        new_content = request.POST.get('new_content')
+        if new_content:
+            msg.content = new_content
+            msg.save()
+            return JsonResponse({'status': 'updated', 'new_content': msg.content})
+        return JsonResponse({'error': 'Contenu vide'}, status=400)
+
+    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+
+
+def reply_message(request):
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        reply_to_id = request.POST.get('reply_to_id')
+        recipient_id = request.POST.get('recipient_id')
+
+        try:
+            recipient = User.objects.get(id=recipient_id)
+            reply_to_msg = Message.objects.get(id=reply_to_id) if reply_to_id else None
+
+            Message.objects.create(
+                sender=request.user,
+                recipient=recipient,
+                content=content,
+                reply_to=reply_to_msg
+            )
+            return JsonResponse({'status': 'replied'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+        
+
+from .models import Message
+
+
+

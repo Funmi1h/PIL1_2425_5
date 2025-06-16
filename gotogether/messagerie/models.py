@@ -12,11 +12,18 @@ class Conversation(models.Model):
 
 
 class Message(models.Model):
-    message_content = models.TextField()
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete= models.CASCADE, related_name= 'sent_messages')
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete= models.CASCADE, related_name= 'received_messages')
+    content = models.TextField()
     conversation = models.ForeignKey(Conversation, on_delete= models.CASCADE)
     # un message ne peut etre que dans un discussion
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete= models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add= True)
     is_read = models.BooleanField(default= False)
+    is_delete = models.BooleanField(default=False)
+    reply_to = models.ForeignKey('self', null= True, blank= True, related_name='replies_to', on_delete= models.CASCADE)
+
+    def __str__(self):
+        return f"{self.sender}  envoie a {self.recipient} : {self.content}"
+
 
 

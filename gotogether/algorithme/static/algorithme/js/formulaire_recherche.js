@@ -5,33 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
 console.log("✅ Script formulaire_demande.js chargé !");
 console.log("Leaflet.js est chargé :", typeof L !== "undefined");
 
-// Changement dynamique selon l'utilisateur
-function toggleForm() {
-    var role = document.querySelector('input[name="role"]:checked');
-    if (!role) {
-        console.error("❌ Aucun rôle sélectionné !");
-        return;
-    }
 
-    var conducteurForm = document.getElementById("conducteur-form");
-    var passagerForm = document.getElementById("passager-form");
-
-    if (!conducteurForm || !passagerForm) {
-        console.error("❌ Formulaires non trouvés dans le DOM !");
-        return;
-    }
-
-    if (role.value === "conducteur") {
-        conducteurForm.style.display = "block";
-        passagerForm.style.display = "none";
-    } else {
-        conducteurForm.style.display = "none";
-        passagerForm.style.display = "block";
-    }
-}
-
-window.onload = toggleForm;
-
+ 
 // Initialisation de la carte
 var map = L.map('map').setView([6.45, 2.35], 13); // Coordonnées pour Abomey-Calavi
 
@@ -57,8 +32,8 @@ function addMarker(lat, lng, popupContent) {
 
 // Fonction pour mettre à jour les champs de coordonnées
 function updateCoordinateFields(lat, lng) {
-    var latitudeField = document.getElementById("latitude");
-    var longitudeField = document.getElementById("longitude");
+    var latitudeField = document.getElementById("id_latitude_depart");
+    var longitudeField = document.getElementById("id_longitude_depart");
 
     if (latitudeField && longitudeField) {
         latitudeField.value = lat;
@@ -118,20 +93,9 @@ userPositionButton.addTo(map);
 
 // Recherche de l'adresse indiquée
 function searchLocation() {
-    var role = document.querySelector('input[name="role"]:checked');
-    if (!role) {
-        alert("Veuillez sélectionner un rôle d'abord.");
-        return;
-    }
     
-    var address = "";
-    if (role.value === "conducteur") {
-        var addressField = document.getElementById("id_addresse_conducteur");
-        address = addressField ? addressField.value : "";
-    } else if (role.value === "passager") {
-        var addressField = document.getElementById("id_addresse_passager");
-        address = addressField ? addressField.value : "";
-    }
+    var address = document.getElementById("id_adresse_depart").value
+    
     
     if (!address.trim()) {
         alert("Veuillez entrer une adresse.");
@@ -171,15 +135,7 @@ function searchLocation() {
 document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ DOM chargé pour la gestion des formulaires !");
     
-    // Gestion du changement de rôle
-    var radios = document.querySelectorAll('input[name="role"]');
-    radios.forEach(radio => {
-        radio.addEventListener("change", function () {
-            console.log("🔄 Rôle changé :", this.value);
-            toggleForm();
-        });
-    });
-    
+
     // Gestion de la soumission des formulaires
     document.querySelectorAll("form").forEach(form => {
         form.addEventListener("submit", function (event) {
@@ -187,8 +143,8 @@ document.addEventListener("DOMContentLoaded", function () {
             
             console.log("📤 Tentative de soumission du formulaire...");
             
-            var latitudeField = document.getElementById("latitude");
-            var longitudeField = document.getElementById("longitude");
+            var latitudeField = document.getElementById("id_latitude_depart");
+            var longitudeField = document.getElementById("id_longitude_depart");
             
             if (!latitudeField || !longitudeField) {
                 alert("❌ Champs latitude/longitude introuvables dans le formulaire !");
@@ -196,19 +152,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
             
-            var latitude = latitudeField.value;
-            var longitude = longitudeField.value;
+            var latitude_depart = latitudeField.value;
+            var longitude_depart = longitudeField.value;
             
-            console.log("📍 Coordonnées récupérées - Lat:", latitude, "Lng:", longitude);
+            console.log("📍 Coordonnées récupérées - Lat:", latitude_depart, "Lng:", longitude_depart);
             
-            if (!latitude || !longitude || latitude === "" || longitude === "") {
+            if (!latitude_depart || !longitude_depart || latitude_depart === "" || longitude_depart === "") {
                 alert("❌ Veuillez sélectionner une position sur la carte avant de soumettre le formulaire !");
                 return;
             }
             
             // Validation des coordonnées
-            var lat = parseFloat(latitude);
-            var lng = parseFloat(longitude);
+            var lat = parseFloat(latitude_depart);
+            var lng = parseFloat(longitude_depart);
             
             if (isNaN(lat) || isNaN(lng)) {
                 alert("❌ Coordonnées invalides !");
@@ -252,10 +208,57 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then(data => {
                 console.log("✅ Données JSON reçues:", data);
-                alert(data.message || "✅ Soumission réussie !");
-                
-                // Optionnel: réinitialiser le formulaire
-                // this.reset();
+
+    //  Afficher les infos de la recherche du passager 
+    const infoPassagerDiv = document.getElementById('passager-info');
+    if (infoPassagerDiv) {
+        infoPassagerDiv.innerHTML = `
+            <p><strong>Votre recherche:</strong> Départ de <strong>${data.adresse_depart_passager || 'Non spécifié'}</strong> à <strong>${data.heure_depart_passager || 'N/A'}</strong></p>
+            <p>Arrivée souhaitée avant <strong>${data.heure_arrivee_passager || 'N/A'}</strong></p>
+        `;
+    }
+
+    // Gérer et afficher la liste des conducteurs 
+    const listeConducteursDiv = document.getElementById('liste-conducteurs');
+    const messageAucunConducteur = document.getElementById('no-drivers-message');
+
+    // On vide la liste précédente (si l'utilisateur fait une nouvelle recherche)
+    listeConducteursDiv.innerHTML = ''; 
+    // On cache le message "aucun conducteur" au début
+    if (messageAucunConducteur) messageAucunConducteur.style.display = 'none';
+
+    if (data.conducteurs && data.conducteurs.length > 0) {
+        // Si des conducteurs sont trouvés, on les affiche
+        data.conducteurs.forEach(conducteur => {
+            const carteConducteurHTML = `
+                <div class="col-md-4 mb-4"> <div class="card shadow-sm"> <div class="card-body">
+                            <h5 class="card-title">${conducteur.username}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">${conducteur.marque_voiture || 'Véhicule'} - ${conducteur.nb_places || 'N/A'} places</h6>
+                            <p class="card-text">
+                                Distance: <strong>${conducteur.distance ? conducteur.distance.toFixed(2) : 'N/A'} km</strong><br>
+                                Adresse: ${conducteur.adresse || 'Non spécifiée'}<br>
+                                Départ: ${conducteur.heure_depart_conducteur || 'N/A'}<br>
+                                Arrivée: ${conducteur.heure_arrivee_conducteur || 'N/A'}<br>
+                                Téléphone: <a href="tel:${conducteur.numero_telephone}">${conducteur.numero_telephone || 'N/A'}</a>
+                            </p>
+                            <button class="btn btn-primary btn-sm">Contacter</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // On ajoute cette carte HTML à la boîte des conducteurs
+            listeConducteursDiv.insertAdjacentHTML('beforeend', carteConducteurHTML);
+        });
+    } else {
+        // Si aucun conducteur n'est trouvé, on affiche le message
+        if (messageAucunConducteur) {
+            messageAucunConducteur.style.display = 'block'; // Rendre le message visible
+        } else {
+            // Au cas où la div du message n'existe pas (un problème de HTML)
+            listeConducteursDiv.innerHTML = '<p>Aucun conducteur trouvé pour votre recherche.</p>';
+        }
+    }
+})
             })
             .catch(error => {
                 console.error("❌ Erreur détaillée:", error);
@@ -263,12 +266,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     });
-});
+
 
 // Fonction utilitaire pour debug - afficher les coordonnées actuelles
 function showCurrentCoordinates() {
-    var latitudeField = document.getElementById("latitude");
-    var longitudeField = document.getElementById("longitude");
+    var latitudeField = document.getElementById("id_latitude_depart");
+    var longitudeField = document.getElementById("id_longitude_depart");
     
     if (latitudeField && longitudeField) {
         console.log("📍 Coordonnées actuelles - Lat:", latitudeField.value, "Lng:", longitudeField.value);
