@@ -1,5 +1,6 @@
 from django import forms
 from authentication.models import User
+from algorithme.models import TrajetOffert
 
 
 
@@ -71,21 +72,42 @@ class RechercheConducteurForm(forms.Form):
     adresse_arrivee = forms.CharField(
         label="Votre adresse d'arrivée (optionnel)",
         max_length=255,
-        required=False,
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Entrez votre adresse d\'arrivée'})
     )
     latitude_arrivee = forms.DecimalField(
         max_digits=30,
         decimal_places=20,
-        required=False,
+        required=True,
         widget=forms.HiddenInput(attrs={'step': 'any'})
     )
     longitude_arrivee = forms.DecimalField(
         max_digits=30,
         decimal_places=20,
-        required=False,
+        required=True,
         widget=forms.HiddenInput(attrs={'step': 'any'})
     )
+
+class ProposerTrajetForm(forms.ModelForm):
+    # Vous pouvez ajouter des champs non-modèle si nécessaire, ex: confirmer_disponibilite = forms.BooleanField(...)
+    
+    class Meta:
+        model = TrajetOffert
+        # Champs que le conducteur remplit pour proposer un trajet
+        fields = [
+            'adresse_depart', 'latitude_depart', 'longitude_depart', 'heure_depart_prevue',
+            'adresse_arrivee', 'latitude_arrivee', 'longitude_arrivee', 'heure_arrivee_prevue',
+            'nb_places_disponibles', 'prix_par_passager'
+        ]
+        widgets = {
+            'heure_depart_prevue': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'heure_arrivee_prevue': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+        labels = {
+            'adresse_depart': "Adresse de départ de votre trajet",
+            'heure_depart_prevue': "Date et heure de départ prévues",
+            'nb_places_disponibles': "Nombre de places disponibles pour ce trajet",
+        }
 
 
 

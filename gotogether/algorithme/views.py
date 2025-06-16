@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from .utils import find_conducteurs_les_plus_proches
 from authentication.models import User
+from algorithme.models import Passager , Conducteur , TrajetOffert
 from django.http import JsonResponse
-from .forms import UserForm , RechercheConducteurForm
+from .forms import UserForm , RechercheConducteurForm , ProposerTrajetForm
+from algorithme.forms import r
 import logging
 from django.contrib.auth.decorators import *
+from  datetime import timezone
 
 # Create your views here.
 
@@ -46,16 +49,6 @@ def formulaire_view(request):
     else: # Requête GET
         # Le formulaire est pré-rempli avec les données de l'utilisateur connecté
         form = UserForm(instance=user_instance)
-    """else:
-        initial_data = {
-            'adresse': "Cotonou, Bénin" 
-        }
-        form = ConducteurForm(initial=initial_data, is_conducteur=is_conducteur) """
-
-
-        
-
-    
     return render(request, "algorithme/formulaire_role.html", {"user_form": form , "is_conducteur":is_conducteur })
 
 # - VUE POUR LA RECHERCHE DE CONDUCTEURS ET L'AFFICHAGE DES RÉSULTATS SUR LA MÊME PAGE ---
@@ -84,6 +77,7 @@ def rechercher_conducteurs_view(request):
                         return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
                 else:
                         try:
+                            heure_actuelle = timezone.now()
                             tous_les_conducteurs = User.objects.filter(role='conducteur')
                         
                     
@@ -145,3 +139,34 @@ def rechercher_conducteurs_view(request):
     })
 
 
+@login_required # S'assurer que seul un utilisateur connecté peut proposer un trajet
+def proposer_trajet_view(request):
+    # S'assurer que l'utilisateur est bien un conducteur
+    if not hasattr(request.user, 'conducteur_profile'):
+        # Créer le profil conducteur si l'utilisateur est 'conducteur' mais n'a pas de profil
+        # Ceci peut arriver si l'utilisateur est passé conducteur APRÈS sa création et le signal n'a pas été exécuté.
+        if request.user.role == 'conducteur':
+            Conducteur.objects.create(user=request.user)
+        else:
+            # Rediriger ou afficher une erreur si l'utilisateur n'est pas un conducteur
+            return redirect('some_error_page') # Ou render un template avec un message
+    
+    conducteur_profile = request.user.conducteur_profile
+
+    if request.method == "POST":
+        form = ProposerTrajetForm(request.POST)
+        if form.is_valid():
+            trajet = form.save(commit=False) # Ne pas sauvegarder tout de suite
+            trajet.conducteur = conducteur_profile # Lier le trajet au profil conducteur de l'utilisateur
+            # Les places disponibles sont déjà dans le formulaire
+            # trajet.nb_places_disponibles = conducteur_profile.nb_places_vehicule # Initialiser avec la capacité du véhicule si vous voulez
+            trajet.est_actif = True # Le trajet est actif lors de sa création
+            trajet.save()
+            return redirect('trajet_propose_success') # Rediriger vers une page de succès ou la liste des trajets
+        else:
+            # Le formulaire n'est pas valide, afficher les erreurs
+            pass # Le render en dessous affichera le formulaire avec les erreurs
+    else:
+        form = ProposerTrajetForm() # Formulaire vide pour une requête GET
+
+    return render(request, "algorithme/proposer_trajet.html", {'form': form})
