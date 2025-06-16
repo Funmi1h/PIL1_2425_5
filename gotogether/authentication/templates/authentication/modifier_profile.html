@@ -38,6 +38,7 @@
                 <input type="text" id="id_adresse" placeholder="Votre emplacement habituel">
                 <input type="hidden" id="id_latitude" name="latitude" />
                 <input type="hidden" id="id_longitude" name="longitude" />
+                 <button type="button" onclick="searchLocation()">Rechercher l'emplacement sur la carte </button>
             </p>
 
             <div id="map" style="display: none; width: 100%; height: 400px; margin-top: 10px;"></div>
@@ -68,8 +69,6 @@
 
 
 <script>
-    
-document.addEventListener('DOMContentLoaded', function() {
     const adresseInput = document.getElementById('id_adresse');
     const latField = document.getElementById('id_latitude');
     const lngField = document.getElementById('id_longitude');
@@ -78,73 +77,112 @@ document.addEventListener('DOMContentLoaded', function() {
     let map, marker;
     let mapInitialized = false;
 
-    function initMap() {
-        map = L.map('map').setView([6.45, 2.35], 13);
+    document.addEventListener('DOMContentLoaded', function() {
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+        function initMap() {
+            if (mapInitialized && map) {
+                map.remove(); // Supprime l'ancienne instance de la carte si elle existe
+            }
+            map = L.map('map').setView([6.45, 2.35], 13); // Coordonnées par défaut pour Abomey-Calavi
 
-        map.on('click', function(e) {
-            placeMarker(e.latlng.lat, e.latlng.lng);
-        });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-        mapInitialized = true;
-    }
+            mapInitialized = true;
 
-    function placeMarker(lat, lng) {
-        if (marker) {
-            marker.setLatLng([lat, lng]);
-        } else {
-            marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-            marker.on('dragend', function() {
-                const pos = marker.getLatLng();
-                updateLatLng(pos.lat, pos.lng);
+            // Écouteur de clic sur la carte pour placer un marqueur
+            map.on('click', function(e) {
+                placeMarker(e.latlng.lat, e.latlng.lng, "Nouvel emplacement");
             });
         }
-        updateLatLng(lat, lng);
-    }
 
-    function updateLatLng(lat, lng) {
-        latField.value = lat;
-        lngField.value = lng;
-    }
-
-    adresseInput.addEventListener('focus', () => {
-        mapContainer.style.display = 'block';
-        validerBtn.style.display = 'inline-block';
-
-        if (!mapInitialized) {
-            initMap();
+        function placeMarker(lat, lng, popupContent = "Emplacement sélectionné") {
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+            } else {
+                marker = L.marker([lat, lng], {draggable: true}).addTo(map);
+                marker.on('dragend', function() {
+                    const pos = marker.getLatLng();
+                    updateLatLng(pos.lat, pos.lng);
+                });
+            }
+            marker.bindPopup(popupContent).openPopup();
+            updateLatLng(lat, lng);
+            console.log("Ajout/Déplacement du marqueur :", lat, lng);
         }
+
+        function updateLatLng(lat, lng) {
+            latField.value = lat;
+            lngField.value = lng;
+        }
+
+        // Fonction unique pour la géocodage
+        function geocodeAddress(address, callback) {
+            if (!address.trim()) {
+                alert("Veuillez entrer une adresse.");
+                return;
+            }
+
+            // Utilise l'API Nominatim directement pour la démonstration
+            // Si tu as un proxy, remplace cette URL par la tienne.
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        callback(data[0].lat, data[0].lon, data[0].display_name);
+                    } else {
+                        alert("Adresse non trouvée.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la recherche d'adresse:", error);
+                    alert("Erreur lors de la recherche d'adresse");
+                });
+        }
+
+        adresseInput.addEventListener('focus', () => {
+            mapContainer.style.display = 'block';
+            validerBtn.style.display = 'inline-block';
+
+            if (!mapInitialized) {
+                initMap();
+            }
+        });
+
+        adresseInput.addEventListener('change', () => {
+            const adresse = adresseInput.value.trim();
+            if (!adresse) return;
+
+            geocodeAddress(adresse, (lat, lon, displayName) => {
+                map.setView([lat, lon], 13);
+                placeMarker(lat, lon, `<b>${displayName}</b>`);
+            });
+        });
+
+        validerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            mapContainer.style.display = 'none';
+            validerBtn.style.display = 'none';
+        });
+
+        // Cette fonction sera appelée par un événement externe (par exemple, un bouton de recherche)
+        window.searchLocation = function() {
+            console.log(document.getElementById('id_adresse')); // Conserver le log si utile pour le débogage
+
+            const address = document.getElementById('id_adresse').value;
+
+            if (!mapInitialized) {
+                initMap();
+                mapContainer.style.display = 'block';
+                validerBtn.style.display = 'inline-block';
+            }
+
+            geocodeAddress(address, (lat, lon, displayName) => {
+                map.setView([lat, lon], 13);
+                placeMarker(lat, lon, `<b>${displayName}</b>`);
+            });
+        };
     });
-
-    adresseInput.addEventListener('change', () => {
-        const adresse = adresseInput.value.trim();
-        if (!adresse) return;
-
-        fetch(`/auth/geocode_proxy?q=${encodeURIComponent(adresse)}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length > 0) {
-                    const lat = data[0].lat;
-                    const lon = data[0].lon;
-                    map.setView([lat, lon], 13);
-                    placeMarker(lat, lon);
-                } else {
-                    alert("Adresse non trouvée");
-                }
-            })
-            .catch(() => alert("Erreur lors de la recherche d'adresse"));
-    });
-
-    validerBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        mapContainer.style.display = 'none';
-        validerBtn.style.display = 'none';
-    });
-});
-
-
 </script>
 {% endblock %}
