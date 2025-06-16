@@ -78,10 +78,16 @@
                             <li class="nav-item">
                                 <a href="{% url 'rechercher_conducteur' %}" class="nav-link mx-4">Trouver ou proposer des trajets </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="{% url 'message_accueil' %}" class="nav-link mx-4">Messages
+                         <li class="nav-item position-relative">
+                                <a href="{% url 'message_accueil' %}" class="nav-link mx-4 position-relative">
+                                    Messages
+                                    <span id="message-notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                    •
+                                    <span class="visually-hidden">nouveau message</span>
+                                    </span>
                                 </a>
-                            </li>
+                        </li>
+
                         </ul>
                         <hr class="d-lg-none">
 
@@ -132,5 +138,35 @@
     <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.js"></script>
     <!--lE SCRIPT DE LA page-->
     <script src="{% static 'js/base.js' %}"></script>
+
+
+
+    <!--Pour les notifs -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const userId = "{{ request.user.id }}"; // OK : Django mettra l'ID ici
+    const wsNotif = new WebSocket(`ws://${window.location.host}/ws/notifs/${userId}/`);
+
+    wsNotif.onopen = function() {
+      console.log("✅ WebSocket de notification connecté");
+    };
+
+    wsNotif.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      console.log("🔔 Notification reçue :", data); // POUR DEBUG
+
+      if (data.type === 'new_message') {
+        const badge = document.getElementById('message-notif-badge');
+        if (badge) badge.classList.remove('d-none');
+      }
+    };
+
+    wsNotif.onerror = function(e) {
+      console.error("❌ Erreur WebSocket notification :", e);
+    };
+  });
+</script>
+
+
 </body>
 </html>

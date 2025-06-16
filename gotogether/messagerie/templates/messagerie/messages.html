@@ -1,4 +1,62 @@
 {% extends 'base.html' %}
+
+{% block head %}
+
+
+
+<style>
+  .container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .all_users {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .each_user {
+    padding: 1rem 1.2rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .each_user:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .each_user strong {
+    font-size: 1.1rem;
+    display: block;
+    color: #212529;
+  }
+
+  .each_user small {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+</style>
+
+{% endblock %}
 {% block content %}
 <div class="container">
   <h1>Vos Messages</h1>
@@ -17,4 +75,13 @@
     {% endfor %}
   </ul>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const badge = document.getElementById('message-notif-badge');
+  if (badge) badge.classList.add('d-none');
+});
+
+</script>
 {% endblock %}
