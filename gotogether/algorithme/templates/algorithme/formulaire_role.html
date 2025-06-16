@@ -13,19 +13,27 @@
 {% if form.errors %}
     <pre>{{ form.errors }}</pre>
 {% endif %}
-<h1>Remplissez ceci </h1>
-    <label><input type="radio" name="role" value="conducteur" checked > Conducteur</label>
-    <label><input type="radio" name="role" value="passager" > Client</label>
-    <div id="map" style="height: 500px;"></div> <!-- Div pour l'affichage de la carte -->
+<h3>Choisissez votre rôle :</h3>
+    <label><input type="radio" name="role" value="conducteur" checked > 👨‍💼 Conducteur (Je propose un trajet)</label>
+    <label><input type="radio" name="role" value="passager" >   👤 Passager (Je cherche un trajet)</label>
+    <div id="map" style="height: 500px;">
+      <p class="help-text">💡 Cliquez sur la carte pour sélectionner votre position ou utilisez la recherche d'adresse</p>
+    </div> <!-- Div pour l'affichage de la carte -->
 <!-- Formulaire pour le conducteur -->
-   <form method="post" id="conducteur-form" style="display: block;">
+   <form method="post" id="user-form" style="display: block;">
          {% csrf_token %}
-         <input type="hidden" name="role" value="conducteur">
+         <p>Votre rôle actuel est : **{{ request.user.role|default:"Non défini" }}**</p>
+    
+    <div class="form-group">
             <div>
-               <label for="{{conducteur_form.adresse.id_for_label}}">{{conducteur_form.adresse.label }}</label>
+               
                   <div>
-                        {{conducteur_form.adresse}}
+                     <label for="{{user_form.adresse.id_for_label}}">{{user_form.adresse.label }}</label>
+                  <div>
+                        <input type="text" id="addresse" placeholder="Entrer votre lieu de départ ou choisissez sur la carte">
                         <button type="button" onclick="searchLocation()">Choisir sur la carte </button>
+                        <div class="help-text">Tapez votre adresse et cliquez sur "Rechercher" ou sélectionnez directement sur la carte</div>
+                  </div>
                   </div>
                {% if conducteur_form.adresse.errors %}
                   {% for error in conducteur_form.adresse.errors %}
@@ -36,54 +44,39 @@
             </div>
 
             <div>
-               <label for="{{conducteur_form.nb_places.id_for_label}}">{{conducteur_form.nb_places.label }}</label>
+               {% if is_conducteur %}
+               <label for="{{user_form.nb_places.id_for_label}}">{{user_form.nb_places.label }}</label>
                <div>
-                  {{conducteur_form.nb_places}}
-                     {% if conducteur_form.nb_places.errors %}
-                           {% for error in conducteur_form.nb_places.errors %}
+                  {{user_form.nb_places}}
+                     {% if user_form.nb_places.errors %}
+                           {% for error in user_form.nb_places.errors %}
                                  <span class="error">{{error}}</span>
                            {% endfor %}
                      {% endif %}
+               {% endif %}
                </div>
                   
             </div>
-      <p>Veuillez valider votre position avant de soumettre le formulaire.</p>
-      <input type="submit" value="Enregistrer">
-      <button type="button" id="get-location">Valider ma position</button> <!-- Bouton pour obtenir la position -->
+        <div style="border-top: 1px solid #eee; padding-top: 15px;">
+            <p class="help-text">⚠️ Assurez-vous que votre position est correcte avant de valider</p>
+            <input type="submit" value="✅ Enregistrer mon offre de covoiturage">
+        </div>  
+                   <!-- Champs cachés pour stocker la latitude et la longitude -->
+
+   <input type="hidden" id="latitude" name="latitude">
+   <input type="hidden" id="longitude" name="longitude">  
+   <!-- Bouton pour obtenir la position -->
+
 
    </form>
 
- Formulaire pour le client 
-   <form method="post" id="passager-form" style="display: block;">
-         {% csrf_token %}
-         <input type="hidden" name="role" value="passager">
-            <div>
-               <label for="{{passager_form.adresse.id_for_label}}">{{passager_form.adresse.label }}</label>
-                  <div>
-                        {{passager_form.adresse}}
-                        <button onclick="searchLocation()">Choisir sur la carte </button>
-                  </div>
-               {% if passager_form.adresse.errors %}
-                  {% for error in passager_form.adresse.errors %}
-                        <span class="error">{{error}}</span>
-                  {% endfor %}
-               {% endif %}
-               <p> Veuillez cliquer sur rechercher pour identifier votre adresse</p>
-            </div>
-                  
-      <p>Veuillez valider votre position avant de soumettre le formulaire.</p>
-      <input type="submit" value="Enregistrer">
-      <button type="button" id="get-location">Valider ma position</button> <!-- Bouton pour obtenir la position -->
-
-      <!-- Champs cachés pour stocker la latitude et la longitude -->
-
-   <input type="hidden" id="latitude" name="latitude">
-   <input type="hidden" id="longitude" name="longitude">
-    
     
 
    
-   
-   <script src="{%static 'algorithme/js/formulaire_demande.js'%}" defer></script>
 </form>
+<div>
+           <!-- Champs cachés pour stocker la latitude et la longitude -->
+
+</div>
+<script src="{%static 'algorithme/js/formulaire_demande.js'%}" defer></script>
     {% endblock %}

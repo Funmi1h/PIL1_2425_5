@@ -1,29 +1,10 @@
 
 document.addEventListener("DOMContentLoaded", function () {
-    alert("Script chargé !");
     console.log("✅ DOM chargé !");
 });
 
 console.log("✅ Script formulaire_demande.js chargé !");
 console.log("Leaflet.js est chargé :", typeof L !== "undefined");
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll("form").forEach(form => {
-        form.addEventListener("submit", function (event) {
-            event.preventDefault(); // Empêche la redirection
-
-            var formData = new FormData(this);
-            fetch(this.action, {
-                method: "POST",
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message); // Affiche le message sans changer de page
-            })
-            .catch(error => console.error("Erreur :", error));
-        });
-    });
-});
 
 //changement dynamique selon l'utilisateur
 
@@ -114,26 +95,68 @@ userPositionButton.onAdd = function(map) {
 userPositionButton.addTo(map);
 
 //Récupération des coordonnées du formulaire
-var latitudeField = document.getElementById("latitude");
-var longitudeField = document.getElementById("longitude");
+//var latitudeField = document.getElementById("latitude");
+//var longitudeField = document.getElementById("longitude");
 
-map.on('click', function(value) {
-    latitudeField.value = value.latlng.lat;
-    longitudeField.value = value.latlng.lng;
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ DOM chargé !");
+    
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // Empêche la redirection
+
+            var latitude = document.getElementById("latitude").value;
+            var longitude = document.getElementById("longitude").value;
+
+            if (!latitude || !longitude) {
+                alert("❌ Veuillez valider votre position avant de soumettre le formulaire !");
+                return;
+            }
+
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || "✅ Soumission réussie !");
+            })
+            .catch(async error => {
+            const responseText = await error.text?.();
+            console.error("❌ Erreur JS détaillée :", error, responseText);
+                alert("❌ Une erreur est survenue ! Détails dans la console.");
+            });
+        });
+    });
 });
 
-// Recherche de l'adresse indiquée
-function searchLocation() {
-    var role = document.querySelector('input[name="role"]:checked').value;
-    var address = "";
 
-    if (role === "conducteur") {
-        // Pour le conducteur
-        address = document.getElementById("id_addresse_conducteur").value;
-    } else if (role === "passager") {
-        // Pour le passager
-        address = document.getElementById("id_addresse_passager").value;
+map.on('click', function(value) {
+    var latitudeField = document.getElementById("latitude");
+    var longitudeField = document.getElementById("longitude");
+
+    if (latitudeField && longitudeField) {
+        latitudeField.value = value.latlng.lat;
+        longitudeField.value = value.latlng.lng;
+        console.log("✅ Coordonnées mises à jour :", value.latlng.lat, value.latlng.lng);
+    } else {
+        console.error("❌ Champs latitude/longitude introuvables !");
     }
+});
+
+
+// Recherche de l'adresse indiquée
+
+function searchLocation() {
+    console.log(document.getElementById("addresse"));
+
+       var address = document.getElementById("addresse").value;
+    
+    if (!address.trim()) {
+        alert("Veuillez entrer une adresse.");
+        return;}
     
     if (address) {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
