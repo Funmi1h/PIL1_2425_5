@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Trouver un covoiturage</h1>
+    <div id="map" style="height: 500px;"></div>
+
+
+    <form method="post" id="recherche-form">
+        {% csrf_token %}
+         <p>
+            <label for="{{ form.adresse_depart.id_for_label }}">{{ form.adresse_depart.label }}</label>
+            <div class="address-group">
+                {{ form.adresse_depart }}
+                <button type="button" onclick="searchLocation()" style="background-color: #28a745;">
+                    Rechercher sur la carte
+                </button>
+            </div>
+            {% if form.adresse_depart.errors %}<ul class="errorlist">{% for error in form.adresse_depart.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+        </p>
+        
+        <p>
+            <label for="{{ form.heure_depart.id_for_label }}">{{ form.heure_depart.label }}</label>
+            {{ form.heure_depart }}
+            {% if form.heure_depart.errors %}<ul class="errorlist">{% for error in form.heure_depart.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.adresse_arrivee.id_for_label }}">{{ form.adresse_arrivee.label }}</label>
+            {{ form.adresse_arrivee }}
+            {% if form.adresse_arrivee.errors %}<ul class="errorlist">{% for error in form.adresse_arrivee.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+        </p>
+
+        <p>
+            <label for="{{ form.heure_arrivee.id_for_label }}">{{ form.heure_arrivee.label }}</label>
+            {{ form.heure_arrivee }}
+            {% if form.heure_arrivee.errors %}<ul class="errorlist">{% for error in form.heure_arrivee.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+        </p>
+        {{ form.latitude_depart }}
+        {{ form.longitude_depart }}
+        {{ form.latitude_arrivee }}
+        {{ form.longitude_arrivee }}
+
+        {% if form.non_field_errors %}
+            <ul class="errorlist">
+                {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+        <button type="submit">Rechercher un covoiturage</button>
+    </form>
+
+
+    <div class="container mt-4">
+    <h2>Résultats de la Recherche</h2>
+    <div id="passenger-info" class="mb-3">
+        </div>
+    <div id="liste-conducteurs"> </div>
+    <div id="drivers-list" class="row">
+        <p id="no-drivers-message" style="display: none;">Aucun conducteur trouvé pour votre recherche.</p>
+    </div>
+</div>
+
+
+
+
+
+    <script src="{%static 'algorithme/js/formulaire_recherche.js'%}" defer></script>
+
+ {% endblock %}
