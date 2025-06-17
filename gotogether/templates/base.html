@@ -76,12 +76,15 @@
                                 <a href="{% url 'dashboard' %}" class="nav-link mx-4">Go board </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'rechercher_conducteur' %}" class="nav-link mx-4">Trouver des trajets </a>
+                                <a href="{% url 'rechercher_trajets_existants' %}" class="nav-link mx-4">Trouver des trajets </a>
                             </li>
-                            <li>
-                                <a href="#" class="nav-link mx-4"> Proposer des trajets </a>
-
+                            <li class="nav-item">
+                                <a href="{% url 'creer_demande_trajet' %}" class="nav-link mx-4">Proposer des trajets </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{% url 'proposer_trajet' %}" class="nav-link mx-4">Offrir ses services </a>
+                            </li>
+                            
                          <li class="nav-item position-relative">
                                 <a href="{% url 'message_accueil' %}" class="nav-link mx-4 position-relative">
                                     Messages

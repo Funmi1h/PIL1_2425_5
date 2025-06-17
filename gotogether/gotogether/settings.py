@@ -1,3 +1,8 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv() # Cette ligne charge votre fichier .env
+
 """
 Django settings for gotogether project.
 
@@ -45,7 +50,7 @@ INSTALLED_APPS = [
     'core',
     'messagerie',
     'channels',
-    'algorithme'
+    'algorithme',
 ]
 
 MIDDLEWARE = [
@@ -186,3 +191,5 @@ EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL= config('EMAIL_HOST_USER')

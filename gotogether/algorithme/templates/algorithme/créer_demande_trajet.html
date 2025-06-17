@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Averia+Libre&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    .map-container {
+        height: 300px;
+        width: 100%;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+    .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+   
+    .leaflet-control-user-position .btn {
+        background-color: #fff;
+        border: none;
+        color: #333;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1.5;
+        border-radius: 2px;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .leaflet-control-user-position .btn:hover {
+        background-color: #f4f4f4;
+    }
+</style>
+{% endblock %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="container mt-5">
+    <h2>Soumettre une Demande de Trajet</h2>
+    <p>Décrivez le trajet que vous recherchez. Les conducteurs pourront consulter votre demande et éventuellement vous proposer un trajet.</p>
+
+    <div class="alert alert-danger" style="display: none;" id="message_error"></div>
+    <div class="alert alert-success" style="display: none;" id="message_success"></div>
+
+    <form method="post" id="demandeTrajetForm" action="{% url 'creer_demande_trajet' %}">
+        {% csrf_token %}
+
+       
+        <h3>Point de Départ</h3>
+        <div class="mb-3">
+            <label for="{{ form.adresse_depart.id_for_label }}" class="form-label">{{ form.adresse_depart.label }}</label>
+            {{ form.adresse_depart }}
+            <button type="button" id="search_depart_button" class="btn btn-secondary btn-sm mt-2">Rechercher sur la carte</button>
+            <button type="button" id="geolocation_depart_button" class="btn btn-info btn-sm mt-2"><i class="fas fa-crosshairs"></i> Ma position actuelle</button>
+            <div id="error_adresse_depart" class="invalid-feedback"></div>
+            {% if form.adresse_depart.errors %}
+                <div class="invalid-feedback d-block">{{ form.adresse_depart.errors }}</div>
+            {% endif %}
+        </div>
+        <div id="map_demande_depart" class="map-container"></div>
+        {{ form.latitude_depart }}
+        {{ form.longitude_depart }}
+
+        <div class="mb-3">
+            <label for="{{ form.heure_depart_prevue.id_for_label }}" class="form-label">{{ form.heure_depart_prevue.label }}</label>
+            {{ form.heure_depart_prevue }}
+            <div id="error_heure_depart_prevue" class="invalid-feedback"></div>
+            {% if form.heure_depart_prevue.errors %}
+                <div class="invalid-feedback d-block">{{ form.heure_depart_prevue.errors }}</div>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <h3>Point d'Arrivée (Optionnel)</h3>
+        <div class="mb-3">
+            <label for="{{ form.adresse_arrivee.id_for_label }}" class="form-label">{{ form.adresse_arrivee.label }}</label>
+            {{ form.adresse_arrivee }}
+            <button type="button" id="search_arrivee_button" class="btn btn-secondary btn-sm mt-2">Rechercher sur la carte</button>
+            <button type="button" id="geolocation_arrivee_button" class="btn btn-info btn-sm mt-2"><i class="fas fa-crosshairs"></i> Ma position actuelle</button>
+            <div id="error_adresse_arrivee" class="invalid-feedback"></div>
+            {% if form.adresse_arrivee.errors %}
+                <div class="invalid-feedback d-block">{{ form.adresse_arrivee.errors }}</div>
+            {% endif %}
+        </div>
+        <div id="map_demande_arrivee" class="map-container"></div>
+        {{ form.latitude_arrivee }}
+        {{ form.longitude_arrivee }}
+
+        <div class="mb-3">
+            <label for="{{ form.heure_arrivee_prevue.id_for_label }}" class="form-label">{{ form.heure_arrivee_prevue.label }}</label>
+            {{ form.heure_arrivee_prevue }}
+            <div id="error_heure_arrivee_prevue" class="invalid-feedback"></div>
+            {% if form.heure_arrivee_prevue.errors %}
+                <div class="invalid-feedback d-block">{{ form.heure_arrivee_prevue.errors }}</div>
+            {% endif %}
+        </div>
+        
+        
+
+        <button type="submit" class="btn btn-primary mt-3">Soumettre la Demande</button>
+    </form>
+</div>
+
+<script src="{% static 'algorithme/js/créer_demande_trajet.js' %}"></script>
+
+{% endblock %}
