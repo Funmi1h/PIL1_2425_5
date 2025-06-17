@@ -181,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Proposer ce trajet';
             });
-        });
+        }
+        })
     }
 });
