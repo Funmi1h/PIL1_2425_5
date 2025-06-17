@@ -9,7 +9,11 @@ from .forms import UserForm , RechercheConducteurForm , ProposerTrajetForm
 
 from algorithme.forms import RechercheConducteurForm
 
+
 from algorithme.forms import  DemandeTrajetForm 
+
+from algorithme.forms import  DemandeTrajetForm , ProposerTrajetForm
+
 
 import logging
 from django.contrib.auth.decorators import *
