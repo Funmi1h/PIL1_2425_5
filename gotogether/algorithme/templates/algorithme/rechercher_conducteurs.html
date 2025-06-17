@@ -27,6 +27,8 @@
                         </button>
                     </div>
                     {% if form.adresse_depart.errors %}<ul class="errorlist">{% for error in form.adresse_depart.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+                        {{ form.latitude_depart }}
+                        {{ form.longitude_depart }}
                 </p>
                 
                 <p>
@@ -38,6 +40,7 @@
                 <p>
                     <label for="{{ form.adresse_arrivee.id_for_label }}">{{ form.adresse_arrivee.label }}</label>
                     {{ form.adresse_arrivee }}
+                    <button class="card" type="button" onclick="searchLocation()" style="background-color: #28a745;"></button>
                     {% if form.adresse_arrivee.errors %}<ul class="errorlist">{% for error in form.adresse_arrivee.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                 </p>
 
@@ -46,8 +49,7 @@
                     {{ form.heure_arrivee }}
                     {% if form.heure_arrivee.errors %}<ul class="errorlist">{% for error in form.heure_arrivee.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                 </p>
-                {{ form.latitude_depart }}
-                {{ form.longitude_depart }}
+             
                 {{ form.latitude_arrivee }}
                 {{ form.longitude_arrivee }}
 
@@ -76,6 +78,6 @@
 
 
 
-    <script src="{%static 'algorithme/js/formulaire_recherche.js'%}" defer></script>
+    <script src="{%static 'algorithme/js/rechercher_conducteurs.js'%}" defer></script>
 
  {% endblock %}

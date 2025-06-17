@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Rechercher un Trajet{% endblock %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Averia+Libre&display=swap" rel="stylesheet">
+    <style>
+        #map_depart_search, #map_arrivee_search { 
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .map-section {
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        .map-section h5 {
+            margin-bottom: 15px;
+        }
+        .driver-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            height: 100%; 
+            flex-direction: column;
+        }
+        .driver-card .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .driver-card .card-text {
+            flex-grow: 1; 
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Rechercher un Trajet</h2>
+
+
+    {% if messages %}
+        <div class="messages-container mb-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'rechercher_trajets_existants' %}" id="rechercheTrajetForm" class="shadow-lg p-4 rounded bg-white mb-4">
+        <div class="alert alert-danger" style="display: none;">
+        </div>
+        {% csrf_token %}
+        <div class="row">
+    
+            <div class="col-md-6">
+                <div class="map-section">
+                    <h5>Mon Point de Départ</h5>
+                    <div class="mb-3">
+                        <label for="{{ form.adresse_depart.id_for_label }}" class="form-label">{{ form.adresse_depart.label }}</label>
+                        <div class="input-group">
+                            {{ form.adresse_depart }}
+                            <button class="btn btn-outline-secondary" type="button" id="searchDepartAddressBtn">Rechercher</button>
+                        </div>
+                    
+                        {% if form.adresse_depart.errors %}
+                            <div class="text-danger small mt-1">{{ form.adresse_depart.errors }}</div>
+                        {% endif %}
+                    </div>
+                   {{ form.latitude_depart }}
+                    {{ form.longitude_depart }}
+                    <div id="depart-coords-error" class="text-danger small mt-1" style="display:none;">
+                        Veuillez sélectionner votre point de départ sur la carte.
+                    </div>
+                    <div id="map_depart_search"></div> {# Carte pour le départ du passager #}
+                </div>
+            </div>
+
+       
+            <div class="col-md-6">
+                <div class="map-section">
+                    <h5>Mon Point d'Arrivée (Optionnel)</h5>
+                    <div class="mb-3">
+                        <label for="{{ form.adresse_arrivee.id_for_label }}" class="form-label">{{ form.adresse_arrivee.label }}</label>
+                        <div class="input-group">
+                            {{ form.adresse_arrivee }}
+                            <button class="btn btn-outline-secondary" type="button" id="searchArriveeAddressBtn">Rechercher</button>
+                        </div>
+                     
+                        {% if form.adresse_arrivee.errors %}
+                            <div class="text-danger small mt-1">{{ form.adresse_arrivee.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    {{ form.latitude_arrivee }}
+                    {{ form.longitude_arrivee }}
+                   
+                    <div id="arrivee-coords-error" class="text-danger small mt-1" style="display:none;">
+                        Veuillez sélectionner votre point d'arrivée sur la carte.
+                    </div>
+                    <div id="map_arrivee_search"></div> 
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.date_depart.id_for_label }}" class="form-label">{{ form.date_depart.label }}</label>
+                {{ form.date_depart }}
+                {% if form.date_depart.errors %}
+                    <div class="text-danger small mt-1">{{ form.date_depart.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.heure_depart.id_for_label }}" class="form-label">{{ form.heure_depart.label }}</label>
+                {{ form.heure_depart }}
+                {% if form.heure_depart.errors %}
+                    <div class="text-danger small mt-1">{{ form.heure_depart.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.heure_arrivee.id_for_label }}" class="form-label">{{ form.heure_arrivee.label }}</label>
+                {{ form.heure_arrivee }}
+                {% if form.heure_arrivee.errors %}
+                    <div class="text-danger small mt-1">{{ form.heure_arrivee.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="{{ form.nb_places.id_for_label }}" class="form-label">{{ form.nb_places.label }}</label>
+                {{ form.nb_places }}
+                {% if form.nb_places.errors %}
+                    <div class="text-danger small mt-1">{{ form.nb_places.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        
+      
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">Rechercher un Trajet</button>
+        </div>
+    </form>
+
+    <div id="search-summary" class="mt-4 p-3 border rounded bg-light" style="display: none;">
+        <h5>Votre recherche :</h5>
+        <p>Départ de <strong id="summary-adresse-depart"></strong> à partir du <strong id="summary-date-depart"></strong> à <strong id="summary-heure-depart"></strong>.</p>
+        <p><span id="summary-adresse-arrivee-text"></span> Arrivée souhaitée avant <strong id="summary-heure-arrivee"></strong>.</p>
+    </div>
+
+    <div id="liste-trajets" class="row mt-4">
+        
+    </div>
+    
+    <div id="no-trajets-message" class="alert alert-info mt-4" style="display: none;">
+        Aucun trajet ne correspond à votre recherche.
+    </div>
+
+</div>
+  <script src="{%static 'algorithme/js/rechercher_trajets.js'%}" defer></script>
+{% endblock %}
+
+    

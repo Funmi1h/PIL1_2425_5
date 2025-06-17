@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'core',
     'messagerie',
     'channels',
-    'algorithme'
+    'algorithme',
 ]
 
 MIDDLEWARE = [
