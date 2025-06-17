@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="alert alert-warning mt-5">
+    <h4 class="mb-3">Propositon enrégistrée avec succès</h4>
+    <p>{{ message }}</p>
+    <a href="{% url 'profil_user' %}" class="btn btn-primary mt-3">Aller compléter mon profil</a>
+</div>
+{% endblock %}

@@ -46,7 +46,7 @@
 </head>
 
 
-<body class="d-flex flex-column min-vh-100 col-lg-10 text-center mx-auto">
+<body class="d-flex flex-column min-vh-100 col-lg-10 text-center mx-auto" data-user-id = '{{ request.user.id }}'>
     
     <!--Header -->
     {% if request.path != '/auth/login/' and request.path != '/auth/signup/' and request.path != '/' and request.path != '/auth/sign_up/' and request.path != '/auth/logout/' %}
@@ -76,12 +76,25 @@
                                 <a href="{% url 'dashboard' %}" class="nav-link mx-4">Go board </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'rechercher_conducteur' %}" class="nav-link mx-4">Trouver ou proposer des trajets </a>
+                                <a href="{% url 'rechercher_trajets_existants' %}" class="nav-link mx-4">Trouver des trajets </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'message_accueil' %}" class="nav-link mx-4">Messages
-                                </a>
+                                <a href="{% url 'creer_demande_trajet' %}" class="nav-link mx-4">Proposer des trajets </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{% url 'proposer_trajet' %}" class="nav-link mx-4">Offrir ses services </a>
+                            </li>
+                            
+                         <li class="nav-item position-relative">
+                                <a href="{% url 'message_accueil' %}" class="nav-link mx-4 position-relative">
+                                    Messages
+                                    <span id="message-notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                    •
+                                    <span class="visually-hidden">nouveau message</span>
+                                    </span>
+                                </a>
+                        </li>
+
                         </ul>
                         <hr class="d-lg-none">
 
@@ -96,7 +109,6 @@
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarUser">
                                                 <li><a class="dropdown-item" href="{% url 'profil_user' %}">Mon profil</a></li>
-                                                <li><a class="dropdown-item">Notifications</a></li>
                                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Se déconnecter</a></li>
                                             </ul>
                                         </li>
@@ -132,5 +144,13 @@
     <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.js"></script>
     <!--lE SCRIPT DE LA page-->
     <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/notifications.js' %}"></script>
+    
+    <!--Audio pour les notifs-->
+<audio id="notif-sound" src="{% static 'sounds.here-i-am-449.ogg' %}" preload="auto"></audio>
+
+
+ 
+
 </body>
 </html>

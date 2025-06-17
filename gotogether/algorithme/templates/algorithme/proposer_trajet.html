@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <style>
+        .map-container {
+            height: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+
+    <h2>Proposer un Trajet</h2>
+
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" id="proposerTrajetForm" action="{% url 'proposer_trajet' %}">
+        {% csrf_token %}
+
+    
+        <div class="form-group">
+            {{ form.adresse_depart.label_tag }}
+            {{ form.adresse_depart }}
+            {% if form.adresse_depart.errors %}
+                <div class="text-danger">{{ form.adresse_depart.errors }}</div>
+            {% endif %}
+          
+            {{ form.latitude_depart }}
+            {{ form.longitude_depart }}
+        </div>
+        <div id="map_proposer_depart" class="map-container"></div>
+
+        <div class="form-group">
+            {{ form.heure_depart_prevue.label_tag }}
+            {{ form.heure_depart_prevue }}
+            {% if form.heure_depart_prevue.errors %}
+                <div class="text-danger">{{ form.heure_depart_prevue.errors }}</div>
+            {% endif %}
+        </div>
+
+      
+        <div class="form-group">
+            {{ form.adresse_arrivee.label_tag }}
+            {{ form.adresse_arrivee }}
+            {% if form.adresse_arrivee.errors %}
+                <div class="text-danger">{{ form.adresse_arrivee.errors }}</div>
+            {% endif %}
+    
+            {{ form.latitude_arrivee }}
+            {{ form.longitude_arrivee }}
+        </div>
+        <div id="map_proposer_arrivee" class="map-container"></div>
+
+        <div class="form-group">
+            {{ form.heure_arrivee_prevue.label_tag }}
+            {{ form.heure_arrivee_prevue }}
+            {% if form.heure_arrivee_prevue.errors %}
+                <div class="text-danger">{{ form.heure_arrivee_prevue.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.nb_places_disponibles.label_tag }}
+            {{ form.nb_places_disponibles }}
+            {% if form.nb_places_disponibles.errors %}
+                <div class="text-danger">{{ form.nb_places_disponibles.errors }}</div>
+            {% endif %}
+        </div>
+
+       
+
+       
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">Proposer ce trajet</button>
+
+    </form>
+    <script src="{%static 'algorithme/js/proposer_trajet.js'%}" defer></script>

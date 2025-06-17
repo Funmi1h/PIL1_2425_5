@@ -78,24 +78,27 @@ def delete_message(request, message_id):
 
 
 
-@login_required
+
 def edit_message(request, message_id):
     if request.method == 'POST':
-        try:
-            msg = Message.objects.get(id=message_id, sender=request.user)
-        except Message.DoesNotExist:
-            return JsonResponse({'error': 'Message introuvable ou non autorisé'}, status=404)
+        message = get_object_or_404(Message, id=message_id)
+
+        # Vérifie que c'est bien l'auteur du message qui modifie
+        if message.sender != request.user:
+            return JsonResponse({'error': 'Accès refusé'}, status=403)
 
         new_content = request.POST.get('new_content')
-        if new_content:
-            msg.content = new_content
-            msg.save()
-            return JsonResponse({'status': 'updated', 'new_content': msg.content})
-        return JsonResponse({'error': 'Contenu vide'}, status=400)
+        if not new_content:
+            return JsonResponse({'error': 'Contenu vide'}, status=400)
 
+        message.content = new_content
+        message.save()
+
+        return JsonResponse({'status': 'updated', 'new_content': new_content})
+    
     return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 
-
+@login_required
 def reply_message(request):
     if request.method == 'POST':
         content = request.POST.get('content')
@@ -117,7 +120,6 @@ def reply_message(request):
             return JsonResponse({'error': str(e)}, status=400)
         
 
-from .models import Message
 
 
 

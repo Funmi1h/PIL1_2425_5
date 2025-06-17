@@ -37,7 +37,7 @@
         </ul>
     {% endif %}
 
-    <a class="forgot-link" href="#">mot de passe oublié ?</a>
+    <a class="forgot-link" href="{% url 'password_reset' %}">mot de passe oublié ?</a>
     <p class="signup-text">Pas encore inscrit ?</p>
     <a class="create-account" href="{% url 'sign_up' %}">Créer un compte</a>
 </div>

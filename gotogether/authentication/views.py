@@ -8,8 +8,8 @@ from .models import User
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-
-
+from algorithme.utils import generate_suggestions_passagers
+from django.contrib import messages
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
     form_class = forms.LoginForm
@@ -115,10 +115,19 @@ def upload_profile_photo(request):
 @login_required
 def modifier_profil(request):
     user = request.user
+
     if request.method == 'POST':
         form = forms.ProfilForm(request.POST, request.FILES, instance = user)
         if form.is_valid():
             form.save()
+
+
+            # desactiver le champ first_login a la premiere connexion
+            if user.first_login:
+                user.first_login = False
+                user.save()
+                messages.success(request, " Rendez-vous sur votre Go Board pour découvrir des trajets en fonction de votre emplacement et vos horaires habituels  habituel !")
+
             return redirect('profil_user')
     else:
         form = forms.ProfilForm(instance=user)
@@ -136,14 +145,14 @@ def geocode_proxy(request):
     
     url = 'https://nominatim.openstreetmap.org/search'  # URL de l'API OpenStreetMap Nominatim
     params = {
-        'q': query,           # La requête d'adresse
-        'format': 'json',     # On veut le résultat en JSON
-        'addressdetails': 1,  # Détails sur l'adresse
-        'limit': 5,           # Limite à 5 résultats
+        'q': query,           
+        'format': 'json',     
+        'addressdetails': 1,  
+        'limit': 5,           
     }
-    response = requests.get(url, params=params)  # Envoie la requête HTTP GET vers Nominatim
-    data = response.json()                        # Parse la réponse JSON
-    return JsonResponse(data, safe=False)         # Renvoie la réponse JSON au front
+    response = requests.get(url, params=params)  #  la requête HTTP GET vers Nominatim
+    data = response.json()                        # on parse  la réponse JSON
+    return JsonResponse(data, safe=False)         #on renvoie la réponse JSON au front
 
 @login_required
 def update_role(request):
@@ -156,3 +165,13 @@ def update_role(request):
     else:
         form = forms.UploadRoleForm(instance= user)
     return render (request, 'authentication/update_role.html', {'form': form, 'user':user})
+
+
+
+
+@login_required
+
+def suggestions_pour_passager(request):
+    user = request.user
+    suggestions_passagers = generate_suggestions_passagers(user)
+    return render (request, 'authentication/dashboard.html', {'suggestions_passagers': suggestions_passagers})
