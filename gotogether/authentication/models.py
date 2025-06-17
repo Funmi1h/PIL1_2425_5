@@ -43,7 +43,7 @@ class User(AbstractUser):
     heure_arrivee = models.TimeField(
         null=True,
         blank=True,
-        verbose_name='Heure d\'arrivée',
+        verbose_name="Heure d'arrivée",
         
 
     )

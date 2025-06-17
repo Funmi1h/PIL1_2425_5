@@ -4,12 +4,11 @@ from messagerie.models import Message, Conversation
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
 from django.utils import timezone
-
-User = get_user_model()
+from authentication.models import User
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']  # Ex: "2_5"
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f"chat_{self.room_name}"
 
         user = self.scope["user"]
@@ -40,19 +39,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         recipient_id = data.get('recipient_id')
         reply_to_id = data.get('reply_to_id')
 
-        if not message or recipient_id is None:
+        if not message or not recipient_id:
             await self.send(text_data=json.dumps({'error': 'Message ou destinataire manquant'}))
-            return
-
-        try:
-            recipient_id = int(recipient_id)
-        except ValueError:
-            await self.send(text_data=json.dumps({'error': 'Identifiant du destinataire invalide'}))
-            return
-
-        sender = self.scope["user"]
-        if not sender.is_authenticated:
-            await self.send(text_data=json.dumps({'error': 'Utilisateur non authentifié'}))
             return
 
         try:
@@ -61,7 +49,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({'error': 'Utilisateur non trouvé'}))
             return
 
-        # Récupération ou création de la conversation
+        sender = self.scope["user"]
+
         try:
             id_1, id_2 = map(int, self.room_name.split("_"))
         except (ValueError, IndexError):
@@ -79,7 +68,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             conversation = await sync_to_async(Conversation.objects.create)()
             await sync_to_async(conversation.participants.add)(sender, recipient)
 
-        # Récupération du message auquel on répond
         reply_to = None
         if reply_to_id:
             try:
@@ -87,7 +75,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             except Message.DoesNotExist:
                 reply_to = None
 
-        # Création du message
         created_msg = await sync_to_async(Message.objects.create)(
             sender=sender,
             recipient=recipient,
@@ -98,19 +85,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         timestamp = timezone.localtime(created_msg.timestamp).strftime('%H:%M')
 
-        # Envoi dans le chat
+        message_payload = {
+            'type': 'chat_message',
+            'message': message,
+            'sender': sender.first_name,
+            'sender_id': sender.id,
+            'timestamp': timestamp,
+            'reply_to': reply_to.content if reply_to else None,
+            'reply_to_id': reply_to.id if reply_to else None,
+        }
+
+        # Envoi uniquement via group_send au groupe
         await self.channel_layer.group_send(
             self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'sender': sender.first_name,
-                'timestamp': timestamp,
-                'reply_to': reply_to.content if reply_to else None,
-                'is_sender_current_user': True
-            }
+            message_payload
         )
 
+        # Notification au destinataire (optionnel)
         await self.channel_layer.group_send(
             f"notif_{recipient.id}",
             {
@@ -119,16 +110,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
-
     async def chat_message(self, event):
+        is_sender_current_user = (self.scope["user"].id == event.get('sender_id'))
         await self.send(text_data=json.dumps({
             'message': event['message'],
             'sender': event['sender'],
             'timestamp': event['timestamp'],
-            'reply_to': event['reply_to'],
-            'is_sender_current_user': event['is_sender_current_user'],
+            'reply_to': event.get('reply_to'),
+            'reply_to_id': event.get('reply_to_id'),
+            'is_sender_current_user': is_sender_current_user,
         }))
-
 
 
 

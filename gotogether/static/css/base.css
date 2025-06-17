@@ -3,6 +3,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
+
   
   text-align: left;
 }
@@ -109,4 +110,21 @@ ion-icon {
 
 .showed{
     display: block;
+}
+
+/*barre de recherche*/
+.search-dropdown:hover .search-bar {
+    display: block;
+    animation: fadeInSlide 0.3s ease-in-out;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

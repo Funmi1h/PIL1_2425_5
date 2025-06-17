@@ -8,7 +8,7 @@ from .models import User
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from algorithme.utils import generate_suggestions_passagers
+from algorithme.utils import generate_suggestions_passagers, generate_suggestions_conducteurs
 from django.contrib import messages
 
 
@@ -186,9 +186,17 @@ def suggestions_pour_passager(request):
 
 
 @login_required
+def suggestions_pour_conducteur(request):
+    user = request.user
+    suggestions_conducteur = generate_suggestions_conducteurs(user)
+    return render (request, 'authentication/dashboard.html', {'suggestions_conducteur': suggestions_conducteur})
+
+@login_required
 def delete_photo_profil(request):
     user = request.user
     if user.photo_profil:
         user.photo_profil.delete(save= False)
         user.save()
     return redirect ('profil_user')
+
+

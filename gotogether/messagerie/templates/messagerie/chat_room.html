@@ -9,6 +9,10 @@
 
 
 <style>
+  body {
+    font-family: 'Averia Libre', cursive;
+    background-color: #c7d0ec;
+  }
   #chat-log {
     width: 100%;
     max-width: 600px;
@@ -114,6 +118,8 @@
 
 {% block content %}
 
+<link href="https://fonts.googleapis.com/css2?family=Averia+Libre&display=swap" rel="stylesheet">
+
 
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h3 class="mb-0">{{ recipient_firstname }}</h3>
@@ -196,22 +202,32 @@ chatSocket.onmessage = function(e) {
   const isMe = data.is_sender_current_user;
   const className = isMe ? 'me' : 'other';
 
+  // Affiche la citation s’il y en a une
+  const replyHtml = data.reply_to_content
+    ? `<div style="font-size: 12px; color: #6c757d; border-left: 3px solid #0d6efd; padding-left: 6px; margin-bottom: 5px;">
+        ↪️ ${data.reply_to_content}
+       </div>`
+    : '';
+
   const newMessage = `
     <div class="chat-message ${className}">
+      ${replyHtml}
       <p>${data.message}</p>
       <span class="message-info">${data.timestamp} ${data.is_read ? '✔' : ''}</span>
     </div>
   `;
+
   chatLog.insertAdjacentHTML('beforeend', newMessage);
   chatLog.scrollTop = chatLog.scrollHeight;
 
-  // Notification seulement si ce n’est pas toi qui envoie
+  // Notification si ce n'est pas moi
   if (!isMe) {
     showNotification(`Nouveau message de ${data.sender || 'contact'}`);
   }
 };
 
-// Fonction pour afficher une notification simple
+
+//  pour afficher une notification simple
 function showNotification(text) {
   const notif = document.createElement('div');
   notif.className = 'notification-toast';
@@ -220,7 +236,7 @@ function showNotification(text) {
 
   setTimeout(() => {
     notif.remove();
-  }, 3000);
+  }, 50000);
 }
 
 
@@ -252,31 +268,37 @@ function showNotification(text) {
 
 
 
-
 <script>
+  // 🔐 Récupère le CSRF token depuis les cookies
   function getCSRFToken() {
-  const name = 'csrftoken';
-  return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1];
-}
+    const name = 'csrftoken';
+    return document.cookie.split('; ')
+      .find(row => row.startsWith(name + '='))
+      ?.split('=')[1];
+  }
 
-
-  // On récupère l'URL de suppression avec un id fictif (0), on enlève le "0/" à la fin pour garder la base
   const deleteMessageUrlBase = "{% url 'delete_message' 0 %}".slice(0, -2);
+  const chatInput = document.querySelector('#chat-message-input');
+  const chatSubmit = document.querySelector('#chat-message-submit');
+  const replyPreview = document.getElementById('reply-preview');
+  const chatLog = document.querySelector('#chat-log');
 
+  // ✅ Gestion des clics : supprimer, modifier, répondre
   document.addEventListener("click", function (e) {
-    // POUR SUPPRIMER
-    if (e.target.classList.contains("btn-delete")) {
-      const messageId = e.target.dataset.id;
+    const target = e.target;
+
+    // 🗑 Supprimer
+    if (target.classList.contains("btn-delete")) {
+      const messageId = target.dataset.id;
+
       fetch(`${deleteMessageUrlBase}${messageId}/`, {
         method: 'POST',
-        headers: {
-          'X-CSRFToken': '{{ csrf_token }}'
-        }
+        headers: { 'X-CSRFToken': getCSRFToken() }
       })
       .then(res => res.json())
       .then(data => {
         if (data.status === 'deleted') {
-          e.target.closest(".chat-message").remove();
+          target.closest(".chat-message").remove();
         } else if (data.error) {
           alert(data.error);
         }
@@ -284,16 +306,17 @@ function showNotification(text) {
       .catch(err => console.error('Erreur:', err));
     }
 
-    // POUR MODIFIER
-    if (e.target.classList.contains("btn-edit")) {
-      const messageId = e.target.dataset.id;
-      const oldContent = e.target.dataset.content;
+    // ✏️ Modifier
+    if (target.classList.contains("btn-edit")) {
+      const messageId = target.dataset.id;
+      const oldContent = target.dataset.content;
       const newContent = prompt("Modifie ton message :", oldContent);
+
       if (newContent && newContent !== oldContent) {
         fetch(`/messagerie/edit/${messageId}/`, {
           method: 'POST',
           headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
+            'X-CSRFToken': getCSRFToken(),
             'Content-Type': 'application/x-www-form-urlencoded'
           },
           body: `new_content=${encodeURIComponent(newContent)}`
@@ -301,7 +324,7 @@ function showNotification(text) {
         .then(res => res.json())
         .then(data => {
           if (data.status === 'updated') {
-            const messageEl = e.target.closest(".chat-message");
+            const messageEl = target.closest(".chat-message");
             messageEl.querySelector("p").innerText = data.new_content;
           } else if (data.error) {
             alert(data.error);
@@ -311,52 +334,69 @@ function showNotification(text) {
       }
     }
 
-    // Pour RÉPONDRE
-    if (e.target.classList.contains("btn-reply")) {
-      const replyText = e.target.dataset.content;
-      const replyBox = document.getElementById("reply-preview");
-      replyBox.innerText = `↪️ Répondre à : ${replyText}`;
-      replyBox.style.display = 'block';
-      replyBox.dataset.replyToId = e.target.dataset.id;
+    // ↪️ Répondre
+    if (target.classList.contains("btn-reply")) {
+      const replyText = target.dataset.content;
+      const replyId = target.dataset.id;
+
+      replyPreview.innerText = `↪️ Répondre à : ${replyText}`;
+      replyPreview.style.display = 'block';
+      replyPreview.dataset.replyToId = replyId;
     }
   });
 
+  // ✅ Envoi du message via fetch (AJAX)
+  chatSubmit.addEventListener('click', function () {
+    const content = chatInput.value.trim();
+    const recipientId = chatInput.dataset.recipient;
+    const replyToId = replyPreview.dataset.replyToId || null;
 
+    if (!content) return;
 
-  document.querySelector('#chat-message-submit').addEventListener('click', function () {
-  const input = document.querySelector('#chat-message-input');
-  const content = input.value.trim();
-  const recipientId = input.dataset.recipient;
-  const replyBox = document.getElementById('reply-preview');
-  const replyToId = replyBox.dataset.replyToId || null;
-
-  if (!content) return;
-
-  fetch('/messagerie/reply_message', {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': getCSRFToken(),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: new URLSearchParams({
-      content: content,
-      recipient_id: recipientId,
-      reply_to_id: replyToId
+    fetch('/messagerie/reply_message', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCSRFToken(),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        content: content,
+        recipient_id: recipientId,
+        reply_to_id: replyToId
+      })
     })
-  })
     .then(res => res.json())
     .then(data => {
       if (data.status === 'replied') {
-        input.value = '';
-        replyBox.style.display = 'none';
-        replyBox.dataset.replyToId = '';
-        replyBox.innerText = '';
+        // ✅ Affiche le message immédiatement
+        const replyHtml = data.reply_to_content
+          ? `<div style="font-size: 12px; color: #6c757d; border-left: 3px solid #0d6efd; padding-left: 6px; margin-bottom: 5px;">
+              ↪️ ${data.reply_to_content}
+             </div>`
+          : '';
+
+        const newMessage = `
+          <div class="chat-message me">
+            ${replyHtml}
+            <p>${data.message}</p>
+            <span class="message-info">${data.timestamp} ✔</span>
+          </div>
+        `;
+
+        chatLog.insertAdjacentHTML('beforeend', newMessage);
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        // 🔄 Réinitialise l'input et la preview
+        chatInput.value = '';
+        replyPreview.style.display = 'none';
+        replyPreview.innerText = '';
+        replyPreview.dataset.replyToId = '';
       } else if (data.error) {
         alert(data.error);
       }
     })
     .catch(err => console.error("Erreur lors de l'envoi :", err));
-});
+  });
 </script>
 
 

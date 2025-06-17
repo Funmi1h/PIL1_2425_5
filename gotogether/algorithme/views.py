@@ -40,8 +40,8 @@ def formulaire_view(request):
         # Instanciez le formulaire avec les données POST et l'instance de l'utilisateur Cela permet à form.save() de Mettre à Jour l'utilisateur existant
         form = UserForm(request.POST, instance=user_instance)
 
-        print("🧪 Utilisateur connecté :", request.user.username)
-        print("🧪 Données reçues (POST) :", request.POST)
+        print(" Utilisateur connecté :", request.user.username)
+        print(" Données reçues (POST) :", request.POST)
         if form.is_valid():
             try :
                 form.save()

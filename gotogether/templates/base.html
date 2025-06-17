@@ -36,6 +36,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Libre&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <title>Go Together</title>
 
 
@@ -46,8 +50,8 @@
 </head>
 
 
-<body class="d-flex flex-column min-vh-100 col-lg-10 text-center mx-auto" data-user-id = '{{ request.user.id }}'>
-    
+<body class="d-flex flex-column min-vh-100 col-lg-11 text-center mx-auto" data-user-id = '{{ request.user.id }}'>
+
     <!--Header -->
     {% if request.path != '/auth/login/' and request.path != '/auth/signup/' and request.path != '/' and request.path != '/auth/sign_up/' and request.path != '/auth/logout/' %}
 
@@ -55,7 +59,7 @@
                 
 
                 <!--Navbar-->
-                <nav class="navbar navbar-expand-lg w-100 bg-bleu-principal">
+                <nav class="navbar navbar-expand-lg w-100 bg-bleu-principal"  style="border-radius: 10px;">
                 <div class="container-fluid ">
                     <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/logo.jpg'%}" alt=""></a>
                     <button class="navbar-toggler navbar-light " 
@@ -75,6 +79,7 @@
                             <li class="nav-item">
                                 <a href="{% url 'dashboard' %}" class="nav-link mx-4">Go board </a>
                             </li>
+                            
                             <li class="nav-item">
                                 <a href="{% url 'rechercher_trajets_existants' %}" class="nav-link mx-4">Trouver des trajets </a>
                             </li>
@@ -98,6 +103,17 @@
 
 
                         <ul class="navbar-nav flex-column flex-lg-row color-bleu-principal ms-3 mx-4 align-item-end">
+
+
+
+                                <li class="nav-item position-relative search-dropdown mx-2">
+                                        <a class="nav-link" href="#" id="searchIcon">
+                                            <i class="bi bi-search"></i>
+                                        </a>
+                                        <div class="search-bar position-absolute bg-white p-2 rounded shadow" style="display: none; top: 100%; left: 0; min-width: 250px; z-index: 1000;">
+                                            <input type="text" class="form-control" placeholder="Rechercher d'autres utilisateurs">
+                                        </div>
+                                </li>
 
                                     <!-- Profil utilisateur -->
                                         <li class="nav-item dropdown mx-2">
@@ -145,8 +161,10 @@
     <script src="{% static 'js/notifications.js' %}"></script>
     
     <!--Audio pour les notifs-->
-<audio id="notif-sound" src="{% static 'sounds.here-i-am-449.ogg' %}" preload="auto"></audio>
+    <audio id="notif-sound" src="{% static 'sounds.here-i-am-449.ogg' %}" preload="auto"></audio>
 
+
+    <!--Le toast pour la premiere connexion -->
 {% if user.is_authenticated and user.first_login %}
     {% url 'changer_profil' as changer_profil_url %}
     {% if request.path != changer_profil_url %}
@@ -177,6 +195,6 @@
 
 
  
-
+ 
 </body>
 </html>
