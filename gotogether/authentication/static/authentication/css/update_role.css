@@ -1,0 +1,13 @@
+body{
+    font-family: 'Averia Libre', cursive;
+    background-color: #c7d0ec;
+}
+#bte {
+    border: 2px solid #007bff;       
+    padding: 10px;                    
+    margin: 20px auto;                
+    width: 80%;                       
+    border-radius: 12px;              
+    background-color: #f8f9fa;        
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+}
