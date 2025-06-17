@@ -43,7 +43,7 @@ class User(AbstractUser):
     heure_arrivee = models.TimeField(
         null=True,
         blank=True,
-        verbose_name='Heure d\'arrivée',
+        verbose_name="Heure d'arrivée",
         
 
     )
@@ -82,3 +82,5 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username', 'numero_telephone']
+
+    first_login = models.BooleanField(default= True)

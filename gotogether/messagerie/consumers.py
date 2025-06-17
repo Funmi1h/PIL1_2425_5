@@ -162,6 +162,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     # 🔔 Appelée lorsqu’un autre consumer envoie une notif à ce groupe
     async def new_message(self, event):
+        print(f"Notification reçue : {event['message']}")  # Log côté serveur
         await self.send(text_data=json.dumps({
             'type': 'new_message',
             'message': event['message']

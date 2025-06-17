@@ -1,4 +1,7 @@
-from math import radians, sin, cos, sqrt, atan2 , asin
+from math import radians, sin, cos, sqrt, atan2 ,asin
+from datetime import datetime, timedelta
+
+from .models import TrajetOffert
 # Formule de haversine pour le calcul de la distance entre deux points géographiques
 def Haversine(lat1, lon1, lat2, lon2):
     # Convertion des degrés en radians
@@ -34,3 +37,29 @@ def find_conducteurs_les_plus_proches(client_latitude, client_longitude, conduct
             'distance': distance
         }) """
     return conducteurs_proches
+
+
+
+# Pour générer les suggestions
+
+def generate_suggestions_passagers(user, rayon_km, tolerance_minutes =30):
+    if user.role != 'passager' or not user.latitude or not user.longitude:
+        return []
+    
+
+    trajets_actifs = TrajetOffert.objects.filter(est_actif=True, nb_places_disponibles__gt=0)
+    suggestions = []
+
+    for trajet in trajets_actifs:
+        dist_depart = Haversine(user.latitude, user.longitude, trajet.latitude_depart, trajet.longitude_depart)
+
+        if dist_depart <= rayon_km:
+            if user.heure_depart :
+                heure_depart_hab = datetime.combine(datetime.today(), user.heure_depart)
+                tolerance = timedelta(minutes= tolerance_minutes)
+
+            if abs(trajet.heure_depart_prevue - heure_depart_hab)<= tolerance:
+                suggestions.append(trajet)
+    
+
+    return suggestions

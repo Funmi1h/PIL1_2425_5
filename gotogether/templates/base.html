@@ -46,7 +46,7 @@
 </head>
 
 
-<body class="d-flex flex-column min-vh-100 col-lg-10 text-center mx-auto">
+<body class="d-flex flex-column min-vh-100 col-lg-10 text-center mx-auto" data-user-id = '{{ request.user.id }}'>
     
     <!--Header -->
     {% if request.path != '/auth/login/' and request.path != '/auth/signup/' and request.path != '/' and request.path != '/auth/sign_up/' and request.path != '/auth/logout/' %}
@@ -55,7 +55,7 @@
                 
 
                 <!--Navbar-->
-                <nav class="navbar navbar-expand-lg w-100 bg-bleu-principal">
+                <nav class="navbar navbar-expand-lg w-100 bg-bleu-principal"  style="border-radius: 10px;">
                 <div class="container-fluid ">
                     <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/logo.jpg'%}" alt=""></a>
                     <button class="navbar-toggler navbar-light " 
@@ -109,7 +109,6 @@
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarUser">
                                                 <li><a class="dropdown-item" href="{% url 'profil_user' %}">Mon profil</a></li>
-                                                <li><a class="dropdown-item">Notifications</a></li>
                                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Se déconnecter</a></li>
                                             </ul>
                                         </li>
@@ -145,35 +144,13 @@
     <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.js"></script>
     <!--lE SCRIPT DE LA page-->
     <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/notifications.js' %}"></script>
+    
+    <!--Audio pour les notifs-->
+<audio id="notif-sound" src="{% static 'sounds.here-i-am-449.ogg' %}" preload="auto"></audio>
 
 
-
-    <!--Pour les notifs -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const userId = "{{ request.user.id }}"; // OK : Django mettra l'ID ici
-    const wsNotif = new WebSocket(`ws://${window.location.host}/ws/notifs/${userId}/`);
-
-    wsNotif.onopen = function() {
-      console.log("✅ WebSocket de notification connecté");
-    };
-
-    wsNotif.onmessage = function(e) {
-      const data = JSON.parse(e.data);
-      console.log("🔔 Notification reçue :", data); // POUR DEBUG
-
-      if (data.type === 'new_message') {
-        const badge = document.getElementById('message-notif-badge');
-        if (badge) badge.classList.remove('d-none');
-      }
-    };
-
-    wsNotif.onerror = function(e) {
-      console.error("❌ Erreur WebSocket notification :", e);
-    };
-  });
-</script>
-
+ 
 
 </body>
 </html>

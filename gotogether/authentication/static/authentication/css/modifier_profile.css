@@ -26,7 +26,7 @@
   height: 180px;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid #ffcc00;
+  border: 3px solid #0400ff;
   box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
 }
 
@@ -41,7 +41,7 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  background: #ffcc00;
+  background: #1100ff;
   color: #222;
   padding: 8px 12px;
   border-radius: 20px;
@@ -55,7 +55,7 @@
 }
 
 .edit-photo-btn:hover {
-  background: #e6b800;
+  background: #0023e6;
 }
 
 .profile-info p {
@@ -84,9 +84,9 @@ input[type="text"], input[type="hidden"] {
 }
 
 input[type="text"]:focus {
-  border-color: #ffcc00;
+  border-color: #1100ff;
   outline: none;
-  box-shadow: 0 0 6px #ffcc00aa;
+  box-shadow: 0 0 6px #001affaa;
 }
 
 .profile-actions {
@@ -97,7 +97,7 @@ input[type="text"]:focus {
 }
 
 .change-password-btn, .edit-profile-btn button {
-  background-color: #ffcc00;
+  background-color: #3700ff;
   color: #222;
   padding: 12px 18px;
   font-weight: 700;
@@ -111,7 +111,7 @@ input[type="text"]:focus {
 }
 
 .change-password-btn:hover, .edit-profile-btn button:hover {
-  background-color: #e6b800;
+  background-color: #3d00e6;
 }
 
 #map {
@@ -120,7 +120,7 @@ input[type="text"]:focus {
 }
 
 #validerEmplacement {
-  background-color: #ffcc00;
+  background-color: #1100ff;
   border: none;
   border-radius: 20px;
   padding: 10px 15px;
@@ -132,5 +132,5 @@ input[type="text"]:focus {
 }
 
 #validerEmplacement:hover {
-  background-color: #e6b800;
+  background-color: #000fe6;
 }
