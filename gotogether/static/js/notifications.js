@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
   const userId = document.body.dataset.userId;
+  if (!userId || userId === "None" || userId === "null") {
+  console.warn("❌ ID utilisateur non défini. WebSocket notifications non lancé.");
+  return;
+}
+
   if (!userId) return;
 
   const notifSound = document.getElementById('notif-sound');

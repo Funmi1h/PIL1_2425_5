@@ -58,6 +58,7 @@ class User(AbstractUser):
         verbose_name='Latitude',
         null=True,
         blank=True
+    
     )
     longitude = models.FloatField(
         verbose_name='Longitude',

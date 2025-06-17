@@ -1,14 +1,14 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from algorithme.models import Conducteur , Passager
-
+import re
 # formulaire pour la connexion des utilisateurs
 class LoginForm(forms.Form):
     
     identifiant = forms.CharField(
         max_length=150,
         widget=forms.TextInput(attrs={'placeholder': 'E-mail ou numero de téléphone'}),
-        label='Identifiant'
+        label='Email ou numero de telephone'
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'placeholder': 'Mot de passe'}),
@@ -116,7 +116,31 @@ class SignUpForm(forms.ModelForm):
                 Conducteur.objects.create(user=user)
         return user
 
-        
+    # methode pour valider le numero de telephone
+    def clean_numero_telephone(self):
+        numero = self.cleaned_data.get('numero_telephone', '').replace(' ', '').replace('-', '')
+
+        # Expression régulière pour un numéro béninois valide (nouveau plan à 8 chiffres, tous préfixes autorisés)
+        pattern = re.compile(r'^(?:\+229|229|0)?\d{8}$')
+
+        if not pattern.match(numero):
+            raise forms.ValidationError("Entrez un numéro béninois valide au format : +229 01XXXXXXX.")
+
+        # Uniformiser le format → toujours +229XXXXXXXX
+        if numero.startswith('0'):
+            numero = '+229' + numero[1:]
+        elif numero.startswith('229'):
+            numero = '+229' + numero[3:]
+        elif not numero.startswith('+229'):
+            numero = '+229' + numero
+
+        # Vérification d'unicité
+        if get_user_model().objects.filter(numero_telephone=numero).exists():
+            raise forms.ValidationError("Ce numéro est déjà utilisé.")
+
+        return numero
+
+
 
 
 # Formulaire pour changer la photo de profil

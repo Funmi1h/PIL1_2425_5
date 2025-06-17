@@ -88,34 +88,3 @@ ion-icon {
     background-color: transparent;
 }
 
-
-
-
-/* Cacher la barre par défaut */
-.search-bar {
-    display: none;
-    min-width: 250px;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
-}
-
-/* Afficher au hover */
-.search-dropdown:hover .search-bar {
-    display: block;
-    animation: fadeInSlide 0.3s ease-in-out;
-    position: absolute;
-}
-
-/* Animation fluide */
-@keyframes fadeInSlide {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-

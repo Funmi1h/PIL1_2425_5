@@ -112,7 +112,26 @@ ion-icon {
     display: block;
 }
 
-/*barre de recherche*/
+
+
+.search-dropdown {
+    position: relative; /* Nécessaire pour le positionnement absolu de la barre */
+    display: inline-block;
+}
+
+.search-bar {
+    display: none;
+    position: absolute;
+    top: 100%;  /* juste en dessous de l'icône */
+    left: 0;
+    min-width: 250px;
+    z-index: 1000;
+    background: white;
+    padding: 8px;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
 .search-dropdown:hover .search-bar {
     display: block;
     animation: fadeInSlide 0.3s ease-in-out;
