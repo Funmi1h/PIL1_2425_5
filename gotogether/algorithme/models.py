@@ -31,8 +31,6 @@ class Conducteur(models.Model):
 
 class TrajetOffert(models.Model):
     conducteur = models.ForeignKey(Conducteur, on_delete=models.CASCADE, related_name='trajets_offerts')
-    
-
     adresse_depart = models.CharField(max_length=255)
     latitude_depart = models.FloatField()
     longitude_depart = models.FloatField()
@@ -77,4 +75,16 @@ class DemandeTrajet(models.Model):
 
 #@receiver(post_save, sender=User)
 
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+       
+        if hasattr(instance, 'role'): # Vérifie si le champ 'role' existe sur l'instance User
+            if instance.role == 'passager':
+                Passager.objects.create(user=instance)
+            elif instance.role == 'conducteur':
+                Conducteur.objects.create(user=instance)
     
+
+
+
+

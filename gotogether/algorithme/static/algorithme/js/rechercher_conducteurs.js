@@ -4,21 +4,17 @@ document.addEventListener("DOMContentLoaded", function () {
             var defaultCoords = [6.45, 2.35]; // Coordonnées pour Abomey-Calavi, Bénin
             var defaultZoom = 13;
 
-            // --- Initialisation de la carte de départ ---
+            
             var mapDepartSearch = L.map('map_depart_search').setView(defaultCoords, defaultZoom);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapDepartSearch);
-            var markerDepartSearchRef = { current: null }; // Utiliser un objet pour la référence du marqueur
-
-            // --- Initialisation de la carte d'arrivée (optionnel) ---
+            var markerDepartSearchRef = { current: null }; 
             var mapArriveeSearch = L.map('map_arrivee_search').setView(defaultCoords, defaultZoom);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapArriveeSearch);
-            var markerArriveeSearchRef = { current: null }; // Utiliser un objet pour la référence du marqueur
-
-            // --- Fonctions utilitaires pour les marqueurs et champs ---
+            var markerArriveeSearchRef = { current: null };
             function updateMarkerAndFields(mapInstance, markerRef, latFieldId, lngFieldId, lat, lng, popupContent, errorDivId) {
                 const latField = document.getElementById(latFieldId);
                 const lngField = document.getElementById(lngFieldId);
@@ -33,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (latField && lngField) {
                     latField.value = lat;
                     lngField.value = lng;
-                    if (errorDiv) errorDiv.style.display = 'none'; // Cacher l'erreur si coord sélectionnées
+                    if (errorDiv) errorDiv.style.display = 'none'; 
                     console.log(`✅ Coordonnées (${latFieldId.split('_')[2]}) mises à jour :`, lat, lng);
                     return true;
                 } else {
@@ -42,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // --- Écouteurs d'événements pour les clics sur les cartes ---
+          
             mapDepartSearch.on('click', function (e) {
                 updateMarkerAndFields(mapDepartSearch, markerDepartSearchRef, 'id_latitude_depart_search', 'id_longitude_depart_search', e.latlng.lat, e.latlng.lng, 
                     `<b>Point de Départ</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`, 'depart-coords-error');
@@ -53,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     `<b>Point d'Arrivée</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`, 'arrivee-coords-error');
             });
 
-            // --- Fonctions de recherche d'adresse (via Nominatim) ---
+            
             function searchAddress(addressFieldId, mapInstance, markerRef, latFieldId, lngFieldId, errorDivId) {
                 var address = document.getElementById(addressFieldId).value;
                 if (!address.trim()) {
@@ -93,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 searchAddress('id_adresse_arrivee', mapArriveeSearch, markerArriveeSearchRef, 'id_latitude_arrivee_search', 'id_longitude_arrivee_search', 'arrivee-coords-error');
             });
 
-            // --- Gestion de la soumission du formulaire de recherche (AJAX) ---
+           
             const rechercheForm = document.getElementById("rechercheTrajetForm");
             rechercheForm.addEventListener("submit", function (event) {
                 event.preventDefault(); 
@@ -108,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const arriveeLngField = document.getElementById('id_longitude_arrivee_search');
                 const arriveeCoordsErrorDiv = document.getElementById('arrivee-coords-error');
 
-                // Validation du point de départ (obligatoire)
+              
                 if (!departLatField.value || !departLngField.value || isNaN(parseFloat(departLatField.value)) || isNaN(parseFloat(departLngField.value))) {
                     departCoordsErrorDiv.style.display = 'block';
                     isValid = false;
@@ -116,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     departCoordsErrorDiv.style.display = 'none';
                 }
 
-                // Validation du point d'arrivée (si l'adresse d'arrivée est renseignée)
+               
                 if (arriveeAdresseField.value.trim() !== '' && (!arriveeLatField.value || !arriveeLngField.value || isNaN(parseFloat(arriveeLatField.value)) || isNaN(parseFloat(arriveeLngField.value)))) {
                     arriveeCoordsErrorDiv.style.display = 'block';
                     isValid = false;
@@ -157,13 +153,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(data => {
                     console.log("✅ Données JSON reçues:", data);
 
-                    // Nettoyer les messages d'erreurs précédents
+                  
                     clearFormErrors();
                     departCoordsErrorDiv.style.display = 'none';
                     arriveeCoordsErrorDiv.style.display = 'none';
 
                     if (data.success) {
-                        // Afficher le résumé de la recherche du passager
+                        
                         const searchSummaryDiv = document.getElementById('search-summary');
                         document.getElementById('summary-adresse-depart').textContent = data.adresse_depart_passager || 'Non spécifiée';
                         document.getElementById('summary-date-depart').textContent = data.date_depart_passager || 'N/A';
@@ -179,7 +175,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         searchSummaryDiv.style.display = 'block';
 
 
-                        // Gérer et afficher la liste des trajets trouvés
                         const listeTrajetsDiv = document.getElementById('liste-trajets');
                         const noTrajetsMessage = document.getElementById('no-trajets-message');
 
@@ -218,7 +213,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             }
                         }
                     } else {
-                        // Afficher les erreurs renvoyées par le backend (form.errors)
                         displayFormErrors(JSON.parse(data.errors));
                     }
                 })
@@ -241,7 +235,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
 
-            // Fonctions utilitaires pour afficher/effacer les erreurs du formulaire
             function displayFormErrors(errors) {
                 clearFormErrors();
 
@@ -296,9 +289,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     generalErrorsDiv.innerHTML = '';
                 }
 
-                // Cacher tous les messages d'erreurs "text-danger" dynamiquement ajoutés
                 rechercheForm.querySelectorAll('.text-danger.small.mt-1').forEach(div => {
-                    // Sauf les divs d'erreur de coordonnées si elles ont déjà un style display:none par la logique JS
+                  
                     if (div.id !== 'depart-coords-error' && div.id !== 'arrivee-coords-error') {
                         div.innerHTML = '';
                     }
