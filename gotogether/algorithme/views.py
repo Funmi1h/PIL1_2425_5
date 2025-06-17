@@ -6,11 +6,7 @@ from authentication.models import User
 from algorithme.models import Passager , Conducteur , TrajetOffert
 from django.http import JsonResponse
 from .forms import UserForm , RechercheConducteurForm , ProposerTrajetForm
-<<<<<<< HEAD
-from algorithme.forms import RechercheConducteurForm
-=======
 from algorithme.forms import  DemandeTrajetForm , ProposerTrajetForm
->>>>>>> 2a5589fe8c4448c6dd87de209c3bf5d33d1d6fdc
 import logging
 from django.contrib.auth.decorators import *
 from  datetime import timedelta 

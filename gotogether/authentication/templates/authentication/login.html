@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
-{% load static%}
+{% load static %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'authentication/css/style.css' %}">
+
 {% endblock %}
 
 {% block content %}
@@ -17,22 +18,31 @@
     {%  endif %}
    
     <form class="login-form" action="" method="post"> 
-        {{form.as_p}}
         {% csrf_token %}
+        <p>
+            {{ form.identifiant.label_tag }}
+            {{ form.identifiant}}
+        </p>
+        <div class="password-field">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            <span class="toggle-password">
+                <i class="fa fa-eye" id="togglePasswordIcon"></i>
+            </span>
+        </div>
+
         <button class="login-button" type="submit">Se connecter</button>
     </form>
 
-    
-
     {% if form.errors %}
-        <ul class = "errorlist">
+        <ul class="errorlist">
             {% for field in form %}
                 {% for error in field.errors %}
-                    <li>{{error}}</li>
+                    <li>{{ error }}</li>
                 {% endfor %}
             {% endfor %}
             {% for error in form.non_field_errors %}
-                <li>{{ errors }}</li>
+                <li>{{ error }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -42,4 +52,17 @@
     <a class="create-account" href="{% url 'sign_up' %}">Créer un compte</a>
 </div>
 
+
+<script>
+    const togglePassword = document.querySelector('.toggle-password');
+    const passwordInput = document.querySelector('#id_password'); 
+
+    togglePassword.addEventListener('click', function () {
+        const icon = this.querySelector('i');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+</script>
 {% endblock %}

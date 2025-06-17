@@ -31,15 +31,8 @@ class Conducteur(models.Model):
 
 class TrajetOffert(models.Model):
     conducteur = models.ForeignKey(Conducteur, on_delete=models.CASCADE, related_name='trajets_offerts')
-<<<<<<< HEAD
-    class TrajetOffert(models.Model):
-    # ... autres champs ...
-        prix_par_passager = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
-    # Informations de départ du trajet
-=======
     
 
->>>>>>> 2a5589fe8c4448c6dd87de209c3bf5d33d1d6fdc
     adresse_depart = models.CharField(max_length=255)
     latitude_depart = models.FloatField()
     longitude_depart = models.FloatField()
@@ -83,21 +76,5 @@ class DemandeTrajet(models.Model):
         ordering = ['heure_depart_prevue'] 
 
 #@receiver(post_save, sender=User)
-<<<<<<< HEAD
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-       
-        if hasattr(instance, 'role'): # Vérifie si le champ 'role' existe sur l'instance User
-            if instance.role == 'passager':
-                Passager.objects.create(user=instance)
-            elif instance.role == 'conducteur':
-                Conducteur.objects.create(user=instance)
-    
-
-
-
-
-=======
 
     
->>>>>>> 2a5589fe8c4448c6dd87de209c3bf5d33d1d6fdc

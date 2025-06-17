@@ -7,7 +7,9 @@
 
 {% block content %}
 <h2>Modifier mon profil</h2>
-<form method="post" class="profile-container">
+
+<form method="post" class="profile-container" enctype="multipart/form-data">
+    {% csrf_token %}
     <div class="profile-left">
         <div class="profile-photo">
             {% if user.photo_profil %}
@@ -59,7 +61,7 @@
                 <i class="fa-solid fa-lock"></i> Changer le mot de passe
             </a>
             <br>
-            <a href="" class="edit-profile-btn"><button type="submit"  class="enregistrermodif">Enregistrer les modifications</button></a>
+            <button type="submit"  class="enregistrermodif edit-profile-btn">Enregistrer les modifications</button>
         </div>
     </div>
 

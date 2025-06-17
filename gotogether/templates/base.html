@@ -81,9 +81,7 @@
                             <li class="nav-item">
                                 <a href="{% url 'creer_demande_trajet' %}" class="nav-link mx-4">Proposer des trajets </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="{% url 'proposer_trajet' %}" class="nav-link mx-4">Offrir ses services </a>
-                            </li>
+                            
                             
                          <li class="nav-item position-relative">
                                 <a href="{% url 'message_accueil' %}" class="nav-link mx-4 position-relative">
@@ -105,7 +103,7 @@
                                         <li class="nav-item dropdown mx-2">
                                             <a class="nav-link dropdown-toggle d-flex align-items-center text-end" href="#" id="navbarUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="bi bi-person-circle me-1"></i>
-                                                {{ user.last_name }}
+                                                {{ user.first_name }}
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarUser">
                                                 <li><a class="dropdown-item" href="{% url 'profil_user' %}">Mon profil</a></li>
@@ -134,7 +132,7 @@
 
 
         <footer>
-            <div class="container text-center">
+            <div class="container text-center bottom-0 text-muted text-gray">
                 <p> 2025 Go Together. All rights reserved.</p>
                 <p>Contact us at <a href="mailto:gotogether@gmail.com">gotogether@gmail.com</a>
         </footer>
@@ -148,6 +146,34 @@
     
     <!--Audio pour les notifs-->
 <audio id="notif-sound" src="{% static 'sounds.here-i-am-449.ogg' %}" preload="auto"></audio>
+
+{% if user.is_authenticated and user.first_login %}
+    {% url 'changer_profil' as changer_profil_url %}
+    {% if request.path != changer_profil_url %}
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+            <div id="firstLoginToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        🎉 Bienvenue ! <a href="{{ changer_profil_url }}" class="text-white text-decoration-underline">Complétez votre profil</a> pour profiter pleinement de GoTogether !
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const toastEl = document.getElementById('firstLoginToast');
+                if (toastEl) {
+                    const toast = new bootstrap.Toast(toastEl, { delay: 8000 });
+                    toast.show();
+                }
+            });
+        </script>
+    {% endif %}
+{% endif %}
+
+
 
 
  

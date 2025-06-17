@@ -139,3 +139,10 @@
   animation: slideDown 1s ease-out forwards;
   display: none; /* Masquer la carte initialement */
 }
+
+
+.delete-photo-btn {
+    color: red;
+    margin-left: 10px;
+    text-decoration: none;
+}

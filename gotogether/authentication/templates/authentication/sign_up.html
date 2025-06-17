@@ -1,69 +1,131 @@
 {% extends 'base.html' %}
-{% load static%}
-
+{% load static %}
 
 {% block head %}
-
 <link rel="stylesheet" href="{% static 'authentication/css/style.css'%}">
 
+
 {% endblock %}
+
 {% block content %}
-    <h1 class="app-title">
-        <img src="{% static 'authentication/logo.svg' %}" alt="">
-    </h1>
-    <h2 class="page-title">Inscription</h2>
+<h1 class="app-title">
+    <img src="{% static 'authentication/logo.svg' %}" alt="">
+</h1>
+<h2 class="page-title">Inscription</h2>
 
-    <form action="" method="post" class="signup-form">
-        {% csrf_token %}
-        
-        {% if message %}
-            <li class="message-error">{{ message }}</li>
-        {% endif %}
+<form action="" method="post" class="signup-form" novalidate>
+    {% csrf_token %}
 
-        <label for="id_first_name" class="form-label" >Prénom</label>
-        {{ form.first_name }}
-        {% if form.first_name.errors %}
-            <small class="error-message">{{ form.first_name.errors.0 }}</small>
-        {% endif %}
+    {% if message %}
+        <li class="message-error">{{ message }}</li>
+    {% endif %}
 
-        <label for="id_last_name" class="form-label">Nom</label>
-        {{ form.last_name }}
-        {% if form.last_name.errors %}
-            <small class="error-message">{{ form.last_name.errors.0 }}</small>
-        {% endif %}
+    <!-- Prénom -->
+    <label for="id_first_name" class="form-label">Prénom</label>
+    {{ form.first_name }}
+    {% if form.first_name.errors %}
+        <small class="error-message">{{ form.first_name.errors.0 }}</small>
+    {% endif %}
 
-        <label for="id_email" class="form-label">E-mail</label>
-        {{ form.email }}
-        {% if form.email.errors %}
-            <small class="error-message">{{ form.email.errors }}</small>
-        {% endif %}
+    <!-- Nom -->
+    <label for="id_last_name" class="form-label">Nom</label>
+    {{ form.last_name }}
+    {% if form.last_name.errors %}
+        <small class="error-message">{{ form.last_name.errors.0 }}</small>
+    {% endif %}
 
-        <label for="id_numéro_telephone" class="form-label">Numéro de téléphone</label>
-        {{ form.numero_telephone }}
-        {% if form.numero_telephone.errors %}
-            <small class="error-message">{{ form.numero_telephone.errors }}</small>
-        {% endif %}
+    <!-- Email -->
+    <label for="id_email" class="form-label">E-mail</label>
+    {{ form.email }}
+    <small class="error-message" id="email-error"></small>
+    {% if form.email.errors %}
+        <small class="error-message">{{ form.email.errors.0 }}</small>
+    {% endif %}
 
-        <label for="id_role" class="form-label">Rôle</label>
-        {{ form.role }}
-        {% if form.role.errors %}
-            <small class="error-message">{{ form.role.errors }}</small>
-        {% endif %}
+    <!-- Numéro de téléphone -->
+    <label for="id_numero_telephone" class="form-label">Numéro de téléphone</label>
+    {{ form.numero_telephone }}
+    {% if form.numero_telephone.errors %}
+        <small class="error-message">{{ form.numero_telephone.errors.0 }}</small>
+    {% endif %}
 
-        <label for="id_password" class="form-label">Mot de passe</label>
+    <!-- Rôle -->
+    <label for="id_role" class="form-label">Rôle</label>
+    {{ form.role }}
+    {% if form.role.errors %}
+        <small class="error-message">{{ form.role.errors.0 }}</small>
+    {% endif %}
+
+    <!-- Mot de passe -->
+    <label for="id_password" class="form-label">Mot de passe</label>
+    <div class="password-field">
         {{ form.password }}
-        {% if form.password.errors %}
-            <small class="error-message">{{ form.password.errors }}</small>
-        {% endif %}
+        <span class="toggle-password"><i class="fa fa-eye" id="togglePasswordIcon1"></i></span>
+    </div>
+    <small class="error-message" id="password-error"></small>
+    {% if form.password.errors %}
+        <small class="error-message">{{ form.password.errors.0 }}</small>
+    {% endif %}
 
-        <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
+    <!-- Confirmation -->
+    <label for="id_confirm_password" class="form-label">Confirmer le mot de passe</label>
+    <div class="password-field">
         {{ form.confirm_password }}
-        {% if form.confirm_password.errors %}
-            <small class="error-message">{{ form.confirm_password.errors }}</small>
-        {% endif %}
+        <span class="toggle-password"><i class="fa fa-eye" id="togglePasswordIcon2"></i></span>
+    </div>
+    <small class="error-message" id="confirm-password-error"></small>
+    {% if form.confirm_password.errors %}
+        <small class="error-message">{{ form.confirm_password.errors.0 }}</small>
+    {% endif %}
 
-        <button type="submit" class="submit-btn">S'inscrire</button>
-    </form>
+    <button type="submit" class="submit-btn">S'inscrire</button>
+</form>
 
-    <a href="{% url 'login' %}" class="login-link">Déjà un compte? Se connecter</a>
+<a href="{% url 'login' %}" class="login-link">Déjà un compte? Se connecter</a>
+
+<!-- Validation JavaScript -->
+<script>
+    const emailInput = document.getElementById('id_email');
+    const passwordInput = document.getElementById('id_password');
+    const confirmPasswordInput = document.getElementById('id_confirm_password');
+
+    const emailError = document.getElementById('email-error');
+    const passwordError = document.getElementById('password-error');
+    const confirmPasswordError = document.getElementById('confirm-password-error');
+
+    // Vérifie l'email
+    emailInput.addEventListener('input', () => {
+        const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        emailError.textContent = emailRegex.test(emailInput.value.trim()) ? '' : "Adresse e-mail invalide.";
+    });
+
+    // Vérifie le mot de passe (regex alignée avec ton validateur Python)
+    passwordInput.addEventListener('input', () => {
+        const value = passwordInput.value;
+        let message = '';
+        if (value.length < 8) message = "Au moins 8 caractères.";
+        else if (!/[A-Z]/.test(value)) message = "Au moins une majuscule.";
+        else if (!/\d/.test(value)) message = "Au moins un chiffre.";
+        else if (!/[!@#$%^&*()_+=\[{\]};:<>|./?,-]/.test(value)) message = "Au moins un caractère spécial.";
+        passwordError.textContent = message;
+    });
+
+    // Vérifie la confirmation
+    confirmPasswordInput.addEventListener('input', () => {
+        confirmPasswordError.textContent = confirmPasswordInput.value !== passwordInput.value
+            ? "Les mots de passe ne correspondent pas."
+            : "";
+    });
+
+    // Affiche/masque le mot de passe
+    document.querySelectorAll('.toggle-password').forEach((icon, index) => {
+        icon.addEventListener('click', () => {
+            const input = index === 0 ? passwordInput : confirmPasswordInput;
+            const iconElement = icon.querySelector('i');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            iconElement.classList.toggle('fa-eye');
+            iconElement.classList.toggle('fa-eye-slash');
+        });
+    });
+</script>
 {% endblock %}

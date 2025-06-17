@@ -10,6 +10,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from algorithme.utils import generate_suggestions_passagers
 from django.contrib import messages
+
+
+
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
     form_class = forms.LoginForm
@@ -29,6 +32,7 @@ class LoginView(LoginView):
                 user = authenticate(request, username=identifiant, password=password)
                 if user is not None:
                     login(request, user)
+                    
                     return render(request, 'authentication/dashboard.html', {'user': user})
                 else:
                     return render(request, self.template_name, {'form': form, 'message': 'Identifiant ou mot de passe incorrect.'})
@@ -116,6 +120,11 @@ def upload_profile_photo(request):
 def modifier_profil(request):
     user = request.user
 
+    if user.first_login and request.method == 'GET':
+        user.first_login = False
+        user.save()
+
+
     if request.method == 'POST':
         form = forms.ProfilForm(request.POST, request.FILES, instance = user)
         if form.is_valid():
@@ -126,9 +135,8 @@ def modifier_profil(request):
             if user.first_login:
                 user.first_login = False
                 user.save()
-                messages.success(request, " Rendez-vous sur votre Go Board pour découvrir des trajets en fonction de votre emplacement et vos horaires habituels  habituel !")
-
-            return redirect('profil_user')
+                
+            return redirect('dashboard')
     else:
         form = forms.ProfilForm(instance=user)
 
@@ -175,3 +183,12 @@ def suggestions_pour_passager(request):
     user = request.user
     suggestions_passagers = generate_suggestions_passagers(user)
     return render (request, 'authentication/dashboard.html', {'suggestions_passagers': suggestions_passagers})
+
+
+@login_required
+def delete_photo_profil(request):
+    user = request.user
+    if user.photo_profil:
+        user.photo_profil.delete(save= False)
+        user.save()
+    return redirect ('profil_user')
