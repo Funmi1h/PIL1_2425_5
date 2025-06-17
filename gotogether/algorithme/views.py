@@ -9,7 +9,7 @@ from .forms import UserForm , RechercheConducteurForm , ProposerTrajetForm
 from algorithme.forms import  DemandeTrajetForm , ProposerTrajetForm
 import logging
 from django.contrib.auth.decorators import *
-from  datetime import timedelta 
+from  datetime import timedelta , datetime
 import datetime
 import json
 
@@ -205,11 +205,8 @@ def créer_demande_trajet_view(request):
         # Vérifier si c'est une requête AJAX (envoyant du JSON)
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             try:
-                # Vérifiez si le corps de la requête est vide
-                if not request.body:
-                    print("Erreur: Corps de la requête vide (AJAX).")
-                    logger.warning("Requête AJAX reçue avec corps vide.")
-                    return JsonResponse({'success': False, 'message': 'Requête vide.'}, status=400)
+                
+               
 
                 data = json.loads(request.body)
                 print("Données JSON reçues par Django (data):", data) # <<< VÉRIFIEZ CECI dans le terminal
@@ -231,8 +228,8 @@ def créer_demande_trajet_view(request):
                             'success': True,
                             'message': 'Votre demande de trajet a été soumise avec succès !',
                             'demande_id': demande_trajet.id,
-                            'adresse_depart': demande_trajet.adresse_depart_demande, # Assurez-vous que ces champs existent
-                            'heure_depart': demande_trajet.heure_depart_souhaitee.strftime('%Y-%m-%d %H:%M') # Assurez-vous que ces champs existent
+                            'adresse_depart': demande_trajet.adresse_depart,
+                            'heure_depart': demande_trajet.heure_depart_prevue.strftime('%Y-%m-%d %H:%M') # Assurez-vous que ces champs existent
                         })
                     except Passager.DoesNotExist:
                         error_message = "Votre compte n'est pas configuré comme passager. Veuillez contacter l'administrateur."
@@ -295,28 +292,35 @@ def créer_demande_trajet_view(request):
 
 @login_required 
 
+@login_required
 def proposer_trajet_view(request):
     logger.info(f"DEBUG: Accès à proposer_trajet_view par User: {request.user.username}, IsAuthenticated: {request.user.is_authenticated}, Role: {request.user.role}")
 
-  
-    conducteur_profile = None
+    # Initialisation de conducteur_profile à None avant le try-except
+    conducteur_profile = None 
+
     try:
-       
-       
-        conducteur_profile = request.user.conducteur_profile # <<< CETTE LIGNE EST ESSENTIELLE
+        conducteur_profile = request.user.conducteur_profile
         logger.info(f"DEBUG: Profil Conducteur trouvé pour {request.user.username} (ID: {conducteur_profile.id}).")
     except Conducteur.DoesNotExist:
         error_message = "Votre compte n'est pas configuré comme conducteur. Veuillez créer ou mettre à jour votre profil conducteur."
         logger.warning(f"❌ User {request.user.username} n'a PAS de profil Conducteur associé. Redirection vers 'changer_profil'.")
-        messages.error(request, error_message) 
+        messages.error(request, error_message)
+        # Gestion de la réponse AJAX pour cette erreur spécifique avant le POST
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'errors': {'__all__': [error_message]}}, status=403)
         return redirect('changer_profil')
     except AttributeError:
-  
+        # Cette erreur peut se produire si request.user n'a pas l'attribut 'conducteur_profile'
+        # ce qui est différent de Conducteur.DoesNotExist
         error_message = "Erreur interne: Impossible d'accéder à votre profil conducteur. Contactez l'administrateur."
-        logger.critical(f"❌ AttributeError: User {request.user.username} n'a pas d'attribut 'conducteur'. Vérifiez le related_name dans le modèle Conducteur.", exc_info=True)
+        logger.critical(f"❌ AttributeError: User {request.user.username} n'a pas d'attribut 'conducteur_profile'. Vérifiez le related_name dans le modèle Conducteur.", exc_info=True)
         messages.error(request, error_message)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'errors': {'__all__': [error_message]}}, status=500) # Ou 403
         return redirect('changer_profil')
-  
+
+    # Vérification du rôle après avoir trouvé le profil pour éviter des redirections multiples
     if request.user.role != 'conducteur':
         error_message = "Votre compte n'est pas configuré comme conducteur. Accès refusé."
         logger.warning(f"❌ User {request.user.username} (rôle: {request.user.role}) n'a pas le rôle 'conducteur'. Redirection vers 'changer_profil'.")
@@ -325,127 +329,44 @@ def proposer_trajet_view(request):
         else:
             messages.error(request, error_message)
             return redirect('changer_profil')
-    
-    
+
+    # Initialisation du formulaire pour les requêtes GET
     form = ProposerTrajetForm() 
+
     if request.method == "POST":
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            try:
-                if not request.body:
-                    logger.warning("Requête AJAX de proposition de trajet reçue avec corps vide.")
-                    return JsonResponse({'success': False, 'message': 'Requête vide.'}, status=400)
+        # Les données, qu'elles proviennent d'AJAX (FormData) ou d'un POST normal,
+        # sont toujours dans request.POST (et request.FILES si des fichiers sont envoyés).
+        form = ProposerTrajetForm(request.POST, request.FILES) # Ajout de request.FILES par bonne pratique
 
-                data = json.loads(request.body)
-                print("Données JSON reçues par Django (proposer_trajet_view):", data) # Pour le débogage
+        if form.is_valid():
+            print("Formulaire ProposerTrajet valide (POST) !")
+            trajet_offert = form.save(commit=False)
+            trajet_offert.conducteur = conducteur_profile # Utilise le profil trouvé au début
+            trajet_offert.save()
 
-                form = ProposerTrajetForm(data)
-
-                if form.is_valid():
-                    print("Formulaire ProposerTrajet valide (AJAX) !") # Debug
-                    trajet_offert = form.save(commit=False)
-                    trajet_offert.conducteur = conducteur_profile # ICI, conducteur_profile est défini !
-                    trajet_offert.save()
-
-                    logger.info(f"✅ Trajet proposé créé avec succès par {request.user.username} (ID: {trajet_offert.id}).")
-                    return JsonResponse({
-                        'success': True,
-                        'message': 'Votre trajet a été proposé avec succès !',
-                        'trajet_id': trajet_offert.id,
-                        'adresse_depart': trajet_offert.adresse_depart,
-                        'heure_depart': trajet_offert.heure_depart_prevue.strftime('%Y-%m-%d %H:%M')
-                    })
-                else:
-                    print("Formulaire ProposerTrajet INVALIDE (AJAX). Erreurs:", form.errors) # Debug
-                    logger.warning(f"❌ Formulaire de proposition de trajet invalide (AJAX) par {request.user.username}. Erreurs: {form.errors}.")
-                    return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
-
-            except json.JSONDecodeError as e:
-                logger.error(f"Erreur de décodage JSON lors de la soumission de proposition de trajet: {e}")
-                return JsonResponse({'success': False, 'message': 'Format JSON invalide.'}, status=400)
-            except Exception as e:
-                logger.critical(f"Erreur inattendue dans la vue proposer_trajet_view (AJAX): {e}", exc_info=True)
-                return JsonResponse({'success': False, 'message': f'Erreur interne du serveur: {e}'}, status=500)
-        
-        else: # Requête POST non-AJAX
-            print("Requête POST NON-AJAX de proposition de trajet reçue.") 
-            form = ProposerTrajetForm(request.POST)
-
-            if form.is_valid():
-                print("Formulaire ProposerTrajet valide (NON-AJAX) !") 
-                trajet_offert = form.save(commit=False)
-                trajet_offert.conducteur = conducteur_profile # ICI, conducteur_profile est défini !
-                trajet_offert.save()
-                logger.info(f"✅ Trajet proposé créé avec succès (non-AJAX) par {request.user.username}.")
-                return redirect('mes_trajets_offerts')
+            logger.info(f"✅ Trajet proposé créé avec succès par {request.user.username} (ID: {trajet_offert.id}).")
+            
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Votre trajet a été proposé avec succès !',
+                    'trajet_id': trajet_offert.id,
+                    'adresse_depart': trajet_offert.adresse_depart,
+                    'heure_depart': trajet_offert.heure_depart_prevue.strftime('%Y-%m-%d %H:%M')
+                })
             else:
-                print("Formulaire ProposerTrajet INVALIDE (NON-AJAX). Erreurs:", form.errors) # Debug
-                logger.warning(f"❌ Formulaire de proposition de trajet invalide (non-AJAX) par {request.user.username}. Erreurs: {form.errors}.")
-                
-    return render(request, 'algorithme/proposer_trajet.html', {'form': form})
-    logger.info(f"DEBUG: Accès à proposer_trajet_view par User: {request.user.username}, IsAuthenticated: {request.user.is_authenticated}, Role: {request.user.role}")
-
-    
-    if request.user.role != 'conducteur':
-        error_message = "Votre compte n'est pas configuré comme conducteur. Accès refusé."
-        logger.warning(f"❌ User {request.user.username} (rôle: {request.user.role}) n'a pas le rôle 'conducteur'. Redirection vers 'changer_profil'.")
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'errors': {'__all__': [error_message]}}, status=403)
+                messages.success(request, 'Votre trajet a été proposé avec succès !')
+                return redirect('mes_trajets_offerts')
         else:
-            messages.error(request, error_message)
-            return redirect('changer_profil')
-   
-    form = ProposerTrajetForm() 
-    if request.method == "POST":
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            try:
-                if not request.body:
-                    logger.warning("Requête AJAX de proposition de trajet reçue avec corps vide.")
-                    return JsonResponse({'success': False, 'message': 'Requête vide.'}, status=400)
-
-                data = json.loads(request.body)
-                print("Données JSON reçues par Django (proposer_trajet_view):", data) # Pour le débogage
-
-                form = ProposerTrajetForm(data)
-
-                if form.is_valid():
-                    print("Formulaire ProposerTrajet valide (AJAX) !") # Debug
-                    trajet_offert = form.save(commit=False)
-                    trajet_offert.conducteur = conducteur_profile # Associer au conducteur connecté
-                    trajet_offert.save()
-
-                    logger.info(f"✅ Trajet proposé créé avec succès par {request.user.username} (ID: {trajet_offert.id}).")
-                    return JsonResponse({
-                        'success': True,
-                        'message': 'Votre trajet a été proposé avec succès !',
-                        'trajet_id': trajet_offert.id,
-                        'adresse_depart': trajet_offert.adresse_depart,
-                        'heure_depart': trajet_offert.heure_depart_prevue.strftime('%Y-%m-%d %H:%M')
-                    })
-                else:
-                    print("Formulaire ProposerTrajet INVALIDE (AJAX). Erreurs:", form.errors)
-                    logger.warning(f"❌ Formulaire de proposition de trajet invalide (AJAX) par {request.user.username}. Erreurs: {form.errors}.")
-                    return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
-
-            except json.JSONDecodeError as e:
-                logger.error(f"Erreur de décodage JSON lors de la soumission de proposition de trajet: {e}")
-                return JsonResponse({'success': False, 'message': 'Format JSON invalide.'}, status=400)
-            except Exception as e:
-                logger.critical(f"Erreur inattendue dans la vue proposer_trajet_view (AJAX): {e}", exc_info=True)
-                return JsonResponse({'success': False, 'message': f'Erreur interne du serveur: {e}'}, status=500)
-        
-        else: 
-            print("Requête POST NON-AJAX de proposition de trajet reçue.") 
-            form = ProposerTrajetForm(request.POST)
-
-            if form.is_valid():
-                print("Formulaire ProposerTrajet valide (NON-AJAX) !") 
-                trajet_offert = form.save(commit=False)
-                trajet_offert.conducteur = conducteur_profile
-                trajet_offert.save()
-                logger.info(f"✅ Trajet proposé créé avec succès (non-AJAX) par {request.user.username}.")
-                return redirect('mes_trajets_offerts')
+            # Le formulaire est invalide
+            print("Formulaire ProposerTrajet INVALIDE (POST). Erreurs:", form.errors)
+            logger.warning(f"❌ Formulaire de proposition de trajet invalide par {request.user.username}. Erreurs: {form.errors}.")
+            
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': form.errors.get_json_data()}, status=400)
             else:
-                print("Formulaire ProposerTrajet INVALIDE (NON-AJAX). Erreurs:", form.errors) # Debug
-                logger.warning(f"❌ Formulaire de proposition de trajet invalide (non-AJAX) par {request.user.username}. Erreurs: {form.errors}.")
+                # Pour les requêtes non-AJAX, le formulaire avec les erreurs sera rendu ci-dessous
+                pass 
                 
+    # Pour les requêtes GET ou si le formulaire POST non-AJAX est invalide, rendre la page avec le formulaire
     return render(request, 'algorithme/proposer_trajet.html', {'form': form})

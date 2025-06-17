@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Libre&display=swap" rel="stylesheet">
     <style>
         .map-container {
             height: 300px;
@@ -13,32 +15,50 @@
         .form-group {
             margin-bottom: 15px;
         }
+        /* Style pour les erreurs des coordonnées, si elles ne sont pas gérées par Django */
+        .coords-error {
+            color: #dc3545; /* Bootstrap red */
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            display: none; /* Hidden by default */
+        }
+        /* Style pour aligner le bouton avec l'input */
+        .input-group .form-control {
+            flex: 1 1 auto; /* Permet à l'input de prendre l'espace disponible */
+            width: 1%; /* Évite le débordement dans flexbox */
+        }
     </style>
+{% endblock %}
 
+{% block content %}
     <h2>Proposer un Trajet</h2>
 
     
-    {% if messages %}
+    <div class="messages">
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
-    {% endif %}
+    </div>
 
     <form method="post" id="proposerTrajetForm" action="{% url 'proposer_trajet' %}">
         {% csrf_token %}
 
-    
         <div class="form-group">
             {{ form.adresse_depart.label_tag }}
-            {{ form.adresse_depart }}
+            <div class="input-group"> 
+                {{ form.adresse_depart }}
+                <button type="button" class="btn btn-outline-secondary" id="searchDepartAddressBtn">Rechercher</button>
+            </div>
             {% if form.adresse_depart.errors %}
                 <div class="text-danger">{{ form.adresse_depart.errors }}</div>
             {% endif %}
-          
-            {{ form.latitude_depart }}
+           
+            <div id="depart-coords-error" class="coords-error"></div> 
+            
+            {{ form.latitude_depart }} 
             {{ form.longitude_depart }}
         </div>
         <div id="map_proposer_depart" class="map-container"></div>
@@ -50,16 +70,20 @@
                 <div class="text-danger">{{ form.heure_depart_prevue.errors }}</div>
             {% endif %}
         </div>
-
-      
+        
         <div class="form-group">
             {{ form.adresse_arrivee.label_tag }}
-            {{ form.adresse_arrivee }}
+            <div class="input-group"> 
+                {{ form.adresse_arrivee }}
+                <button type="button" class="btn btn-outline-secondary" id="searchArriveeAddressBtn">Rechercher</button>
+            </div>
             {% if form.adresse_arrivee.errors %}
                 <div class="text-danger">{{ form.adresse_arrivee.errors }}</div>
             {% endif %}
-    
-            {{ form.latitude_arrivee }}
+            
+            <div id="arrivee-coords-error" class="coords-error"></div>
+            
+            {{ form.latitude_arrivee }} 
             {{ form.longitude_arrivee }}
         </div>
         <div id="map_proposer_arrivee" class="map-container"></div>
@@ -80,9 +104,6 @@
             {% endif %}
         </div>
 
-       
-
-       
         {% if form.non_field_errors %}
             <div class="alert alert-danger">
                 {% for error in form.non_field_errors %}
@@ -90,8 +111,14 @@
                 {% endfor %}
             </div>
         {% endif %}
+        
+        <div class="alert alert-danger" style="display: none;"></div>
 
         <button type="submit" class="btn btn-primary">Proposer ce trajet</button>
-
     </form>
-    <script src="{%static 'algorithme/js/proposer_trajet.js'%}" defer></script>
+
+
+ 
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="{% static 'algorithme/js/proposer_trajet.js' %}" defer></script>
+{% endblock %}

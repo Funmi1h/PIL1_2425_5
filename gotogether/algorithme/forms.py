@@ -1,13 +1,15 @@
 from django import forms
 from authentication.models import User
 from algorithme.models import TrajetOffert , DemandeTrajet
+from datetime import datetime
+from django.utils import timezone
 
 
 
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        # Les champs dont on a besoin
+       
         fields = ['adresse', 'nb_places' , 'latitude' , 'longitude']
         widgets = {
             'latitude': forms.NumberInput(attrs={'step': 'any'}),
@@ -27,14 +29,11 @@ class UserForm(forms.ModelForm):
             widget= forms.TextInput(attrs={'placeholder':'nombre de places'})
         ) 
     def __init__(self, *args, **kwargs):
-        # 1. Récupérez la variable 'is_conducteur' passée depuis la vue
         is_conducteur = kwargs.pop('is_conducteur', False) 
         super().__init__(*args, **kwargs)
 
-        # 2. Définissez si 'nb_places' est obligatoire en fonction de 'is_conducteur'
-        self.fields['nb_places'].required = is_conducteur # Ceci rend le champ obligatoire dans le HTML et pour la validation de base de Django
+        self.fields['nb_places'].required = is_conducteur 
 
-        # Définition de la valeur initiale pour l'adresse
         if not self.initial.get('adresse') and not self.data.get('adresse'):
             self.fields['adresse'].initial = "Cotonou, Bénin"
 
@@ -100,7 +99,6 @@ class RechercheConducteurForm(forms.Form):
 
         heure_depart = cleaned_data.get('heure_depart')
         heure_arrivee = cleaned_data.get('heure_arrivee')
-        # date_depart est un nouveau champ, à utiliser avec l'heure
         date_depart = cleaned_data.get('date_depart') 
 
 class ProposerTrajetForm(forms.ModelForm):
@@ -108,7 +106,6 @@ class ProposerTrajetForm(forms.ModelForm):
     
     class Meta:
         model = TrajetOffert
-        # Champs que le conducteur remplit pour proposer un trajet
         fields = [
             'adresse_depart', 'latitude_depart', 'longitude_depart', 'heure_depart_prevue',
             'adresse_arrivee', 'latitude_arrivee', 'longitude_arrivee', 'heure_arrivee_prevue',
@@ -127,6 +124,51 @@ class ProposerTrajetForm(forms.ModelForm):
             'heure_depart_prevue': "Date et heure de départ prévues",
             'nb_places_disponibles': "Nombre de places disponibles pour ce trajet",
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        adresse_depart = cleaned_data.get('adresse_depart')
+        latitude_depart = cleaned_data.get('latitude_depart')
+        longitude_depart = cleaned_data.get('longitude_depart')
+        heure_depart_prevue = cleaned_data.get('heure_depart_prevue')
+
+        adresse_arrivee = cleaned_data.get('adresse_arrivee')
+        latitude_arrivee = cleaned_data.get('latitude_arrivee')
+        longitude_arrivee = cleaned_data.get('longitude_arrivee')
+        heure_arrivee_prevue = cleaned_data.get('heure_arrivee_prevue')
+        
+        if adresse_depart and (latitude_depart is None or longitude_depart is None):
+            self.add_error('adresse_depart', "Veuillez rechercher et valider l'adresse de départ pour obtenir ses coordonnées.")
+            if latitude_depart is None:
+                self.add_error('latitude_depart', "Coordonnée de latitude de départ manquante.")
+            if longitude_depart is None:
+                self.add_error('longitude_depart', "Coordonnée de longitude de départ manquante.")
+
+      
+        if adresse_arrivee: 
+            if latitude_arrivee is None or longitude_arrivee is None:
+                self.add_error('adresse_arrivee', "Veuillez rechercher et valider l'adresse d'arrivée pour obtenir ses coordonnées.")
+                if latitude_arrivee is None:
+                    self.add_error('latitude_arrivee', "Coordonnée de latitude d'arrivée manquante.")
+                if longitude_arrivee is None:
+                    self.add_error('longitude_arrivee', "Coordonnée de longitude d'arrivée manquante.")
+        elif not adresse_arrivee: 
+            if latitude_arrivee is not None or longitude_arrivee is not None:
+                cleaned_data['latitude_arrivee'] = None
+                cleaned_data['longitude_arrivee'] = None
+                
+
+      
+        if heure_depart_prevue :
+            if heure_arrivee_prevue <= timezone.now():
+                self.add_error('heure_arrivee_prevue', "L'heure d'arrivée prévue doit être après l'heure de départ prévue.")
+
+   
+        if heure_depart_prevue < timezone.now():
+            self.add_error('heure_depart_prevue', "L'heure de départ ne peut pas être dans le passé.")
+            
+        return cleaned_data
+
 
 class DemandeTrajetForm(forms.ModelForm):
     class Meta:

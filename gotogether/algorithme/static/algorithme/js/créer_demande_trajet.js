@@ -1,4 +1,4 @@
-// algorithme/static/algorithme/js/formulaire_demande_map.js
+
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ DOM chargé pour la demande de trajet (avec deux cartes Leaflet)!");
@@ -6,13 +6,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const defaultCoords = [6.45, 2.35]; // Coordonnées pour Abomey-Calavi, Bénin
     const defaultZoom = 13;
 
-    // Variables globales pour les cartes et les marqueurs
     let mapDepart = null;
     let markerDepart = null;
     let mapArrivee = null;
     let markerArrivee = null;
 
-    // IDs des champs d'entrée du formulaire (AJUSTÉS POUR CORRESPONDRE À Django forms)
+    
     const ID_ADRESSE_DEPART = "id_adresse_depart";
     const ID_LATITUDE_DEPART = "id_latitude_depart";
     const ID_LONGITUDE_DEPART = "id_longitude_depart";
@@ -21,19 +20,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const ID_LATITUDE_ARRIVEE = "id_latitude_arrivee";
     const ID_LONGITUDE_ARRIVEE = "id_longitude_arrivee";
 
-    // --- INITIALISATION DES CARTES ---
+    
     function initializeMaps() {
-        // Initialisation de la carte de DÉPART
+        
         const mapDepartDiv = document.getElementById('map_demande_depart');
         if (mapDepartDiv) {
-            if (mapDepart !== null) mapDepart.remove(); // Supprime l'ancienne instance
+            if (mapDepart !== null) mapDepart.remove(); 
             mapDepart = L.map('map_demande_depart').setView(defaultCoords, defaultZoom);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapDepart);
             console.log("Map de départ initialisée.");
 
-            // Événement clic sur la carte de DÉPART
+            
             mapDepart.on('click', function (e) {
                 updateMarkerAndFields(mapDepart, 'depart', e.latlng.lat, e.latlng.lng, 
                     `<b>Point de Départ</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`);
@@ -42,17 +41,17 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("❌ Élément 'map_demande_depart' introuvable. La carte de départ ne peut pas être initialisée.");
         }
 
-        // Initialisation de la carte d'ARRIVÉE
+        
         const mapArriveeDiv = document.getElementById('map_demande_arrivee');
         if (mapArriveeDiv) {
-            if (mapArrivee !== null) mapArrivee.remove(); // Supprime l'ancienne instance
+            if (mapArrivee !== null) mapArrivee.remove(); 
             mapArrivee = L.map('map_demande_arrivee').setView(defaultCoords, defaultZoom);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapArrivee);
             console.log("Map d'arrivée initialisée.");
 
-            // Événement clic sur la carte d'ARRIVÉE
+            
             mapArrivee.on('click', function (e) {
                 updateMarkerAndFields(mapArrivee, 'arrivee', e.latlng.lat, e.latlng.lng, 
                     `<b>Point d'Arrivée</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`);
@@ -61,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("❌ Élément 'map_demande_arrivee' introuvable. La carte d'arrivée ne peut pas être initialisée.");
         }
 
-        // Initialiser les marqueurs si des valeurs sont déjà présentes dans les champs au chargement
         const initialLatDepart = parseFloat(document.getElementById(ID_LATITUDE_DEPART)?.value);
         const initialLngDepart = parseFloat(document.getElementById(ID_LONGITUDE_DEPART)?.value);
         if (!isNaN(initialLatDepart) && !isNaN(initialLngDepart) && mapDepart) {
@@ -76,8 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
             mapArrivee.setView([initialLatArrivee, initialLngArrivee], defaultZoom);
         }
     }
-
-    // --- FONCTIONS DE GESTION DES MARQUEURS ET CHAMPS ---
+// --- FONCTIONS DE GESTION DES MARQUEURS ET CHAMPS ---
 
     /**
      * Ajoute ou met à jour un marqueur sur la carte spécifiée et met à jour les champs de coordonnées.
@@ -93,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
             currentMarkerRef = markerDepart;
             latField = document.getElementById(ID_LATITUDE_DEPART);
             lngField = document.getElementById(ID_LONGITUDE_DEPART);
-        } else { // type === 'arrivee'
+        } else { 
             currentMarkerRef = markerArrivee;
             latField = document.getElementById(ID_LATITUDE_ARRIVEE);
             lngField = document.getElementById(ID_LONGITUDE_ARRIVEE);
@@ -104,27 +101,25 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Supprime l'ancien marqueur si il existe
         if (currentMarkerRef) {
             mapInstance.removeLayer(currentMarkerRef);
         }
 
-        // Ajoute le nouveau marqueur
+        
         const newMarker = L.marker([lat, lng]).addTo(mapInstance);
         newMarker.bindPopup(popupContent).openPopup();
 
-        // Met à jour la référence globale du marqueur
         if (type === 'depart') {
             markerDepart = newMarker;
         } else {
             markerArrivee = newMarker;
         }
 
-        // Met à jour les champs cachés
+       
         latField.value = lat;
         lngField.value = lng;
         
-        // Nettoie l'erreur de validation JavaScript si elle était présente
+        
         const errorDiv = document.getElementById(`error_${type === 'depart' ? 'adresse_depart' : 'adresse_arrivee'}`);
         if (errorDiv) errorDiv.textContent = '';
         const addressField = document.getElementById(type === 'depart' ? ID_ADRESSE_DEPART : ID_ADRESSE_ARRIVEE);
@@ -133,12 +128,12 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`✅ Coordonnées ${type} mises à jour : Lat: ${lat}, Lng: ${lng}`);
     }
 
-    // --- GÉOLOCALISATION DE L'UTILISATEUR ---
+
     window.getUserPosition = function (type) {
         let mapInstance;
         if (type === 'depart') {
             mapInstance = mapDepart;
-        } else { // type === 'arrivee'
+        } else { 
             mapInstance = mapArrivee;
         }
 
@@ -150,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const popupContent = "Votre Position Actuelle";
                 updateMarkerAndFields(mapInstance, type, lat, lng, popupContent);
-                // Optionnel: Mettre l'adresse approximative dans le champ texte
+                
                 reverseGeocode(lat, lng, type);
 
             }, function (error) {
@@ -162,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Fonction de géocodage inverse (coordonnées vers adresse)
+  
     function reverseGeocode(lat, lng, type) {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
             .then(response => response.json())
@@ -180,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // --- RECHERCHE D'ADRESSE (Nominatim) ---
+   
     function searchLocation(addressFieldId, type) {
         const addressInput = document.getElementById(addressFieldId);
         if (!addressInput) {
@@ -220,11 +215,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.length > 0) {
                     const lat = parseFloat(data[0].lat);
                     const lon = parseFloat(data[0].lon);
-                    mapInstance.setView([lat, lon], 15); // Centrer et zoomer sur le résultat
+                    mapInstance.setView([lat, lon], 15); 
 
                     const popupContent = `Adresse trouvée: ${data[0].display_name}`;
                     updateMarkerAndFields(mapInstance, type, lat, lon, popupContent);
-                    addressInput.value = data[0].display_name; // Met à jour le champ texte avec l'adresse complète
+                    addressInput.value = data[0].display_name; 
                 } else {
                     alert(`Aucune adresse trouvée pour "${address}".`);
                 }
@@ -235,8 +230,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // --- LIAISON DES ÉLÉMENTS DU FORMULAIRE ---
-    initializeMaps(); // Initialiser les cartes au chargement du DOM
+   
+    initializeMaps(); 
 
     const demandeTrajetForm = document.getElementById('demandeTrajetForm');
     if (!demandeTrajetForm) {
@@ -244,24 +239,24 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Boutons de recherche d'adresse
+
     const searchDepartButton = document.getElementById('search_depart_button');
     if (searchDepartButton) searchDepartButton.addEventListener('click', () => searchLocation(ID_ADRESSE_DEPART, 'depart'));
     const searchArriveeButton = document.getElementById('search_arrivee_button');
     if (searchArriveeButton) searchArriveeButton.addEventListener('click', () => searchLocation(ID_ADRESSE_ARRIVEE, 'arrivee'));
 
-    // Boutons de géolocalisation
+  
     const geolocationDepartButton = document.getElementById('geolocation_depart_button');
     if (geolocationDepartButton) geolocationDepartButton.addEventListener('click', () => window.getUserPosition('depart'));
     const geolocationArriveeButton = document.getElementById('geolocation_arrivee_button');
     if (geolocationArriveeButton) geolocationArriveeButton.addEventListener('click', () => window.getUserPosition('arrivee'));
 
 
-    // --- GESTION DE LA SOUMISSION DU FORMULAIRE AJAX ---
+   
     demandeTrajetForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Récupérer les champs de coordonnées pour validation
+        
         const latDepartField = document.getElementById(ID_LATITUDE_DEPART);
         const lngDepartField = document.getElementById(ID_LONGITUDE_DEPART);
         const adresseDepartField = document.getElementById(ID_ADRESSE_DEPART);
@@ -270,28 +265,28 @@ document.addEventListener("DOMContentLoaded", function () {
         const lngArriveeField = document.getElementById(ID_LONGITUDE_ARRIVEE);
         const adresseArriveeField = document.getElementById(ID_ADRESSE_ARRIVEE);
 
-        clearFormErrors(); // Nettoyer les messages d'erreur précédents
+        clearFormErrors(); 
 
         let formIsValid = true;
 
-        // Validation du point de départ (obligatoire)
+        
         if (!latDepartField.value || !lngDepartField.value || isNaN(parseFloat(latDepartField.value)) || isNaN(parseFloat(lngDepartField.value)) || !adresseDepartField.value.trim()) {
             displayFieldError(ID_ADRESSE_DEPART, "Veuillez définir un point de départ sur la carte (clic ou recherche).");
             formIsValid = false;
         }
 
-        // Validation du point d'arrivée (si l'adresse d'arrivée est renseignée, les coords doivent l'être, sinon les coords doivent être vides)
+        
         if (adresseArriveeField.value.trim()) {
             if (!latArriveeField.value || !lngArriveeField.value || isNaN(parseFloat(latArriveeField.value)) || isNaN(parseFloat(lngArriveeField.value))) {
                 displayFieldError(ID_ADRESSE_ARRIVEE, "Si vous avez entré une adresse d'arrivée, veuillez la sélectionner sur la carte ou utiliser le bouton de recherche.");
                 formIsValid = false;
             }
         } else {
-            // Si l'adresse d'arrivée est vide, les coordonnées doivent aussi être vides
+           
             if (latArriveeField.value || lngArriveeField.value) {
-                // Si des coordonnées sont là sans adresse, on les efface et on prévient l'utilisateur
+               
                 displayFieldError(ID_ADRESSE_ARRIVEE, "Si vous avez défini un point d'arrivée sur la carte, veuillez renseigner l'adresse d'arrivée ou effacer le point.");
-                // Effacer les coordonnées et le marqueur pour éviter l'envoi de données incohérentes
+        
                 latArriveeField.value = '';
                 lngArriveeField.value = '';
                 if (markerArrivee) {
@@ -343,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 displayGeneralSuccess(data.message || 'Votre demande de trajet a été soumise avec succès !');
 
                 demandeTrajetForm.reset();
-                // Réinitialiser les champs cachés et les marqueurs après succès
+               
                 document.getElementById(ID_LATITUDE_DEPART).value = '';
                 document.getElementById(ID_LONGITUDE_DEPART).value = '';
                 document.getElementById(ID_LATITUDE_ARRIVEE).value = '';
@@ -351,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (markerDepart) { mapDepart.removeLayer(markerDepart); markerDepart = null; }
                 if (markerArrivee) { mapArrivee.removeLayer(markerArrivee); markerArrivee = null; }
                 
-                // Réinitialiser la vue des cartes
+             
                 mapDepart.setView(defaultCoords, defaultZoom);
                 mapArrivee.setView(defaultCoords, defaultZoom);
 
@@ -381,7 +376,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-    // --- Fonctions utilitaires d'affichage des messages ---
+
 
     function displayGeneralSuccess(message) {
         const successDiv = document.getElementById('message_success');
@@ -397,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const successDiv = document.getElementById('message_success');
         const errorDiv = document.getElementById('message_error');
         if (errorDiv) {
-            errorDiv.innerHTML = message; // Use innerHTML to allow for <br>
+            errorDiv.innerHTML = message; 
             errorDiv.style.display = 'block';
         }
         if (successDiv) successDiv.style.display = 'none';
@@ -407,7 +402,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const field = document.getElementById(fieldId);
         if (field) {
             field.classList.add('is-invalid');
-            let feedbackDiv = document.getElementById(`error_${fieldId.replace('id_', '')}`); // Adjust ID for error div
+            let feedbackDiv = document.getElementById(`error_${fieldId.replace('id_', '')}`);
             if (!feedbackDiv) {
                  feedbackDiv = document.createElement('div');
                  feedbackDiv.classList.add('invalid-feedback');
@@ -427,7 +422,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('message_error').style.display = 'none';
     }
 
-    // Fonction pour afficher les erreurs reçues de Django (via form.errors.as_json())
     function displayFormErrors(errors) {
         clearFormErrors();
 
@@ -441,7 +435,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const field = document.getElementById(`id_${fieldName}`);
                     if (field) {
                         field.classList.add('is-invalid');
-                        let feedbackDiv = document.getElementById(`error_${fieldName}`); // Assurez-vous que l'ID correspond au template
+                        let feedbackDiv = document.getElementById(`error_${fieldName}`); 
                         if (!feedbackDiv) { 
                             feedbackDiv = document.createElement('div');
                             feedbackDiv.classList.add('invalid-feedback');

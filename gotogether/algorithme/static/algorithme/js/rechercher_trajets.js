@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Bouton 'searchArriveeAddressBtn' introuvable.");
     }
 
-    // --- Gestion de la soumission du formulaire de recherche (AJAX) ---
+   
     const rechercheForm = document.getElementById("rechercheTrajetForm");
     if (rechercheForm) {
         rechercheForm.addEventListener("submit", function (event) {
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Validation du point de départ (obligatoire)
+        
             if (!departLatField.value || !departLngField.value || isNaN(parseFloat(departLatField.value)) || isNaN(parseFloat(departLngField.value))) {
                 departCoordsErrorDiv.style.display = 'block';
                 isValid = false;
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 departCoordsErrorDiv.style.display = 'none';
             }
 
-            // Validation du point d'arrivée (si l'adresse d'arrivée est renseignée)
+           
             if (arriveeAdresseField.value.trim() !== '') {
                 if (!arriveeLatField.value || !arriveeLngField.value || isNaN(parseFloat(arriveeLatField.value)) || isNaN(parseFloat(arriveeLngField.value))) {
                     arriveeCoordsErrorDiv.style.display = 'block';
@@ -209,22 +209,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("📡 Réponse reçue, status:", response.status);
 
                 if (!response.ok) {
-                    // Si la réponse n'est pas OK, on lit le corps en texte pour éviter l'erreur "body stream already read"
-                    // On essaie ensuite de le parser en JSON.
+                  
                     return response.text().then(text => {
                         try {
-                            const errorData = JSON.parse(text); // Tente de parser en JSON
-                            // Si c'est du JSON et contient des erreurs, renvoie-les
+                            const errorData = JSON.parse(text); 
                             return Promise.reject({ status: response.status, errors: errorData.errors || { '__all__': ['Erreur du serveur (format JSON).'] } });
                         } catch (e) {
-                            // Si ce n'est pas du JSON (ou si le parsing échoue), c'est une erreur inattendue
+                           
                             console.error("Réponse du serveur non-JSON en cas d'erreur HTTP:", text.substring(0, 500));
-                            // Utiliser Promise.reject pour propager l'erreur au catch global
+                           
                             return Promise.reject({ status: response.status, errors: { '__all__': [`Erreur serveur (${response.status}): Réponse inattendue. Veuillez vérifier le serveur.`] } });
                         }
                     });
                 }
-                // Si la réponse est OK, on la lit toujours en JSON
+               
                 return response.json();
             })
             .then(data => {
@@ -264,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (data.trajets && data.trajets.length > 0) {
                         data.trajets.forEach(trajet => {
-                            // Note: Le champ `distance` doit être `distance_depart` et `distance_arrivee` comme dans votre JSON de test
+                           
                             const trajetCardHTML = `
                                 <div class="col-md-6 col-lg-4 mb-4">
                                     <div class="card driver-card">
@@ -296,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 } else {
-                    // Les erreurs sont déjà parsées par le bloc catch du fetch, donc on affiche directement
+                    
                     displayFormErrors(data.errors ? JSON.parse(data.errors) : { '__all__': ['Une erreur inattendue est survenue côté serveur.'] });
                 }
             })
@@ -313,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else if (error && error.message) {
                     errorMessage = error.message;
                 }
-                // N'alerte que si aucune erreur spécifique n'a été affichée via displayFormErrors
+               
                 if (!error.errors || Object.keys(error.errors).length === 0) {
                     alert("❌ " + errorMessage);
                 }
@@ -323,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Formulaire 'rechercheTrajetForm' introuvable. Les fonctionnalités de recherche pourraient être limitées.");
     }
 
-    // Fonctions utilitaires pour afficher/effacer les erreurs du formulaire
+    
     function displayFormErrors(errors) {
         const rechercheFormElement = document.getElementById("rechercheTrajetForm");
         if (!rechercheFormElement) {
@@ -333,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         clearFormErrors();
 
-        // Si `errors` est une chaîne, tente de la parser comme JSON
+      
         if (typeof errors === 'string') {
             try {
                 errors = JSON.parse(errors);
@@ -358,7 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         });
                         nonFieldErrorsDiv.style.display = 'block';
                     } else {
-                        // Fallback pour les erreurs globales si le div d'alerte n'existe pas
+                        
                         console.warn("Div pour les erreurs générales non trouvé. Erreurs:", errorMessages);
                         alert("Erreur générale du formulaire: " + errorMessages.join(', '));
                     }

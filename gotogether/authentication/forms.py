@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from algorithme.models import Conducteur , Passager
 
 # formulaire pour la connexion des utilisateurs
 class LoginForm(forms.Form):
@@ -79,6 +80,7 @@ class SignUpForm(forms.ModelForm):
         confirm_password = cleaned_data.get("confirm_password") # on recupere la confirmation du mot de passe
         email = cleaned_data.get("email")
         numero_telephone = cleaned_data.get("numero_telephone")
+        
 
         # Vérification unicité email
         if get_user_model().objects.filter(email=email).exists():
@@ -91,6 +93,28 @@ class SignUpForm(forms.ModelForm):
         # Vérification mot de passe identique
         if password and confirm_password and password != confirm_password:
             self.add_error('confirm_password', "Les mots de passe ne correspondent pas.")
+    
+    def save(self, commit=True):
+        # Créer l'utilisateur avant de créer le profil
+        user = get_user_model()(
+            first_name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'],
+            email=self.cleaned_data['email'],
+            
+            numero_telephone=self.cleaned_data['numero_telephone'],
+            username=self.cleaned_data['email'], 
+        )
+        user.set_password(self.cleaned_data['password'])
+
+        if commit:
+            user.save() 
+
+            role = self.cleaned_data.get('role')
+            if role == 'passager':
+                Passager.objects.create(user=user)
+            elif role == 'conducteur':
+                Conducteur.objects.create(user=user)
+        return user
 
         
 
