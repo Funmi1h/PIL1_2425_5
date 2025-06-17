@@ -109,12 +109,10 @@ class ProposerTrajetForm(forms.ModelForm):
         fields = [
             'adresse_depart', 'latitude_depart', 'longitude_depart', 'heure_depart_prevue',
             'adresse_arrivee', 'latitude_arrivee', 'longitude_arrivee', 'heure_arrivee_prevue',
-<<<<<<< HEAD
-            'nb_places_disponibles', 
-=======
-            'nb_places_disponibles'
->>>>>>> 2a5589fe8c4448c6dd87de209c3bf5d33d1d6fdc
-        ]
+
+            'nb_places_disponibles', ]
+         
+
         widgets = {
             'heure_depart_prevue': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'heure_arrivee_prevue': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
