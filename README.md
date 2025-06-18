@@ -40,6 +40,60 @@ Chaque année, les élèves de la premiere année de l'Institut de Formation et 
     </pre>
   3. Cloner le dépot dans le dossier
      <pre>
-       (env) git clone https://github.com/rosasbehoundja/PIL1_2324_2.git
+       (env) git clone https://github.com/Funmi1h/PIL1_2425_5.git
+     </pre>
+  4. Naviguer dans le répertoire du projet
+     <pre>
+          (env) cd PIL1_2425_5
      </pre>
 
+  5. Installer les dépendances
+     <pre>
+          (env) pip install -r requirements.txt
+     </pre>
+   6. Configurer la base de données dans le fichier settings.py
+      * Avec MySQL
+         
+      <pre>
+                     DATABASES = {
+            'default': {
+              'ENGINE': 'django.db.backends.mysql',
+              'NAME': 'your_db_name',
+              'USER': 'your_db_user',
+              'PASSWORD': 'your_db_password',
+              'HOST': 'your_db_host',  # Mettre à '127.0.0.1' ou 'localhost'
+              'PORT': '3306',          # Port par défaut de mysql
+              }
+          }
+  
+      </pre>
+
+        * Avec Postgre SQL
+          <pre>
+                         DATABASES = {
+              'default': {
+                  'ENGINE': 'django.db.backends.postgresql',
+                  'NAME': 'your_db_name',
+                  'USER': 'your_db_user',
+                  'PASSWORD': 'your_db_password',
+                  'HOST': 'localhost',
+                  'PORT': '5432', #Port par défaut de PostegreSQL
+              }
+          }
+          </pre>
+7. Effectuer les migrations
+   <pre>
+        (env) python manage.py  makemigrations
+        (env) python manage.py migrate
+   </pre>
+8. Démarrer le serveur de développement
+   * Démarrer le serveur sans vouloir tester le fonctionnement de la messagerie
+   <pre>
+        (env) python manage.py runserver 
+   </pre>
+
+   * Démarrer le serveur pour tout expérimenté en temps réel
+   <pre>
+        (env) daphne gotogether.asgi:application 
+   </pre>
+     
