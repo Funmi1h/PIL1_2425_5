@@ -51,7 +51,7 @@ Chaque année, les élèves de la premiere année de l'Institut de Formation et 
      <pre>
           (env) pip install -r requirements.txt
      </pre>
-   6. Configurer la base de données dans le fichier settings.py
+   6. Configurer la base de données dans le fichier [settings.py](https://github.com/Funmi1h/PIL1_2425_5/blob/main/gotogether/gotogether/settings.py)
       * Avec MySQL
          
       <pre>
