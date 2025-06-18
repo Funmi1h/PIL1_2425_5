@@ -3,86 +3,90 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'authentication/css/style.css'%}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+
 
 
 
 {% endblock %}
 
 {% block content %}
-<h1 class="app-title">
-    <img src="{% static 'authentication/logo.svg' %}" alt="">
-</h1>
-<h2 class="page-title">Inscription</h2>
+<div class="card cadre-principal">
+    <h1 class="app-title">
+        <img src="{% static 'authentication/logo.svg' %}" alt="">
+    </h1>
+    <h2 class="page-title">Inscription</h2>
 
-<form action="" method="post" class="signup-form" novalidate>
-    {% csrf_token %}
+    <form action="" method="post" class="signup-form" novalidate>
+        {% csrf_token %}
 
-    {% if message %}
-        <li class="message-error">{{ message }}</li>
-    {% endif %}
+        {% if message %}
+            <li class="message-error">{{ message }}</li>
+        {% endif %}
 
-    <!-- Prénom -->
-    <label for="id_first_name" class="form-label">Prénom</label>
-    {{ form.first_name }}
-    {% if form.first_name.errors %}
-        <small class="error-message">{{ form.first_name.errors.0 }}</small>
-    {% endif %}
+        <!-- Prénom -->
+        <label for="id_first_name" class="form-label">Prénom</label>
+        {{ form.first_name }}
+        {% if form.first_name.errors %}
+            <small class="error-message">{{ form.first_name.errors.0 }}</small>
+        {% endif %}
 
-    <!-- Nom -->
-    <label for="id_last_name" class="form-label">Nom</label>
-    {{ form.last_name }}
-    {% if form.last_name.errors %}
-        <small class="error-message">{{ form.last_name.errors.0 }}</small>
-    {% endif %}
+        <!-- Nom -->
+        <label for="id_last_name" class="form-label">Nom</label>
+        {{ form.last_name }}
+        {% if form.last_name.errors %}
+            <small class="error-message">{{ form.last_name.errors.0 }}</small>
+        {% endif %}
 
-    <!-- Email -->
-    <label for="id_email" class="form-label">E-mail</label>
-    {{ form.email }}
-    <small class="error-message" id="email-error"></small>
-    {% if form.email.errors %}
-        <small class="error-message">{{ form.email.errors.0 }}</small>
-    {% endif %}
+        <!-- Email -->
+        <label for="id_email" class="form-label">E-mail</label>
+        {{ form.email }}
+        <small class="error-message" id="email-error"></small>
+        {% if form.email.errors %}
+            <small class="error-message">{{ form.email.errors.0 }}</small>
+        {% endif %}
 
-    <!-- Numéro de téléphone -->
-    <label for="id_numero_telephone" class="form-label">Numéro de téléphone</label>
-    {{ form.numero_telephone }}
-    {% if form.numero_telephone.errors %}
-        <small class="error-message">{{ form.numero_telephone.errors.0 }}</small>
-    {% endif %}
+        <!-- Numéro de téléphone -->
+        <label for="id_numero_telephone" class="form-label">Numéro de téléphone</label>
+        {{ form.numero_telephone }}
+        {% if form.numero_telephone.errors %}
+            <small class="error-message">{{ form.numero_telephone.errors.0 }}</small>
+        {% endif %}
 
-    <!-- Rôle -->
-    <label for="id_role" class="form-label">Rôle</label>
-    {{ form.role }}
-    {% if form.role.errors %}
-        <small class="error-message">{{ form.role.errors.0 }}</small>
-    {% endif %}
+        <!-- Rôle -->
+        <label for="id_role" class="form-label">Rôle</label>
+        {{ form.role }}
+        {% if form.role.errors %}
+            <small class="error-message">{{ form.role.errors.0 }}</small>
+        {% endif %}
 
-    <!-- Mot de passe -->
-    <label for="id_password" class="form-label">Mot de passe</label>
-    <div class="password-field">
-        {{ form.password }}
-        <span class="toggle-password"><i class="fa fa-eye" id="togglePasswordIcon1"></i></span>
-    </div>
-    <small class="error-message" id="password-error"></small>
-    {% if form.password.errors %}
-        <small class="error-message">{{ form.password.errors.0 }}</small>
-    {% endif %}
+        <!-- Mot de passe -->
+        <label for="id_password" class="form-label">Mot de passe</label>
+        <div class="password-field">
+            {{ form.password }}
+            <span class="toggle-password"><i class="fa fa-eye" id="togglePasswordIcon1"></i></span>
+        </div>
+        <small class="error-message" id="password-error"></small>
+        {% if form.password.errors %}
+            <small class="error-message">{{ form.password.errors.0 }}</small>
+        {% endif %}
 
-    <!-- Confirmation -->
-    <label for="id_confirm_password" class="form-label">Confirmer le mot de passe</label>
-    <div class="password-field">
-        {{ form.confirm_password }}
-        <span class="toggle-password"><i class="fa fa-eye" id="togglePasswordIcon2"></i></span>
-    </div>
-    <small class="error-message" id="confirm-password-error"></small>
-    {% if form.confirm_password.errors %}
-        <small class="error-message">{{ form.confirm_password.errors.0 }}</small>
-    {% endif %}
+        <!-- Confirmation -->
+        <label for="id_confirm_password" class="form-label">Confirmer le mot de passe</label>
+        <div class="password-field">
+            {{ form.confirm_password }}
+            <span class="toggle-password"><i class="fa fa-eye" id="togglePasswordIcon2"></i></span>
+        </div>
+        <small class="error-message" id="confirm-password-error"></small>
+        {% if form.confirm_password.errors %}
+            <small class="error-message">{{ form.confirm_password.errors.0 }}</small>
+        {% endif %}
 
-    <button type="submit" class="submit-btn">S'inscrire</button>
-</form>
+        <button type="submit" class="submit-btn">S'inscrire</button>
+    </form>
 
-<a href="{% url 'login' %}" class="login-link">Déjà un compte? Se connecter</a>
+    <a href="{% url 'login' %}" class="login-link">Déjà un compte? Se connecter</a>
+</div>
 
 <!-- Validation JavaScript -->
 <script>

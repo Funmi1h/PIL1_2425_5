@@ -1,9 +1,22 @@
 {% extends 'base.html' %}
 
 {% block head %}
+
+<link href="https://fonts.googleapis.com/css2?family=Averia+Libre&display=swap" rel="stylesheet">
+
+
 <style>
-  .suggestions {
-    margin-top: 3rem;
+  body{
+    font-family: 'Averia Libre', cursive;
+    background-color: #c7d0ec;
+  }
+  .container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem; 
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    background-color: white;
+    border-radius: 12px;
   }
   .suggestion_user {
     display: flex;
@@ -37,6 +50,25 @@
   .suggestion_user .info small {
     color: #6c757d;
   }
+
+  .conversation_entry:hover {
+  background-color: #f1f5ff;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.conversation_entry ion-icon {
+  color: #adb5bd;
+}
+
+.text-primary {
+  font-weight: bold;
+}
+
+
+.text-primary.fw-semibold {
+  color: #0d6efd !important;
+  font-weight: 600;
+}
 </style>
 {% endblock %}
 
@@ -45,24 +77,46 @@
   <h1>Vos Messages</h1>
   <p>Commencez par discuter avec d'autres utilisateurs</p>
 
-  {% if user_data %}
-    <ul class="all_users">
-      {% for item in user_data %}
-        <a href="{% url 'chat_room' item.user.id %}" class="each_user d-block mb-3">
-          <strong>{{ item.user.first_name }} {{ item.user.last_name }}</strong><br>
-          {% if item.last_message %}
-            <small class="text-muted">{{ item.last_message.content|truncatechars:50 }}</small><br>
-            <small class="text-muted fst-italic">{{ item.last_message.timestamp|date:"d/m/Y H:i" }}</small>
-          {% else %}
-            <small class="text-muted">Aucun message</small>
-          {% endif %}
-        </a>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="text-muted">Vous n'avez pas encore de conversations.</p>
-  {% endif %}
 
+
+
+  {% if user_data %}
+  <ul class="conversation_list p-0">
+    {% for item in user_data %}
+      <a href="{% url 'chat_room' item.user.id %}" class="conversation_entry d-flex align-items-center p-3 mb-3 rounded shadow-sm text-decoration-none text-dark">
+        
+        {% if item.user.photo_profil %}
+          <img src="{{ item.user.photo_profil.url }}" class="rounded-circle me-3" alt="{{ item.user.get_full_name }}" width="50" height="50">
+        {% else %}
+          <ion-icon name="person-circle-outline" class="me-3" style="font-size: 50px;"></ion-icon>
+        {% endif %}
+        
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <strong>{{ item.user.first_name }} {{ item.user.last_name }}</strong>
+            {% if item.last_message %}
+              <small class="text-muted">{{ item.last_message.timestamp|date:"d/m/Y H:i" }}</small>
+            {% endif %}
+          </div>
+          
+          {% if item.last_message %}
+            <div class="{% if item.last_message.sender != request.user and not item.last_message.read %}text-primary fw-semibold{% else %}text-muted{% endif %} small">
+              {{ item.last_message.content|truncatechars:50 }}
+            </div>
+          {% else %}
+            <small class="text-muted fst-italic">Aucun message</small>
+          {% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="text-muted">Vous n'avez pas encore de conversations.</p>
+{% endif %}
+
+
+
+  <!--Suggestion de gens avec qui écrire-->
   {% if suggested_users %}
   <div class="suggestions">
     <h2>Suggestions d’utilisateurs avec qui discuter</h2>

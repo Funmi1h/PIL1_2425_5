@@ -21,8 +21,8 @@ Chaque année, les élèves de la premiere année de l'Institut de Formation et 
 * Suggestions de passagers ou de conducteurs : Découvrez en fonction de votre rôle des suggestions de trajets proposés par de conducteur ou des trajets demandés par des passagers.
 
 ## Installation 
-- [Python
-- [Django
+- [Python](https://www.python.org/downloads/)
+- [Django](https://www.djangoproject.com/)
 - Autres dépendances listés dans le fichier requirements.txt
 
      ## Installation
