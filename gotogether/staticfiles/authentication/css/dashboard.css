@@ -1,3 +1,8 @@
+
+body{
+    font-family: 'Averia Libre', cursive;
+    background-color: #c7d0ec;
+  }
 .dashboard {
     padding: 20px;
     max-width: 1000px;
@@ -41,3 +46,30 @@
 .alert {
     margin-top: 10px;
 }
+#got1{
+        border: 2px solid #007bff;       
+        padding: 10px;                    
+        margin: 20px auto;                
+        width: 80%;                       
+        border-radius: 12px;              
+        background-color: #f8f9fa;        
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+        align-items: center;
+        color: black;
+}
+#got2{
+        border: 2px solid #007bff;       
+        padding: 10px;                    
+        margin: 20px auto;                
+        width: 80%;                       
+        border-radius: 12px;              
+        background-color: #f8f9fa;        
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+        align-items: center;
+        color: black;
+}
+i.material-icons {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+

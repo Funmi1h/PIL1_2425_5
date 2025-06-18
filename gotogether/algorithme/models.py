@@ -38,33 +38,26 @@ class Conducteur(models.Model):
 class TrajetOffert(models.Model):
     conducteur = models.ForeignKey(Conducteur, on_delete=models.CASCADE, related_name='trajets_offerts')
 
-
-
-    class TrajetOffert(models.Model):
-    # ... autres champs ...
-        prix_par_passager = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
-    # Informations de départ du trajet
-
-    
-
-
-
     adresse_depart = models.CharField(max_length=255)
     latitude_depart = models.FloatField()
     longitude_depart = models.FloatField()
-    heure_depart_prevue = models.DateTimeField() 
+    heure_depart_prevue = models.TimeField() 
     adresse_arrivee = models.CharField(max_length=255, blank=True, null=True)
     latitude_arrivee = models.FloatField(null=True, blank=True)
     longitude_arrivee = models.FloatField(null=True, blank=True)
-    heure_arrivee_prevue = models.DateTimeField(null=True, blank=True) 
+    heure_arrivee_prevue = models.TimeField(null=True, blank=True) 
     nb_places_disponibles = models.IntegerField(default=1)
-    date_depart = models.DateField(null=True)    
+    date_depart = models.DateField()    
    
     est_actif = models.BooleanField(default=True)
     
 
     def __str__(self):
-        return f"Trajet de {self.conducteur.user.username} de {self.adresse_depart} le {self.heure_depart_prevue.strftime('%Y-%m-%d %H:%M')}"
+       
+        if self.date_depart and self.heure_depart_prevue:
+            return f"Trajet de {self.conducteur.user.username} de {self.adresse_depart} le {self.date_depart.strftime('%d/%m/%Y')} à {self.heure_depart_prevue.strftime('%H:%M')}"
+        else:
+            return f"Trajet de {self.conducteur.user.username} de {self.adresse_depart}"
 
     class Meta:
         ordering = ['heure_depart_prevue'] 
@@ -77,11 +70,12 @@ class DemandeTrajet(models.Model):
     adresse_depart = models.CharField(max_length=255)
     latitude_depart = models.FloatField()
     longitude_depart = models.FloatField()
-    heure_depart_prevue = models.DateTimeField() 
+    heure_depart_prevue = models.TimeField() 
     adresse_arrivee = models.CharField(max_length=255, blank=True, null=True)
     latitude_arrivee = models.FloatField(null=True, blank=True)
     longitude_arrivee = models.FloatField(null=True, blank=True)
-    heure_arrivee_prevue = models.DateTimeField(null=True, blank=True)
+    heure_arrivee_prevue = models.TimeField(null=True, blank=True)
+    date_depart = models.DateField(null=True)
     est_actif = models.BooleanField(default=True)
     
 

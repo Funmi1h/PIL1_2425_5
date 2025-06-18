@@ -1,0 +1,85 @@
+{% extends 'base.html' %} 
+{% block title %}Mes Trajets Offerts - Go Together{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Mes Trajets Offerts</h2>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if trajets_offerts %}
+        <div class="row">
+            {% for trajet in trajets_offerts %}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        Trajet du {{ trajet.date_depart|date:"d/m/Y" }} à {{ trajet.heure_depart_prevue|time:"H:i" }}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">De: {{ trajet.adresse_depart }}</h5>
+                        {% if trajet.adresse_arrivee %}
+                            <p class="card-text">À: {{ trajet.adresse_arrivee }}</p>
+                            <p class="card-text"><small class="text-muted">Arrivée prévue à: {{ trajet.heure_arrivee_prevue|time:"H:i" }}</small></p>
+                        {% else %}
+                            <p class="card-text"><small class="text-muted">Trajet sans destination finale spécifiée (point à point)</small></p>
+                        {% endif %}
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="bi bi-person-fill"></i> Places disponibles: {{ trajet.nombre_de_places_disponibles }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-currency-dollar"></i> Prix par place: {{ trajet.prix_par_place }} XOF
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-clock-history"></i> Créé le: {{ trajet.date_creation|date:"d/m/Y H:i" }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="bi bi-info-circle-fill"></i> Statut: 
+                                {% if trajet.is_active %}
+                                    <span class="badge bg-success">Actif</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactif</span>
+                                {% endif %}
+                            </li>
+                            {% if trajet.description %}
+                            <li class="list-group-item">
+                                <i class="bi bi-chat-dots-fill"></i> Description: {{ trajet.description }}
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                        {# Ajoutez des boutons d'action ici si nécessaire (ex: modifier, annuler) #}
+                        <a href="#" class="btn btn-sm btn-outline-secondary me-2">Modifier</a>
+                        <a href="#" class="btn btn-sm btn-outline-danger">Annuler</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            Vous n'avez pas encore proposé de trajets. <a href="{% url 'proposer_trajet' %}" class="alert-link">Proposez votre premier trajet maintenant !</a>
+        </div>
+    {% endif %}
+    
+    <div class="mt-4 text-center">
+        <a href="{% url 'proposer_trajet' %}" class="btn btn-success"><i class="bi bi-plus-circle-fill"></i> Proposer un nouveau trajet</a>
+    </div>
+
+</div>
+
+<script>
+        const MES_TRAJETS_OFFERTS_URL = "{% url 'mes_trajets_offerts' %}";
+        console.log("MES_TRAJETS_OFFERTS_URL définie:", MES_TRAJETS_OFFERTS_URL); // Utile pour le débogage
+    </script>
+{% endblock %}

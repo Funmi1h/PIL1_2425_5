@@ -214,4 +214,10 @@ body{
     font-size: 14px;
     text-align: left;
   }
+  .mag0{
+    order: 2!important;
+  }
+  .mag7{
+    order: 1!important;
+  }
 }

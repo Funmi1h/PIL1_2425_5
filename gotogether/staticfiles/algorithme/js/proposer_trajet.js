@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }).addTo(mapProposerDepart);
         mapProposerDepart.invalidateSize();
     } else {
-        // Supprimé : console.error("❌ Élément 'map_proposer_depart' introuvable dans le DOM. La carte de départ ne sera pas initialisée.");
+        console.error("❌ Élément 'map_proposer_depart' introuvable dans le DOM. La carte de départ ne sera pas initialisée.");
     }
 
     // --- Initialisation de la carte d'arrivée (pour la proposition de trajet) ---
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }).addTo(mapProposerArrivee);
         mapProposerArrivee.invalidateSize();
     } else {
-        // Supprimé : console.error("❌ Élément 'map_proposer_arrivee' introuvable dans le DOM. La carte d'arrivée ne sera pas initialisée.");
+        console.error("❌ Élément 'map_proposer_arrivee' introuvable dans le DOM. La carte d'arrivée ne sera pas initialisée.");
     }
 
     // --- Références aux champs de formulaire et divs d'erreur spécifiques à proposer_trajet.html ---
@@ -148,17 +148,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const result = await directGeocodeNominatim(address);
             if (result) {
                 const lat = result.lat;
-                const lng = result.lon; // <--- CORRECTION ICI : 'lon' renommé en 'lng'
-                const popupContent = `<b>${popupTitle}</b><br>${result.display_name}<br>Lat: ${lat.toFixed(6)}<br>Lng: ${lng.toFixed(6)}`;
-                updateMarkerAndFields(mapInstance, markerRef, lat, lng, popupContent, latInput, lngInput);
+                const lon = result.lon;
+                const popupContent = `<b>${popupTitle}</b><br>${result.display_name}<br>Lat: ${lat.toFixed(6)}<br>Lng: ${lon.toFixed(6)}`;
+                updateMarkerAndFields(mapInstance, markerRef, lat, lon, popupContent, latInput, lngInput);
                 if (addressInput) addressInput.value = result.display_name;
                 clearFieldError(addressInput.id.replace('id_', '')); // Nettoie l'erreur du champ d'adresse
                 
                 // Si ce sont les champs de départ, on valide explicitement les coordonnées
-                if (addressInput.id === 'id_adresse_depart' && (lat === 0 || lng === 0)) { // Correction ici aussi pour 'lng'
+                if (addressInput.id === 'id_adresse_depart' && (lat === 0 || lng === 0)) { // Si les coordonnées sont à 0, elles sont peut-être invalides
                     displayFieldError('latitude_depart', "Veuillez sélectionner un point de départ valide sur la carte.");
                     displayFieldError('longitude_depart', "Veuillez sélectionner un point de départ valide sur la carte.");
-                } else if (addressInput.id === 'id_adresse_arrivee' && (lat === 0 || lng === 0)) { // Correction ici aussi pour 'lng'
+                } else if (addressInput.id === 'id_adresse_arrivee' && (lat === 0 || lng === 0)) {
                     displayFieldError('latitude_arrivee', "Veuillez sélectionner un point d'arrivée valide sur la carte.");
                     displayFieldError('longitude_arrivee', "Veuillez sélectionner un point d'arrivée valide sur la carte.");
                 }
@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
             searchAndPlaceMarker(adresseDepartInput.value, mapProposerDepart, markerProposerDepartRef, latitudeDepartInput, longitudeDepartInput, adresseDepartInput, 'Adresse de Départ');
         });
     } else {
-        // Supprimé : console.error("❌ Champ 'id_adresse_depart' introuvable. L'autocomplétion de départ ne sera pas activée.");
+        console.error("❌ Champ 'id_adresse_depart' introuvable. L'autocomplétion de départ ne sera pas activée.");
     }
 
     if (adresseArriveeInput) {
@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
             searchAndPlaceMarker(adresseArriveeInput.value, mapProposerArrivee, markerProposerArriveeRef, latitudeArriveeInput, longitudeArriveeInput, adresseArriveeInput, 'Adresse d\'Arrivée');
         });
     } else {
-        // Supprimé : console.error("❌ Champ 'id_adresse_arrivee' introuvable. L'autocomplétion d'arrivée ne sera pas activée.");
+        console.error("❌ Champ 'id_adresse_arrivee' introuvable. L'autocomplétion d'arrivée ne sera pas activée.");
     }
 
 
@@ -388,23 +388,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     }
-    
-    // Fonction utilitaire pour afficher un message de succès général (non lié aux erreurs de validation)
-    function displayGeneralSuccess(message) {
-        const successDiv = document.getElementById('form-global-success'); // Assurez-vous d'avoir une div avec cet ID
-        if (successDiv) {
-            successDiv.innerHTML = `<div>${message}</div>`;
-            successDiv.style.display = 'block';
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-                successDiv.innerHTML = '';
-            }, 5000); // Cache le message après 5 secondes
-        } else {
-            console.log("Succès:", message); // Fallback si pas de div de succès
-            alert(message); // Ou un alert simple
-        }
-    }
-
 
     // --- Soumission du formulaire de proposition de trajet ---
     const proposerTrajetForm = document.getElementById("proposerTrajetForm");
@@ -445,7 +428,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 isValidClientSide = false;
             } else { clearFieldError('heure_depart_prevue'); }
 
-            if (!heureArriveePrevueInput || (adresseArriveeInput.value.trim() && !heureArriveePrevueInput.value.trim())) {
+            if (!heureArriveePrevueInput || adresseArriveeInput.value.trim() && !heureArriveePrevueInput.value.trim()) {
                 displayFieldError('heure_arrivee_prevue', 'L\'heure d\'arrivée est requise si une adresse d\'arrivée est spécifiée.');
                 isValidClientSide = false;
             } else { clearFieldError('heure_arrivee_prevue'); }
@@ -477,80 +460,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             })
             .then(response => {
-                console.log("📡 Réponse reçue, statut HTTP:", response.status);
-                
-                // Si la réponse n'est PAS OK (ex: 400 Bad Request, 500 Internal Server Error)
-                if (!response.ok) { 
-                    console.log("🚫 Réponse HTTP non OK. Tentative de lire le JSON d'erreur...");
-                    // Toujours tenter de lire la réponse comme du JSON si le statut n'est pas OK
-                    return response.json()
-                        .then(errorData => {
-                            console.log("❌ Erreurs JSON du serveur reçues et parsées:", errorData);
-                            if (errorData && errorData.errors) {
-                                displayFormErrors(errorData.errors); 
-                            } else {
-                                console.error("Le JSON d'erreur ne contient pas de clé 'errors' ou est mal formé:", errorData);
-                                displayFormErrors({ '__all__': [{ message: "Format d'erreur serveur inattendu. Voir console." }] });
-                            }
-                            // Important : Nous avons géré l'erreur du serveur et l'avons affichée.
-                            // Nous allons retourner un "rejet silencieux" pour ne pas déclencher le .catch final.
-                            // La chaîne de promesses s'arrête ici.
-                            return Promise.reject({ handled: true, message: 'Server validation errors displayed.' }); 
-                        })
-                        .catch(jsonParseError => {
-                            // C'est ici que l'on tombe si response.json() échoue vraiment (ex: si le corps n'est pas du JSON valide)
-                            console.error("🚫 Erreur irrécupérable lors du parsing JSON de la réponse d'erreur (réponse non-JSON valide):", jsonParseError);
-                            
-                            // Si json() échoue, on affiche une erreur générique et on rejette une promesse
-                            // pour le catch global, mais on ne re-lit pas le corps ici.
-                            displayFormErrors({ '__all__': [{ message: `Erreur inattendue du serveur (${response.status}). Le corps de la réponse n'est pas un JSON valide.` }] });
-                            
-                            // On renvoie un rejet "vrai" pour le catch final, qui saura alors quoi faire.
-                            return Promise.reject(new Error(`Invalid JSON server response body. HTTP Status: ${response.status}`));
+                console.log("📡 Réponse reçue, status:", response.status);
+                // Si la réponse n'est pas OK (ex: 400 Bad Request)
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        console.log("❌ Erreurs JSON du serveur reçues:", errorData);
+                        displayFormErrors(errorData.errors || {}); // S'attend à 'errors' dans le JSON
+                        throw new Error('Server validation failed'); // Pour passer au bloc .catch
+                    }).catch(jsonParseError => {
+                        console.error("Erreur lors du parsing JSON de la réponse d'erreur:", jsonParseError);
+                        // Tente de lire comme du texte pour voir ce que le serveur renvoie exactement
+                        return response.text().then(text => {
+                            console.error("Réponse brute du serveur en cas d'erreur HTTP:", text.substring(0, 500) + '...');
+                            displayFormErrors({ '__all__': [{ message: `Erreur inattendue du serveur (${response.status}). Réponse non JSON ou invalide.` }] });
+                            throw new Error('Non-JSON server response'); // Continue de propager l'erreur
                         });
+                    });
                 }
-                // Si la réponse est OK (statut 2xx)
-                console.log("✅ Réponse HTTP OK. Lecture du JSON de succès...");
-                return response.json(); 
+                return response.json(); // Traite la réponse réussie
             })
             .then(data => {
                 console.log("✅ Données JSON reçues (succès ou échec logique):", data);
 
-                clearFormErrors(); 
+                clearFormErrors(); // Nettoie toutes les erreurs précédentes
+                // Nettoyage des erreurs de coordonnées des cartes
+                // (maintenant géré par clearFieldError qui cible les divs invalid-feedback)
 
                 if (data.success) {
+                    // Redirection après un court délai
+                    // Assurez-vous que MES_TRAJETS_OFFERTS_URL est définie dans le template proposer_trajet.html
                     if (typeof MES_TRAJETS_OFFERTS_URL !== 'undefined') {
                         setTimeout(() => {
                             window.location.href = MES_TRAJETS_OFFERTS_URL;
-                        }, 1500); 
+                        }, 1500); // Redirection après 1.5 secondes (ajustez ce délai si vous voulez)
                     } else {
                         console.error("MES_TRAJETS_OFFERTS_URL n'est pas définie. Redirection automatique impossible.");
+                        // Fallback: Afficher un message persistant et/ou proposer un lien manuel
                         displayGeneralSuccess("Votre trajet a été proposé avec succès ! (Redirection automatique non disponible)");
+                        // Optionnel: document.getElementById('votre_lien_mes_trajets').style.display = 'block';
                     }
                 } else {
-                    console.warn("Le serveur a signalé un échec logique (success: false) avec statut OK.");
-                    // Ici, on gère les cas où le serveur envoie success: false mais avec un statut 200 OK.
-                    // C'est moins courant pour les erreurs de validation de formulaire mais possible pour d'autres échecs logiques.
+                    
+                    console.log("Le serveur a signalé un échec logique (success: false) avec statut OK.");
                     displayFormErrors(data.errors || { '__all__': ['Une erreur inattendue est survenue lors de la proposition du trajet (statut OK).'] });
                 }
             })
             .catch(error => {
-                // Ce bloc catch ne devrait s'exécuter que pour les erreurs non gérées précédemment
-                // ou pour des erreurs réseau pures, ou nos rejets spécifiques.
-                
-                // Si l'erreur a été marquée comme "gérée" (handled: true), on ne fait rien de plus.
-                if (error && error.handled) {
-                    console.log("L'erreur a déjà été gérée et affichée:", error.message);
-                    return; // Sortie précoce pour éviter le re-traitement
-                }
-
                 console.error("🚨 Erreur finale lors de la soumission du formulaire:", error);
                 
-                // Pour toute autre erreur inattendue (ex: problème réseau, erreur JavaScript non capturée, JSON invalide)
-                displayFormErrors({ '__all__': [{ message: "Une erreur réseau ou une erreur JavaScript inattendue est survenue: " + error.message }] });
+                if (!error.errors) { 
+                    displayFormErrors({ '__all__': [{ message: "Une erreur réseau ou une erreur inattendue est survenue." }] });
+                }
             });
         });
     } else {
-        // Supprimé : console.error("❌ Formulaire 'proposerTrajetForm' introuvable. Les fonctionnalités de proposition de trajet pourraient être limitées.");
+        console.error("❌ Formulaire 'proposerTrajetForm' introuvable. Les fonctionnalités de proposition de trajet pourraient être limitées.");
     }
 });
