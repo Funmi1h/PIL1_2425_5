@@ -20,3 +20,26 @@ Chaque année, les élèves de la premiere année de l'Institut de Formation et 
 * Liste des Discussions : Visualisez et accédez rapidement à vos discussions récentes.
 * Suggestions de passagers ou de conducteurs : Découvrez en fonction de votre rôle des suggestions de trajets proposés par de conducteur ou des trajets demandés par des passagers.
 
+## Installation 
+* [Python] 
+* [Django] 
+* Autres dépendances listés dans le fichier requirements.txt
+
+     ## Installation
+1.  Créer un dossier et l'ouvrir dans l'éditeur de code
+2.  Créer et activer l'environnement virtuel
+    - Sous Windows:
+    <pre>
+      python -m venv env
+     .\mon_env\Scripts\activate
+    </pre>
+    - Sous Linux:
+    <pre>
+        python3 -m venv mon env
+        source env/bin/activate
+    </pre>
+  3. Cloner le dépot dans le dossier
+     <pre>
+       (env) git clone https://github.com/rosasbehoundja/PIL1_2324_2.git
+     </pre>
+
