@@ -5,20 +5,21 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from .models import User
+from .models import User 
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from algorithme.utils import generate_suggestions_passagers, generate_suggestions_conducteurs
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-
+from algorithme.models import Passager , Conducteur
 from django.db import models
 from algorithme.utils import generate_suggestions_conducteurs , generate_suggestions_passagers
 
 from algorithme.models import TrajetOffert , DemandeTrajet
+import logging
 
-
+logger = logging.getLogger(__name__)
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
     form_class = forms.LoginForm
@@ -99,30 +100,98 @@ def logout_user(request):
     return redirect('login')
 
 #vue pour le dashboard
-@login_required
 def dashboard(request):
     user = request.user
     context = {
         'user': user,
-        'page_title': 'Mon Tableau de Bord'
+        'user_display_name': user.username, # Pour la cohérence avec le template
+        'page_title': 'Mon Tableau de Bord',
+        'suggestions_passagers': [],
+        'suggestions_conducteur': [],
+        'derniers_trajets_offerts': [],
+        'dernieres_recherches_trajets': [],
+        'suggestions_passagers_error': None,
+        'suggestions_conducteur_error': None,
+        'derniers_trajets_offerts_error': None,
+        'dernieres_recherches_trajets_error': None,
     }
 
-    if user.role == 'conducteur':
-        
-        suggestions_passagers = generate_suggestions_passagers(user, rayon_km=10, tolerance_minutes=45)
-        context['suggestions_passagers'] = suggestions_passagers
-        
-       
-     
+    # --- Récupération des profils utilisateur ---
+    conducteur_profile = None
+    passager_profile = None
 
-    elif user.role == 'passager':
+    try:
+        if hasattr(user, 'conducteur_profile') and user.conducteur_profile:
+            conducteur_profile = user.conducteur_profile
+    except Conducteur.DoesNotExist:
+        logger.info(f"User {user.username} does not have a Conducteur profile.")
+    except AttributeError:
+        # Ceci peut arriver si le OneToOneField n'est pas configuré correctement
+        logger.warning(f"AttributeError: User {user.username} does not have 'conducteur_profile' attribute.")
 
-        suggestions_conducteurs = generate_suggestions_conducteurs(user, rayon_km=10, tolerance_minutes=45)
-        context['suggestions_conducteurs'] = suggestions_conducteurs
-       
-       
-        
-    return render (request,'authentication/dashboard.html', context={'user' : user})
+    try:
+        if hasattr(user, 'passager_profile') and user.passager_profile:
+            passager_profile = user.passager_profile
+    except Passager.DoesNotExist:
+        logger.info(f"User {user.username} does not have a Passager profile.")
+    except AttributeError:
+        logger.warning(f"AttributeError: User {user.username} does not have 'passager_profile' attribute.")
+
+
+    # --- Logique pour les SUGGESTIONS (basée sur le rôle de l'utilisateur) ---
+
+    # Suggestions de trajets pour l'utilisateur en tant que Passager
+    if user.role == 'passager' and passager_profile:
+        try:
+            # Assurez-vous que generate_suggestions_passagers prend 'user' ou 'passager_profile'
+            context['suggestions_passagers'] = generate_suggestions_passagers(user, rayon_km=10, tolerance_minutes=45)
+        except Exception as e:
+            logger.error(f"Erreur suggestions passagers pour {user.username}: {e}", exc_info=True)
+            context['suggestions_passagers_error'] = "Impossible de charger les suggestions de trajets. Veuillez réessayer."
+    elif user.role == 'passager' and not passager_profile:
+        context['suggestions_passagers_error'] = "Vous devez avoir un profil passager pour voir les suggestions de trajets."
+
+
+    # Suggestions de passagers pour l'utilisateur en tant que Conducteur
+    if user.role == 'conducteur' and conducteur_profile:
+        try:
+            # Assurez-vous que generate_suggestions_conducteurs prend 'user' ou 'conducteur_profile'
+            context['suggestions_conducteur'] = generate_suggestions_conducteurs(user, rayon_km=10, tolerance_minutes=45)
+        except Exception as e:
+            logger.error(f"Erreur suggestions conducteurs pour {user.username}: {e}", exc_info=True)
+            context['suggestions_conducteur_error'] = "Impossible de charger les suggestions de passagers. Veuillez réessayer."
+    elif user.role == 'conducteur' and not conducteur_profile:
+        context['suggestions_conducteur_error'] = "Vous devez avoir un profil conducteur pour voir les suggestions de passagers."
+
+
+    # --- Logique pour l'HISTORIQUE des trajets/recherches (affichée quel que soit le rôle) ---
+
+    # Derniers trajets offerts (si l'utilisateur est un conducteur)
+    if conducteur_profile: # Vérifier si le profil conducteur existe
+        try:
+            context['derniers_trajets_offerts'] = TrajetOffert.objects.filter(
+                conducteur=conducteur_profile
+            ).order_by('-date_depart', '-heure_depart_prevue')[:5]
+        except Exception as e:
+            logger.error(f"Erreur chargement derniers trajets offerts pour {user.username}: {e}", exc_info=True)
+            context['derniers_trajets_offerts_error'] = "Impossible de charger vos derniers trajets offerts."
+    else:
+        context['derniers_trajets_offerts_error'] = "Vous devez avoir un profil conducteur pour voir vos trajets offerts."
+
+
+    # Dernières recherches de trajets (si l'utilisateur est un passager)
+    if passager_profile: # Vérifier si le profil passager existe
+        try:
+            context['dernieres_recherches_trajets'] = DemandeTrajet.objects.filter(
+                passager=passager_profile # Assurez-vous que le champ est 'passager'
+            ).order_by('-date_recherche', '-heure_depart_preferee')[:5]
+        except Exception as e:
+            logger.error(f"Erreur chargement dernières recherches pour {user.username}: {e}", exc_info=True)
+            context['dernieres_recherches_trajets_error'] = "Impossible de charger vos dernières recherches de trajets."
+    else:
+        context['dernieres_recherches_trajets_error'] = "Vous devez avoir un profil passager pour voir vos recherches de trajets."
+
+    return render(request, 'authentication/dashboard.html', context)
 
 
 # vue pour changer le mot de passe
