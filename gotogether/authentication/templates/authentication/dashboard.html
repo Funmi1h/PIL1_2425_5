@@ -47,12 +47,12 @@
            <div class="card mb-4">
                 <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
                 <div class="card-body">
-                    {% if suggestions_passagers %}
+                    {% if suggestions_conducteurs %}
                         <ul class="list-group">
-                            {% for suggestion in suggestions_passagers %}
+                            {% for suggestion in suggestions_conducteurs %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        {{ suggestion.conducteur.user.first_name }} propose un trajet 
+                                        {{ suggestion.conducteur.user.username }} propose un trajet 
                                         <strong>{{ suggestion.adresse_depart }}</strong> → 
                                         <strong>{{ suggestion.adresse_arrivee }}</strong><br>
                                         le {{ suggestion.heure_depart_prevue|date:"d/m/Y" }} à 
@@ -77,12 +77,12 @@
            <div class="card mb-4">
                 <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
                 <div class="card-body">
-                    {% if suggestions_conducteur %}
+                    {% if suggestions_passagers %}
                         <ul class="list-group">
-                            {% for suggestion in suggestions_conducteur %}
+                            {% for suggestion in suggestions_passagers %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        {{ suggestion.passager.user.first_name }} recherche un trajet 
+                                        {{ suggestion.passager.user.username }} recherche un trajet 
                                         <strong>{{ suggestion.adresse_depart }}</strong> → 
                                         <strong>{{ suggestion.adresse_arrivee }}</strong><br>
                                         le {{ suggestion.heure_depart_prevue|date:"d/m/Y" }} à 

@@ -2,6 +2,7 @@ from math import radians, sin, cos, sqrt, atan2 ,asin
 from datetime import datetime, timedelta
 from . import models
 from .models import TrajetOffert
+from datetime import datetime, timedelta, date
 # Formule de haversine pour le calcul de la distance entre deux points géographiques
 def Haversine(lat1, lon1, lat2, lon2):
     # Convertion des degrés en radians
@@ -38,54 +39,141 @@ def find_conducteurs_les_plus_proches(client_latitude, client_longitude, conduct
         }) """
     return conducteurs_proches
 
+def generate_suggestions_passagers(user, rayon_km=10, tolerance_minutes=45, limit=5):
 
+    
+    from algorithme.models import TrajetOffert, DemandeTrajet 
 
-# Pour générer les suggestions
-# pour les passagers
-def generate_suggestions_passagers(user, rayon_km, tolerance_minutes =30):
-    if user.role != 'passager' or not user.latitude or not user.longitude:
+    
+    if user.role != 'passager':
         return []
-    
 
-    trajets_actifs = TrajetOffert.objects.filter(est_actif=True, nb_places_disponibles__gt=0)
+    
+    der_demandes_passager = DemandeTrajet.objects.filter(passager=user)
+
+    
+    if not der_demandes_passager:
+        return []
+
     suggestions = []
-
-    for trajet in trajets_actifs:
-        dist_depart = Haversine(user.latitude, user.longitude, trajet.latitude_depart, trajet.longitude_depart)
-
-        if dist_depart <= rayon_km:
-            if user.heure_depart :
-                heure_depart_hab = datetime.combine(datetime.today(), user.heure_depart)
-                tolerance = timedelta(minutes= tolerance_minutes)
-
-            if abs(trajet.heure_depart_prevue - heure_depart_hab)<= tolerance:
-                suggestions.append(trajet)
     
 
-    return suggestions
+    
+    for demande_du_passager in der_demandes_passager: 
+        
+        
+        demande_lat = demande_du_passager.latitude_depart
+        demande_lon = demande_du_passager.longitude_depart
+        
+        
+        if demande_lat is None or demande_lon is None:
+            continue 
+
+       
+        demande_time_comparable = datetime.combine(date.today(), demande_du_passager.heure_depart_prevue)
+
+        
+        trajets_actifs = TrajetOffert.objects.filter(
+            est_actif=True,
+            nb_places_disponibles__gt=0,
+            date_depart__gte=date.today() 
+        )
+
+        tolerance = timedelta(minutes=tolerance_minutes)
+
+        
+        for trajet_offre in trajets_actifs: 
+            dist_depart = Haversine(
+                demande_lat, demande_lon,
+                trajet_offre.latitude_depart, trajet_offre.longitude_depart
+            )
+
+            
+            if dist_depart <= rayon_km:
+                
+                offre_time_comparable = datetime.combine(date.today(), trajet_offre.heure_depart_prevue)
+
+                
+                if abs(offre_time_comparable - demande_time_comparable) <= tolerance:
+                        suggestions.append(trajet_offre)
+
+            
+            
+            if len(suggestions) >= limit:
+                break 
+        
+        
+        if len(suggestions) >= limit:
+            break
+
+    
+    return suggestions[:limit]
+
 
 
 
 # pour les conducteurs 
+def generate_suggestions_conducteurs(user, rayon_km=10, tolerance_minutes=45, limit=5):
+  
+    from algorithme.models import TrajetOffert, DemandeTrajet
 
-def generate_suggestions_conducteurs(user, rayon_km, tolerance_minutes =30):
-    if user.role != 'conducteur' or not user.latitude or not user.longitude:
+    if user.role != 'conducteur':
         return []
-    
 
-    trajets_actifs = models.DemandeTrajet.objects.filter(est_actif=True)
+   
+    der_offres_conducteur = TrajetOffert.objects.filter(conducteur=user)
+
+    if not der_offres_conducteur:
+        return []
+
     suggestions = []
-
-    for trajet in trajets_actifs:
-        dist_depart = Haversine(user.latitude, user.longitude, trajet.latitude_depart, trajet.longitude_depart)
-
-        if dist_depart <= rayon_km:
-            if user.heure_depart :
-                heure_depart_hab = datetime.combine(datetime.today(), user.heure_depart)
-                tolerance = timedelta(minutes= tolerance_minutes)
-
-            if abs(trajet.heure_depart_prevue - heure_depart_hab)<= tolerance:
-                suggestions.append(trajet)
     
 
-    return suggestions
+    
+    for offre_du_conducteur in der_offres_conducteur:
+        
+        
+        offre_lat = offre_du_conducteur.latitude_depart
+        offre_lon = offre_du_conducteur.longitude_depart 
+        
+        if offre_lat is None or offre_lon is None:
+            continue
+
+        
+        offre_time_comparable = datetime.combine(date.today(), offre_du_conducteur.heure_depart_prevue)
+
+       
+        demandes_actives = DemandeTrajet.objects.filter(
+            est_actif=True,
+            date_trajet__gte=date.today()
+        ) 
+
+        tolerance = timedelta(minutes=tolerance_minutes)
+
+        
+        for demande_passager in demandes_actives:
+            dist_depart = Haversine(
+                offre_lat, offre_lon,
+                demande_passager.latitude_depart, demande_passager.longitude_depart
+            )
+
+            if dist_depart <= rayon_km:
+                
+                demande_time_comparable = datetime.combine(date.today(), demande_passager.heure_depart_souhaitee)
+
+               
+                if abs(demande_time_comparable - offre_time_comparable) <= tolerance:
+                
+                        suggestions.append(demande_passager)
+                        
+
+            if len(suggestions) >= limit:
+                break
+        
+        if len(suggestions) >= limit:
+            break
+
+    return suggestions[:limit]
+
+
+

@@ -1,0 +1,60 @@
+
+body{
+    font-family: 'Averia Libre', cursive;
+    background-color: #c7d0ec;
+  }
+  #map {
+
+    border-radius: 0 0 0.5rem 0.5rem; 
+    border-top: 1px solid #ddd; 
+  }
+  #id_adresse_depart {
+    border: 2px solid #007bff;       
+    padding: 10px;                    
+    margin: 20px auto;                
+    width: 80%;                       
+    border-radius: 12px;              
+    background-color: #f8f9fa;        
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+  }
+  button.card {
+    border: 2px solid #007bff;       
+    padding: 10px;                    
+    margin: 20px auto;                
+    width: 80%;                       
+    border-radius: 12px;              
+    background-color: #f8f9fa;        
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    align-items: center;
+  }
+  #id_heure_depart {
+    border: 2px solid #007bff;        
+    padding: 10px;                   
+    margin: 20px auto;                
+    width: 50%;                       
+    border-radius: 12px;              
+    background-color: #f8f9fa;       
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    align-items: left;
+  }
+  #id_adresse_arrivee {
+    border: 2px solid #007bff;        
+    padding: 10px;                   
+    margin: 20px auto;               
+    width: 50%;                      
+    border-radius: 12px;              
+    background-color: #f8f9fa;       
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  #id_heure_arrivee {
+    border: 2px solid #007bff;        
+    padding: 10px;                    
+    margin: 20px auto;                
+    width: 50%;                       
+    border-radius: 12px;              
+    background-color: #f8f9fa;        
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+  }
+
+
+  

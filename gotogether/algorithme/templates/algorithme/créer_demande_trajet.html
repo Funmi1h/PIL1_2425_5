@@ -28,7 +28,7 @@
         font-size: 0.875em;
         color: #dc3545;
     }
-   
+    
     .leaflet-control-user-position .btn {
         background-color: #fff;
         border: none;
@@ -64,7 +64,7 @@
     <form method="post" id="demandeTrajetForm" action="{% url 'creer_demande_trajet' %}">
         {% csrf_token %}
 
-       
+        
         <h3>Point de Départ</h3>
         <div class="mb-3">
             <label for="{{ form.adresse_depart.id_for_label }}" class="form-label">{{ form.adresse_depart.label }}</label>
@@ -79,6 +79,15 @@
         <div id="map_demande_depart" class="map-container"></div>
         {{ form.latitude_depart }}
         {{ form.longitude_depart }}
+
+        <div class="mb-3">
+            <label for="{{ form.date_depart.id_for_label }}" class="form-label">{{ form.date_depart.label }}</label>
+            {{ form.date_depart }}
+            <div id="error_date_depart" class="invalid-feedback"></div>
+            {% if form.date_depart.errors %}
+                <div class="invalid-feedback d-block">{{ form.date_depart.errors }}</div>
+            {% endif %}
+        </div>
 
         <div class="mb-3">
             <label for="{{ form.heure_depart_prevue.id_for_label }}" class="form-label">{{ form.heure_depart_prevue.label }}</label>

@@ -352,13 +352,11 @@ def proposer_trajet_view(request):
             return JsonResponse({'success': False, 'errors': {'__all__': [error_message]}}, status=403)
         return redirect('changer_profil')
     except AttributeError:
-        # Cette erreur peut se produire si request.user n'a pas l'attribut 'conducteur_profile'
-        # ce qui est différent de Conducteur.DoesNotExist
         error_message = "Erreur interne: Impossible d'accéder à votre profil conducteur. Contactez l'administrateur."
         logger.critical(f"❌ AttributeError: User {request.user.username} n'a pas d'attribut 'conducteur_profile'. Vérifiez le related_name dans le modèle Conducteur.", exc_info=True)
         messages.error(request, error_message)
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'errors': {'__all__': [error_message]}}, status=500) # Ou 403
+            return JsonResponse({'success': False, 'errors': {'__all__': [error_message]}}, status=500) 
         return redirect('changer_profil')
 
     # Vérification du rôle après avoir trouvé le profil pour éviter des redirections multiples
@@ -375,8 +373,6 @@ def proposer_trajet_view(request):
     form = ProposerTrajetForm() 
 
     if request.method == "POST":
-        # Les données, qu'elles proviennent d'AJAX (FormData) ou d'un POST normal,
-        # sont toujours dans request.POST (et request.FILES si des fichiers sont envoyés).
         form = ProposerTrajetForm(request.POST, request.FILES) # Ajout de request.FILES par bonne pratique
 
         if form.is_valid():
@@ -388,12 +384,19 @@ def proposer_trajet_view(request):
             logger.info(f"✅ Trajet proposé créé avec succès par {request.user.username} (ID: {trajet_offert.id}).")
             
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                # Retourne un succès JSON
                 return JsonResponse({
                     'success': True,
                     'message': 'Votre trajet a été proposé avec succès !',
                     'trajet_id': trajet_offert.id,
                     'adresse_depart': trajet_offert.adresse_depart,
-                    'heure_depart': trajet_offert.heure_depart_prevue.strftime('%Y-%m-%d %H:%M')
+                    # N'oubliez pas les coordonnées pour des traitements JS futurs si besoin
+                    'latitude_depart': str(trajet_offert.latitude_depart), 
+                    'longitude_depart': str(trajet_offert.longitude_depart),
+                    'adresse_arrivee': trajet_offert.adresse_arrivee,
+                    'latitude_arrivee': str(trajet_offert.latitude_arrivee) if trajet_offert.latitude_arrivee else None,
+                    'longitude_arrivee': str(trajet_offert.longitude_arrivee) if trajet_offert.longitude_arrivee else None,
+                    # Ajoutez d'autres champs si votre JS en a besoin pour l'affichage de confirmation
                 })
             else:
                 messages.success(request, 'Votre trajet a été proposé avec succès !')
@@ -404,10 +407,83 @@ def proposer_trajet_view(request):
             logger.warning(f"❌ Formulaire de proposition de trajet invalide par {request.user.username}. Erreurs: {form.errors}.")
             
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'errors': form.errors.get_json_data()}, status=400)
+                # Convertir form.errors en une chaîne JSON, puis la recharger en objet Python
+                # pour s'assurer que JsonResponse reçoit un dictionnaire Python standard.
+                # `as_json()` donne une chaîne, `json.loads()` la transforme en dict/list Python.
+                errors_dict = json.loads(form.errors.as_json()) 
+                return JsonResponse({'success': False, 'errors': errors_dict}, status=400)
             else:
                 # Pour les requêtes non-AJAX, le formulaire avec les erreurs sera rendu ci-dessous
                 pass 
                 
     # Pour les requêtes GET ou si le formulaire POST non-AJAX est invalide, rendre la page avec le formulaire
     return render(request, 'algorithme/proposer_trajet.html', {'form': form})
+
+
+
+# N'oubliez pas d'importer les modèles nécessaires si ce n'est pas déjà fait
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+# Assurez-vous d'importer vos modèles DemandeTrajet et Conducteur
+from .models import DemandeTrajet, Conducteur, TrajetOffert # Assurez-vous que TrajetOffert est bien importé
+from .forms import ProposerTrajetForm # et votre formulaire
+
+import logging
+import json # N'oubliez pas cette importation pour json.loads
+
+logger = logging.getLogger(__name__)
+
+# ... (votre vue proposer_trajet_view existante) ...
+
+@login_required
+def mes_trajets_offerts_view(request):
+    """
+    Affiche la liste des trajets offerts par le conducteur connecté.
+    """
+    logger.info(f"DEBUG: Accès à mes_trajets_offerts_view par User: {request.user.username}")
+
+    try:
+        # Tente de récupérer le profil conducteur de l'utilisateur connecté.
+        # Utilise .select_related('utilisateur') pour précharger l'utilisateur lié
+        # et éviter des requêtes supplémentaires si l'utilisateur est accédé plus tard.
+        conducteur_profile = request.user.conducteur_profile
+    except Conducteur.DoesNotExist:
+        error_message = "Votre compte n'est pas configuré comme conducteur. Veuillez créer ou mettre à jour votre profil conducteur."
+        messages.error(request, error_message)
+        logger.warning(f"❌ User {request.user.username} n'a PAS de profil Conducteur associé. Redirection vers 'changer_profil'.")
+        return redirect('changer_profil')
+    except AttributeError:
+        error_message = "Erreur interne: Impossible d'accéder à votre profil conducteur. Contactez l'administrateur."
+        messages.critical(f"❌ AttributeError: User {request.user.username} n'a pas d'attribut 'conducteur_profile'. Vérifiez le related_name dans le modèle Conducteur.", exc_info=True)
+        messages.error(request, error_message)
+        return redirect('changer_profil')
+
+    # Vérification explicite du rôle au cas où le profil existe mais le rôle est incorrect
+    if request.user.role != 'conducteur':
+        error_message = "Votre compte n'est pas configuré comme conducteur. Accès refusé."
+        messages.error(request, error_message)
+        logger.warning(f"❌ User {request.user.username} (rôle: {request.user.role}) n'a pas le rôle 'conducteur'. Redirection.")
+        return redirect('changer_profil')
+
+   
+    trajets_offerts = TrajetOffert.objects.filter(conducteur=conducteur_profile).order_by('date_depart', 'heure_depart_prevue')
+    
+   
+
+    context = {
+        'trajets_offerts': trajets_offerts,
+        'conducteur': conducteur_profile, 
+    }
+
+    print(f"Utilisateur connecté: {request.user.username}")
+    trajets_offerts = TrajetOffert.objects.filter(conducteur=request.user).order_by('-date_depart')
+    print(f"Nombre de trajets trouvés: {trajets_offerts.count()}")
+    for trajet in trajets_offerts:
+        print(f"Trajet ID: {trajet.id}, Départ: {trajet.adresse_depart}, Date: {trajet.date_depart}")
+    context = {
+        'trajets_offerts': trajets_offerts,
+    }
+    
+    return render(request, 'algorithme/mes_trajets_offerts.html', context)

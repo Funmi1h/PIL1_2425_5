@@ -14,6 +14,9 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 
 from django.db import models
+from algorithme.utils import generate_suggestions_conducteurs , generate_suggestions_passagers
+
+from algorithme.models import TrajetOffert , DemandeTrajet
 
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
@@ -119,6 +122,26 @@ def logout_user(request):
 @login_required
 def dashboard(request):
     user = request.user
+    context = {
+        'user': user,
+        'page_title': 'Mon Tableau de Bord'
+    }
+
+    if user.role == 'conducteur':
+        
+        suggestions_passagers = generate_suggestions_passagers(user, rayon_km=10, tolerance_minutes=45)
+        context['suggestions_passagers'] = suggestions_passagers
+        
+       
+     
+
+    elif user.role == 'passager':
+
+        suggestions_conducteurs = generate_suggestions_conducteurs(user, rayon_km=10, tolerance_minutes=45)
+        context['suggestions_conducteurs'] = suggestions_conducteurs
+       
+       
+        
     return render (request,'authentication/dashboard.html', context={'user' : user})
 
 
