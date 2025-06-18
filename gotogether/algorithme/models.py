@@ -16,6 +16,11 @@ class Passager(models.Model):
 
     infos_recomandations = models.CharField(null= True, blank= True, max_length= 155, unique=True, default='RAS')
 
+    date_depart_passager = models.DateField(null=True )
+
+    heure_arrivee_passager = models.TimeField(null=True , blank=True)
+    heure_depart_passager = models.TimeField(null=True , blank=True)
+
 
 
     def _str_(self):
@@ -39,8 +44,8 @@ class TrajetOffert(models.Model):
     latitude_arrivee = models.FloatField(null=True, blank=True)
     longitude_arrivee = models.FloatField(null=True, blank=True)
     heure_arrivee_prevue = models.DateTimeField(null=True, blank=True) 
-    nb_places_disponibles = models.IntegerField(default=1) 
-    
+    nb_places_disponibles = models.IntegerField(default=1)
+    date_depart = models.DateField(null=True)    
    
     est_actif = models.BooleanField(default=True)
     

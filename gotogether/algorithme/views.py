@@ -82,6 +82,7 @@ def rechercher_trajets_view(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         
         if form.is_valid():
+            print("Form cleaned data:", form.cleaned_data)
             client_latitude = form.cleaned_data.get('latitude_depart')
             client_longitude = form.cleaned_data.get('longitude_depart') 
             
@@ -107,9 +108,9 @@ def rechercher_trajets_view(request):
                 trajets_final = trajets_filtres_base
 
                 if date_depart_passager_obj:
-                    # Si une date est spécifiée, on filtre sur cette date
+                
                     trajets_final = trajets_final.filter(
-                        heure_depart_prevue__date=date_depart_passager_obj
+                        date_depart_prevue__date=date_depart_passager_obj
                     )
                 else:
                     today = timezone.localdate()
@@ -123,11 +124,11 @@ def rechercher_trajets_view(request):
                     # Combiner la date spécifiée (ou du jour) avec l'heure de début
                     if date_depart_passager_obj:
                         start_datetime_filter = timezone.make_aware(
-                            datetime.combine(date_depart_passager_obj, heure_depart_passager_obj)
+                            datetime.datetime.combine(date_depart_passager_obj, heure_depart_passager_obj)
                         )
                     else: 
                         start_datetime_filter = timezone.make_aware(
-                            datetime.combine(timezone.localdate(), heure_depart_passager_obj)
+                            datetime.datetime.combine(timezone.localdate(), heure_depart_passager_obj)
                         )
                     trajets_final = trajets_final.filter(heure_depart_prevue__gte=start_datetime_filter)
 
@@ -135,11 +136,11 @@ def rechercher_trajets_view(request):
                   
                     if date_depart_passager_obj:
                         end_datetime_filter = timezone.make_aware(
-                            datetime.combine(date_depart_passager_obj, heure_arrivee_passager_obj)
+                            datetime.datetime.combine(date_depart_passager_obj, heure_arrivee_passager_obj)
                         )
                     else: 
                         end_datetime_filter = timezone.make_aware(
-                            datetime.combine(timezone.localdate(), heure_arrivee_passager_obj)
+                            datetime.datetime.combine(timezone.localdate(), heure_arrivee_passager_obj)
                         )
                     trajets_final = trajets_final.filter(heure_arrivee_prevue__lte=end_datetime_filter)
 

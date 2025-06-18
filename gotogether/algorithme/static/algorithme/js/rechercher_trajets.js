@@ -1,4 +1,4 @@
-// votre_projet/algorithme/static/algorithme/js/rechercher_trajets.js
+
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ DOM chargé pour la page de recherche de trajets !");
@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         markerRef.current = L.marker([lat, lng]).addTo(mapInstance);
         markerRef.current.bindPopup(popupContent).openPopup();
+        mapInstance.panTo([lat, lng]); // Centre la carte sur le nouveau marqueur
 
         latField.value = lat;
         lngField.value = lng;
@@ -66,34 +67,48 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- Écouteurs d'événements pour les clics sur les cartes ---
     if (mapDepartSearch) {
         mapDepartSearch.on('click', function (e) {
+            // Mettez à jour aussi le champ d'adresse en effectuant une recherche inversée
+            reverseGeocode(e.latlng.lat, e.latlng.lng, true, 'id_adresse_depart');
             updateMarkerAndFields(mapDepartSearch, markerDepartSearchRef, e.latlng.lat, e.latlng.lng, 
-                `<b>Point de Départ</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`, true);
+                `<b>Point de Départ</b>`, true);
         });
     }
 
     if (mapArriveeSearch) {
         mapArriveeSearch.on('click', function (e) {
+            // Mettez à jour aussi le champ d'adresse en effectuant une recherche inversée
+            reverseGeocode(e.latlng.lat, e.latlng.lng, false, 'id_adresse_arrivee');
             updateMarkerAndFields(mapArriveeSearch, markerArriveeSearchRef, e.latlng.lat, e.latlng.lng, 
-                `<b>Point d'Arrivée</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`, false);
+                `<b>Point d'Arrivée</b>`, false);
         });
     }
+    
+    // Fonction de géocodage inversé (lat/lng vers adresse)
+    function reverseGeocode(lat, lon, isDepart, addressFieldId) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`)
+            .then(response => response.json())
+            .then(data => {
+                const addressField = document.getElementById(addressFieldId);
+                if (addressField && data.display_name) {
+                    addressField.value = data.display_name;
+                    console.log(`✅ Adresse ${isDepart ? 'départ' : 'arrivée'} mise à jour via reverse geocoding: ${data.display_name}`);
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors du géocodage inversé:", error);
+            });
+    }
+
 
     // --- Fonctions de recherche d'adresse (via Nominatim) ---
-    function searchLocation(inputElementId, mapInstance, markerRef, isDepart) {
-        var addressInput = document.getElementById(inputElementId);
-        if (!addressInput) {
-            console.error(`❌ Champ d'adresse '${inputElementId}' introuvable.`);
-            alert("Erreur interne: champ d'adresse manquant.");
-            return;
-        }
-
-        var address = addressInput.value;
+    // Rend searchLocation plus générique et utilisable par l'autocomplétion
+    function searchLocation(address, mapInstance, markerRef, isDepart, addressInputField) {
         if (!address.trim()) {
-            alert("Veuillez entrer une adresse.");
+            // Ne rien faire si l'adresse est vide pour l'autocomplétion
             return;
         }
         
-        var searchQuery = address + ", Bénin"; 
+        var searchQuery = address + ", Bénin"; // Spécifier le pays pour de meilleurs résultats
         
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`)
             .then(response => {
@@ -105,49 +120,101 @@ document.addEventListener("DOMContentLoaded", function () {
                     var lat = parseFloat(data[0].lat);
                     var lon = parseFloat(data[0].lon);
                     if (mapInstance) {
-                        mapInstance.setView([lat, lon], 15);
                         var popupContent = `<b>Adresse trouvée</b><br>${data[0].display_name}`;
                         updateMarkerAndFields(mapInstance, markerRef, lat, lon, popupContent, isDepart);
+                        // Assurez-vous que le champ d'adresse est mis à jour avec l'adresse complète et propre de Nominatim
+                        if (addressInputField) {
+                             addressInputField.value = data[0].display_name;
+                        }
                     } else {
-                        alert("La carte n'a pas pu être initialisée pour afficher l'adresse.");
+                        console.warn("La carte n'a pas pu être initialisée pour afficher l'adresse.");
                     }
                 } else {
-                    alert("Aucune adresse trouvée pour: " + address);
+                    // Si aucune adresse n'est trouvée, réinitialiser les champs de lat/lng et cacher l'erreur
+                    const latFieldId = isDepart ? 'id_latitude_depart_search' : 'id_latitude_arrivee_search';
+                    const lngFieldId = isDepart ? 'id_longitude_depart_search' : 'id_longitude_arrivee_search';
+                    const errorDivId = isDepart ? 'depart-coords-error' : 'arrivee-coords-error';
+
+                    const latField = document.getElementById(latFieldId);
+                    const lngField = document.getElementById(lngFieldId);
+                    const errorDiv = document.getElementById(errorDivId);
+
+                    if (latField) latField.value = '';
+                    if (lngField) lngField.value = '';
+                    if (errorDiv) errorDiv.style.display = 'none'; // Cacher l'erreur si l'adresse n'est pas trouvée via l'autocomplétion
+                    if (markerRef.current) {
+                        mapInstance.removeLayer(markerRef.current); // Supprimer le marqueur si l'adresse n'est plus valide
+                        markerRef.current = null;
+                    }
+                    console.log("Aucune adresse trouvée pour: " + address);
+                    // Pas d'alerte ici pour l'autocomplétion, c'est moins intrusif.
                 }
             })
             .catch(error => {
                 console.error("Erreur lors de la recherche d'adresse:", error);
-                alert("Erreur lors de la recherche d'adresse. Vérifiez votre connexion internet ou réessayez.");
+                // Pas d'alerte ici pour l'autocomplétion
             });
     }
 
-    const searchDepartAddressBtn = document.getElementById("searchDepartAddressBtn");
-    if (searchDepartAddressBtn) {
-        searchDepartAddressBtn.addEventListener("click", function() {
-            if (mapDepartSearch) {
-                searchLocation("id_adresse_depart", mapDepartSearch, markerDepartSearchRef, true);
-            } else {
-                alert("La carte de départ n'est pas disponible.");
-            }
+    // --- Implémentation du Debounce pour l'autocomplétion ---
+    let debounceTimerDepart;
+    let debounceTimerArrivee;
+    const DEBOUNCE_DELAY = 2000; // milliseconds
+
+    // Champ de texte pour l'adresse de départ
+    const idAdresseDepartInput = document.getElementById("id_adresse_depart");
+    if (idAdresseDepartInput) {
+        // Supprimez l'écouteur du bouton si vous voulez que la recherche soit purement automatique
+        const searchDepartAddressBtn = document.getElementById("searchDepartAddressBtn");
+        if (searchDepartAddressBtn) {
+             searchDepartAddressBtn.style.display = 'none'; // Cache le bouton si désiré
+             // Ou retirez l'EventListener:
+             // searchDepartAddressBtn.removeEventListener("click", function() { ... });
+        }
+
+
+        idAdresseDepartInput.addEventListener("input", function() {
+            clearTimeout(debounceTimerDepart);
+            const address = this.value;
+            debounceTimerDepart = setTimeout(() => {
+                if (mapDepartSearch) {
+                    searchLocation(address, mapDepartSearch, markerDepartSearchRef, true, idAdresseDepartInput);
+                } else {
+                    console.warn("La carte de départ n'est pas initialisée pour l'autocomplétion.");
+                }
+            }, DEBOUNCE_DELAY);
         });
     } else {
-        console.error("❌ Bouton 'searchDepartAddressBtn' introuvable.");
-    }
-    
-    const searchArriveeAddressBtn = document.getElementById("searchArriveeAddressBtn");
-    if (searchArriveeAddressBtn) {
-        searchArriveeAddressBtn.addEventListener("click", function() {
-            if (mapArriveeSearch) {
-                searchLocation("id_adresse_arrivee", mapArriveeSearch, markerArriveeSearchRef, false);
-            } else {
-                alert("La carte d'arrivée n'est pas disponible.");
-            }
-        });
-    } else {
-        console.error("❌ Bouton 'searchArriveeAddressBtn' introuvable.");
+        console.error("❌ Champ 'id_adresse_depart' introuvable. L'autocomplétion de départ ne sera pas activée.");
     }
 
-   
+    // Champ de texte pour l'adresse d'arrivée
+    const idAdresseArriveeInput = document.getElementById("id_adresse_arrivee");
+    if (idAdresseArriveeInput) {
+        // Supprimez l'écouteur du bouton si vous voulez que la recherche soit purement automatique
+        const searchArriveeAddressBtn = document.getElementById("searchArriveeAddressBtn");
+        if (searchArriveeAddressBtn) {
+             searchArriveeAddressBtn.style.display = 'none'; // Cache le bouton si désiré
+             // Ou retirez l'EventListener:
+             // searchArriveeAddressBtn.removeEventListener("click", function() { ... });
+        }
+
+        idAdresseArriveeInput.addEventListener("input", function() {
+            clearTimeout(debounceTimerArrivee);
+            const address = this.value;
+            debounceTimerArrivee = setTimeout(() => {
+                if (mapArriveeSearch) {
+                    searchLocation(address, mapArriveeSearch, markerArriveeSearchRef, false, idAdresseArriveeInput);
+                } else {
+                    console.warn("La carte d'arrivée n'est pas initialisée pour l'autocomplétion.");
+                }
+            }, DEBOUNCE_DELAY);
+        });
+    } else {
+        console.error("❌ Champ 'id_adresse_arrivee' introuvable. L'autocomplétion d'arrivée ne sera pas activée.");
+    }
+
+    // --- Votre code existant pour la soumission du formulaire et la gestion des erreurs ---
     const rechercheForm = document.getElementById("rechercheTrajetForm");
     if (rechercheForm) {
         rechercheForm.addEventListener("submit", function (event) {
@@ -169,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-        
+            // Validation des coordonnées de départ
             if (!departLatField.value || !departLngField.value || isNaN(parseFloat(departLatField.value)) || isNaN(parseFloat(departLngField.value))) {
                 departCoordsErrorDiv.style.display = 'block';
                 isValid = false;
@@ -177,7 +244,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 departCoordsErrorDiv.style.display = 'none';
             }
 
-           
+            // Validation des coordonnées d'arrivée (si l'adresse d'arrivée est renseignée)
             if (arriveeAdresseField.value.trim() !== '') {
                 if (!arriveeLatField.value || !arriveeLngField.value || isNaN(parseFloat(arriveeLatField.value)) || isNaN(parseFloat(arriveeLngField.value))) {
                     arriveeCoordsErrorDiv.style.display = 'block';
@@ -186,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     arriveeCoordsErrorDiv.style.display = 'none';
                 }
             } else {
-                 arriveeCoordsErrorDiv.style.display = 'none';
+                arriveeCoordsErrorDiv.style.display = 'none'; // Aucune adresse d'arrivée, donc pas d'erreur de coordonnées
             }
 
             if (!isValid) {
@@ -197,6 +264,9 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("📤 Tentative de soumission du formulaire de recherche...");
             
             const formData = new FormData(this);
+            console.log("--- Contenu de FormData avant envoi ---");
+for (let pair of formData.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);}
             
             fetch(this.action, {
                 method: "POST",
@@ -209,20 +279,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("📡 Réponse reçue, status:", response.status);
 
                 if (!response.ok) {
-                  
                     return response.text().then(text => {
                         try {
                             const errorData = JSON.parse(text); 
                             return Promise.reject({ status: response.status, errors: errorData.errors || { '__all__': ['Erreur du serveur (format JSON).'] } });
                         } catch (e) {
-                           
                             console.error("Réponse du serveur non-JSON en cas d'erreur HTTP:", text.substring(0, 500));
-                           
                             return Promise.reject({ status: response.status, errors: { '__all__': [`Erreur serveur (${response.status}): Réponse inattendue. Veuillez vérifier le serveur.`] } });
                         }
                     });
                 }
-               
                 return response.json();
             })
             .then(data => {
@@ -262,7 +328,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (data.trajets && data.trajets.length > 0) {
                         data.trajets.forEach(trajet => {
-                           
                             const trajetCardHTML = `
                                 <div class="col-md-6 col-lg-4 mb-4">
                                     <div class="card driver-card">
@@ -294,7 +359,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 } else {
-                    
                     displayFormErrors(data.errors ? JSON.parse(data.errors) : { '__all__': ['Une erreur inattendue est survenue côté serveur.'] });
                 }
             })
@@ -306,12 +370,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (error.errors.__all__) {
                         errorMessage = error.errors.__all__.join('<br>');
                     } else if (Object.keys(error.errors).length > 0) {
-                         errorMessage = "Veuillez corriger les erreurs dans le formulaire.";
+                        errorMessage = "Veuillez corriger les erreurs dans le formulaire.";
                     }
                 } else if (error && error.message) {
                     errorMessage = error.message;
                 }
-               
+                
                 if (!error.errors || Object.keys(error.errors).length === 0) {
                     alert("❌ " + errorMessage);
                 }
@@ -321,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Formulaire 'rechercheTrajetForm' introuvable. Les fonctionnalités de recherche pourraient être limitées.");
     }
 
-    
+    // Fonctions d'affichage/nettoyage des erreurs de formulaire (existantes)
     function displayFormErrors(errors) {
         const rechercheFormElement = document.getElementById("rechercheTrajetForm");
         if (!rechercheFormElement) {
@@ -331,7 +395,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         clearFormErrors();
 
-      
         if (typeof errors === 'string') {
             try {
                 errors = JSON.parse(errors);
@@ -356,7 +419,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         });
                         nonFieldErrorsDiv.style.display = 'block';
                     } else {
-                        
                         console.warn("Div pour les erreurs générales non trouvé. Erreurs:", errorMessages);
                         alert("Erreur générale du formulaire: " + errorMessages.join(', '));
                     }

@@ -124,33 +124,27 @@
 
         <div class="row mt-4">
             <div class="col-md-4 mb-3">
-                <label for="{{ form.date_depart.id_for_label }}" class="form-label">{{ form.date_depart.label }}</label>
-                {{ form.date_depart }}
+                <label for="{{ form.date_depart.id_for_label }}" class="form-label">{{ form.date_depart_passager.label }}</label>
+                {{ form.date_depart_passager }}
                 {% if form.date_depart.errors %}
-                    <div class="text-danger small mt-1">{{ form.date_depart.errors }}</div>
+                    <div class="text-danger small mt-1">{{ form.date_depart_passager.errors }}</div>
                 {% endif %}
             </div>
             <div class="col-md-4 mb-3">
-                <label for="{{ form.heure_depart.id_for_label }}" class="form-label">{{ form.heure_depart.label }}</label>
-                {{ form.heure_depart }}
-                {% if form.heure_depart.errors %}
-                    <div class="text-danger small mt-1">{{ form.heure_depart.errors }}</div>
+                <label for="{{ form.heure_depart.id_for_label }}" class="form-label">{{ form.heure_depart_passager.label }}</label>
+                {{ form.heure_depart_passager }}
+                {% if form.heure_depart_passager.errors %}
+                    <div class="text-danger small mt-1">{{ form.heure_depart_passager.errors }}</div>
                 {% endif %}
             </div>
             <div class="col-md-4 mb-3">
-                <label for="{{ form.heure_arrivee.id_for_label }}" class="form-label">{{ form.heure_arrivee.label }}</label>
-                {{ form.heure_arrivee }}
-                {% if form.heure_arrivee.errors %}
-                    <div class="text-danger small mt-1">{{ form.heure_arrivee.errors }}</div>
+                <label for="{{ form.heure_arrivee.id_for_label }}" class="form-label">{{ form.heure_arrivee_passager.label }}</label>
+                {{ form.heure_arrivee_passager }}
+                {% if form.heure_arrivee_passager.errors %}
+                    <div class="text-danger small mt-1">{{ form.heure_arrivee_passager.errors }}</div>
                 {% endif %}
             </div>
-            <div class="col-md-4 mb-3">
-                <label for="{{ form.nb_places.id_for_label }}" class="form-label">{{ form.nb_places.label }}</label>
-                {{ form.nb_places }}
-                {% if form.nb_places.errors %}
-                    <div class="text-danger small mt-1">{{ form.nb_places.errors }}</div>
-                {% endif %}
-            </div>
+           
         </div>
         
       
