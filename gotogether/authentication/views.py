@@ -15,90 +15,70 @@ from django.contrib.auth import get_user_model
 
 from django.db import models
 
+
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
     form_class = forms.LoginForm
     redirect_authenticated_user = True
 
-    def get(self, request, *args, **kwargs):
-        # Si utilisateur déjà connecté, redirige directement (optionnel)
+    def get(self, request):
         if request.user.is_authenticated:
-            return redirect('dashboard')  # adapter la redirection
+            return redirect('dashboard') 
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
-            identifiant = form.cleaned_data['identifiant'].strip()
-            password = form.cleaned_data['password']
-
-            # Normaliser identifiant : email ou téléphone
-            if re.match(r"[^@]+@[^@]+\.[^@]+", identifiant):  # c'est un email
-                try:
-                    user_obj = User.objects.get(email=identifiant)
-                    username = user_obj.email
-                except User.DoesNotExist:
-                    username = None
+            identifiant = form.cleaned_data.get('identifiant')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=identifiant, password=password)
+            if user:
+                login(request, user)
+                return redirect('dashboard')  
             else:
-                # Formatage numéro téléphone au format +229xxxxxxxx
-                clean_num = identifiant.replace(" ", "").replace("-", "")
-                if clean_num.startswith("0"):
-                    clean_num = "+229" + clean_num[1:]
-                elif clean_num.startswith("229") and not clean_num.startswith("+229"):
-                    clean_num = "+229" + clean_num[3:]
-                elif not clean_num.startswith("+229"):
-                    clean_num = "+229" + clean_num
-                try:
-                    user_obj = User.objects.get(numero_telephone=clean_num)
-                    username = user_obj.email  # toujours s'authentifier via email (USERNAME_FIELD)
-                except User.DoesNotExist:
-                    username = None
-
-            if username:
-                user = authenticate(request, username=username, password=password)
-                if user is not None:
-                    login(request, user)
-                    return redirect('dashboard')  # remplacer par ta vue cible
-                else:
-                    messages.error(request, "Mot de passe incorrect.")
-            else:
-                messages.error(request, "Utilisateur introuvable avec ces identifiants.")
-        else:
-            messages.error(request, "Formulaire invalide.")
-
-        return render(request, self.template_name, {'form': form})
-
-
-
-
+                return render(request, self.template_name, {
+                    'form': form,
+                    'message': 'Identifiant ou mot de passe incorrect.'
+                })
+        return render(request, self.template_name, {
+            'form': form,
+            'message': 'Veuillez corriger les erreurs dans le formulaire.'
+        })
 
 
 # vue pour inscription des utilisateurs
 
+
+
 def signup(request):
-    # si la requete est de type POST, on traite le formulaire d'inscription
     if request.method == 'POST':
         form = forms.SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False) # on crée l'utilisateur sans le sauvegarder dans la base de données
-            # on récupere les deux mots de passe
             password = form.cleaned_data.get('password')
             confirm_password = form.cleaned_data.get('confirm_password')
 
-            # on verifie si les deux mots de passe sont identiques
-            if password == confirm_password:
-                user.set_password(password)  # hasher le mot de passe
-                user.save()
-                return render(request, 'authentication/profil.html', {'user': user})
-            else:
-                return render(request, 'authentication/sign_up.html', {'form': form, 'message': 'Les mots de passe ne correspondent pas.'})
+            if password != confirm_password:
+                return render(request, 'authentication/sign_up.html', {
+                    'form': form,
+                    'message': 'Les mots de passe ne correspondent pas.'
+                })
+
+            user = form.save(commit=False)
+            user.set_password(password)
+            user.save()
+            login(request, user)
+            return redirect('profil_user')
         else:
-            return render(request, 'authentication/sign_up.html', {'form': form, 'message': 'Veuillez corriger les erreurs dans le formulaire.'})
-    # quand la requete est de type GET, on affiche le formulaire d'inscription
+            return render(request, 'authentication/sign_up.html', {
+                'form': form,
+                'message': 'Veuillez corriger les erreurs dans le formulaire.'
+            })
     else:
         form = forms.SignUpForm()
-    return render(request, 'authentication/sign_up.html', {'form': form})
+        return render(request, 'authentication/sign_up.html', {'form': form})
+
+
 
 @login_required
 def profil_user(request):
@@ -232,6 +212,9 @@ def delete_photo_profil(request):
         user.photo_profil.delete(save= False)
         user.save()
     return redirect ('profil_user')
+
+
+
 
 
 
