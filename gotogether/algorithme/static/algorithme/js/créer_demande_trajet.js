@@ -265,17 +265,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // MODIFICATION: Suppression des écouteurs de clic sur les boutons de recherche
-    // const searchDepartButton = document.getElementById('search_depart_button');
-    // if (searchDepartButton) searchDepartButton.addEventListener('click', () => searchLocation(ID_ADRESSE_DEPART, 'depart'));
-    // const searchArriveeButton = document.getElementById('search_arrivee_button');
-    // if (searchArriveeButton) searchArriveeButton.addEventListener('click', () => searchLocation(ID_ADRESSE_ARRIVEE, 'arrivee'));
-
-    // NOUVEAU: Ajout des écouteurs d'événements 'input' pour la recherche automatique
     const adresseDepartInput = document.getElementById(ID_ADRESSE_DEPART);
     if (adresseDepartInput) {
         adresseDepartInput.addEventListener('input', function () {
-            clearTimeout(searchDepartTimeout); // Réinitialise le timer à chaque frappe
+            clearTimeout(searchDepartTimeout); 
             searchDepartTimeout = setTimeout(() => {
                 searchLocation(ID_ADRESSE_DEPART, 'depart');
             }, SEARCH_DELAY_MS);
@@ -285,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const adresseArriveeInput = document.getElementById(ID_ADRESSE_ARRIVEE);
     if (adresseArriveeInput) {
         adresseArriveeInput.addEventListener('input', function () {
-            clearTimeout(searchArriveeTimeout); // Réinitialise le timer à chaque frappe
+            clearTimeout(searchArriveeTimeout); 
             searchArriveeTimeout = setTimeout(() => {
                 searchLocation(ID_ADRESSE_ARRIVEE, 'arrivee');
             }, SEARCH_DELAY_MS);
@@ -329,10 +322,10 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             // Si le champ d'adresse d'arrivée est vide mais qu'un marqueur ou des coords sont là
             if (latArriveeField.value || lngArriveeField.value) {
-                // MODIFICATION: Le message est plus précis maintenant que la recherche est automatique
+                
                 displayFieldError(ID_ADRESSE_ARRIVEE, "Vous avez un point d'arrivée sur la carte sans adresse. Veuillez effacer le point ou taper une adresse.");
 
-                // Réinitialise le marqueur et les champs si l'adresse est vide pour forcer une correction
+                
                 latArriveeField.value = '';
                 lngArriveeField.value = '';
                 if (markerArrivee) {
@@ -384,7 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 displayGeneralSuccess(data.message || 'Votre demande de trajet a été soumise avec succès !');
 
                 demandeTrajetForm.reset();
-                // Effacer explicitement les valeurs des champs cachés et supprimer les marqueurs
+               
                 document.getElementById(ID_LATITUDE_DEPART).value = '';
                 document.getElementById(ID_LONGITUDE_DEPART).value = '';
                 document.getElementById(ID_LATITUDE_ARRIVEE).value = '';
@@ -392,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (markerDepart) { mapDepart.removeLayer(markerDepart); markerDepart = null; }
                 if (markerArrivee) { mapArrivee.removeLayer(markerArrivee); markerArrivee = null; }
 
-                // Recentrer les cartes sur les coordonnées par défaut après soumission
+               
                 mapDepart.setView(defaultCoords, defaultZoom);
                 mapArrivee.setView(defaultCoords, defaultZoom);
 
