@@ -55,7 +55,7 @@
 
 
 <body class="d-flex flex-column min-vh-100 col-lg-11 text-center mx-auto" data-user-id = '{{ user.id }}'>
-
+<div class="content">
     <!--Header -->
     {% if request.path != '/auth/login/' and request.path != '/auth/signup/' and request.path != '/' and request.path != '/auth/sign_up/' and request.path != '/auth/logout/' %}
 
@@ -184,7 +184,7 @@
 
        </main>
 
-
+</div>
         <footer>
             <div class="container text-center bottom-0 text-muted text-gray">
                 <p> 2025 Go Together. All rights reserved.</p>
@@ -233,6 +233,7 @@
 
 
  
- 
+ <ul id="global-results-container" class="results-container" style="display: none;"></ul>
+
 </body>
 </html>

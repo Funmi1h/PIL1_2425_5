@@ -8,42 +8,13 @@ function toggleIcon(){
 }
 
 
-
-
 document.addEventListener('DOMContentLoaded', () => {
   const dropdown = document.querySelector('.search-dropdown');
   const searchBar = dropdown.querySelector('.search-bar');
   const searchInput = searchBar.querySelector('input');
+  const resultsContainer = document.getElementById('global-results-container');
 
-  // Container pour afficher les résultats
-  const resultsContainer = document.createElement('ul');
-  resultsContainer.style.position = 'absolute';
-  resultsContainer.style.backgroundColor = 'white';
-  resultsContainer.style.border = '1px solid #ccc';
-  resultsContainer.style.width = searchInput.offsetWidth + 'px';
-  resultsContainer.style.marginTop = '5px';
-  resultsContainer.style.listStyle = 'none';
-  resultsContainer.style.padding = '0';
-  resultsContainer.style.maxHeight = '200px';
-  resultsContainer.style.overflowY = 'auto';
-  resultsContainer.style.zIndex = '1000';
-  resultsContainer.style.display = 'none';
-  searchBar.appendChild(resultsContainer);
-
-  // Container pour afficher le profil complet de l’utilisateur sélectionné
   let userProfileDisplay = document.getElementById('user-profile-display');
-  if (!userProfileDisplay) {
-    userProfileDisplay = document.createElement('div');
-    userProfileDisplay.id = 'user-profile-display';
-    userProfileDisplay.style.border = '1px solid #ccc';
-    userProfileDisplay.style.padding = '15px';
-    userProfileDisplay.style.marginTop = '10px';
-    userProfileDisplay.style.backgroundColor = '#fafafa';
-    userProfileDisplay.style.display = 'none';
-    userProfileDisplay.style.maxWidth = '350px';
-    dropdown.appendChild(userProfileDisplay);
-  }
-
   let currentUsers = [];
   let debounceTimeout = null;
 
@@ -53,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.focus();
   });
 
-  // Cache la barre + résultats si on quitte, sauf si focus dans barre
+  // Cache la barre si on quitte
   dropdown.addEventListener('mouseleave', () => {
     setTimeout(() => {
       if (!searchBar.contains(document.activeElement)) {
@@ -64,28 +35,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 200);
   });
 
-  // Clic hors dropdown ferme la barre + résultats + profil
+  // Clique ailleurs = fermer
   document.addEventListener('click', e => {
-    if (!dropdown.contains(e.target)) {
+    if (!dropdown.contains(e.target) && !resultsContainer.contains(e.target)) {
       searchBar.style.display = 'none';
       clearResults();
       hideUserProfile();
     }
   });
 
-  // Utilitaire : nettoie les résultats
   function clearResults() {
     resultsContainer.innerHTML = '';
     resultsContainer.style.display = 'none';
   }
 
-  // Utilitaire : cache profil utilisateur affiché
   function hideUserProfile() {
     userProfileDisplay.innerHTML = '';
     userProfileDisplay.style.display = 'none';
   }
 
-  // Crée photo profil ou fallback icône Ionicons
   function createProfilePicture(user, size = 40) {
     if (user.photo_profil && user.photo_profil.trim() !== '') {
       const img = document.createElement('img');
@@ -105,14 +73,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Affiche la liste des résultats sous la barre
   function renderResults(users) {
     clearResults();
+
+    const rect = searchInput.getBoundingClientRect();
+    resultsContainer.style.position = 'absolute';
+    resultsContainer.style.top = rect.bottom + window.scrollY + 'px';
+    resultsContainer.style.left = rect.left + window.scrollX + 'px';
+    resultsContainer.style.width = rect.width + 'px';
+    resultsContainer.style.backgroundColor = 'white';
+    resultsContainer.style.border = '1px solid #ccc';
+    resultsContainer.style.maxHeight = '200px';
+    resultsContainer.style.overflowY = 'auto';
+    resultsContainer.style.zIndex = '1000';
+    resultsContainer.style.listStyle = 'none';
+    resultsContainer.style.padding = '0';
+    resultsContainer.style.margin = '0';
 
     if (!Array.isArray(users) || users.length === 0) {
       const li = document.createElement('li');
       li.textContent = 'Aucun résultat';
-      li.style.padding = '5px 10px';
+      li.style.padding = '8px 10px';
       resultsContainer.appendChild(li);
       resultsContainer.style.display = 'block';
       return;
@@ -120,14 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     users.forEach(user => {
       const li = document.createElement('li');
-      li.style.padding = '5px 10px';
+      li.style.padding = '8px 10px';
       li.style.cursor = 'pointer';
       li.style.display = 'flex';
       li.style.alignItems = 'center';
       li.style.gap = '10px';
 
       const picture = createProfilePicture(user);
-
       const textDiv = document.createElement('div');
       textDiv.style.flexGrow = '1';
 
@@ -154,25 +134,21 @@ document.addEventListener('DOMContentLoaded', () => {
       chatLink.style.whiteSpace = 'nowrap';
       chatLink.target = '_blank';
 
-      // Clic sur le li remplit l'input, masque dropdown et résultats
       li.addEventListener('click', () => {
         searchInput.value = `${user.first_name} ${user.last_name}`;
+        displayUserProfile(user);
         clearResults();
-        hideUserProfile();
-        searchBar.style.display = 'none';
       });
 
       li.appendChild(picture);
       li.appendChild(textDiv);
       li.appendChild(chatLink);
-
       resultsContainer.appendChild(li);
     });
 
     resultsContainer.style.display = 'block';
   }
 
-  // Affiche le profil complet de l'utilisateur sélectionné
   function displayUserProfile(user) {
     userProfileDisplay.innerHTML = '';
     userProfileDisplay.style.display = 'block';
@@ -181,11 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
     picture.style.marginBottom = '10px';
 
     const role = document.createElement('div');
-    role.textContent = `Role: ${user.role}`;
+    role.textContent = `Rôle : ${user.role}`;
     role.style.fontWeight = 'bold';
 
     const name = document.createElement('div');
-    name.textContent = `Nom complet: ${user.first_name} ${user.last_name}`;
+    name.textContent = `Nom complet : ${user.first_name} ${user.last_name}`;
     name.style.marginBottom = '10px';
 
     const chatLink = document.createElement('a');
@@ -204,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
     userProfileDisplay.appendChild(chatLink);
   }
 
-  // Gérer recherche AJAX avec debounce
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
     clearTimeout(debounceTimeout);
@@ -218,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     debounceTimeout = setTimeout(() => {
       fetch(`/search-users/?q=${encodeURIComponent(query)}`)
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
           currentUsers = Array.isArray(data) ? data : (data.users || []);
           renderResults(currentUsers);
@@ -232,23 +207,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   });
 
-  // Gérer touche Entrée dans champ recherche
   searchInput.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
       event.preventDefault();
       const query = searchInput.value.trim().toLowerCase();
       if (query.length === 0) return;
 
-      // Chercher utilisateur dans currentUsers (nom complet exact)
       const matchedUser = currentUsers.find(user => {
-        const fullName = (user.first_name + ' ' + user.last_name).toLowerCase();
+        const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
         return fullName === query;
       });
 
       if (matchedUser) {
         displayUserProfile(matchedUser);
         clearResults();
-        searchBar.style.display = 'none';
       } else {
         hideUserProfile();
         alert('Utilisateur non trouvé dans les résultats.');

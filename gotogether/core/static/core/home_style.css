@@ -221,3 +221,68 @@ body{
     order: 1!important;
   }
 }
+
+
+
+
+/* Animation générale d'apparition */
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-100px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(100px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatBox {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+/* Effets appliqués */
+.animate-left {
+  animation: slideInLeft 1s ease-out forwards;
+}
+
+.animate-right {
+  animation: slideInRight 1s ease-out forwards;
+}
+
+.card {
+  opacity: 0;
+  animation: fadeUp 0.8s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+.mag5 {
+  animation: floatBox 3s ease-in-out infinite;
+  background-color: #007bff; /* Bleu */
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 1.5rem;
+  color: white;
+  text-align: center;
+}
+
+.mag51 a {
+  text-decoration: none;
+  color: white;
+  padding: 10px 20px;
+  background-color: #0056b3;
+  margin: 0 10px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.mag51 a:hover {
+  background-color: #003d80;
+}
+

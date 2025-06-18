@@ -19,15 +19,16 @@
                     <h1>Bienvenue sur Go Together</h1>
                     <p>Votre plateforme de covoiturage étudiant </p>
                 </div>
-                <img src="{%static 'core/img/Location review-cuate.png' %}" alt="" class="img-fluid mag1">
-                <img src="{%static 'core/img/City-driver-pana.png'%}" alt="" class="img-fluid mag2">
-                <div class="mag5">
+                <img src="{%static 'core/img/Location review-cuate.png' %}" alt="" class="img-fluid mag1 animate-left">
+                <img src="{%static 'core/img/City-driver-pana.png'%}" alt="" class="img-fluid mag2 animate-right">
+                   <div class="mag5">
                     <div class="mag51">
-                        <p>Rejoignez-nous dès aujourd'hui.</p>
-                        <button> <a href="{% url 'login' %}">Se connecter</a></button>
-                        <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
+                        <p class="mb-3">Rejoignez-nous dès aujourd'hui.</p>
+                        <a href="{% url 'login' %}">Se connecter</a>
+                        <a href="{% url 'sign_up' %}">Inscription</a>
                     </div>
-                </div>
+                    </div>
+
             </div>
             <div class="col-md-6 col-sm-12 mag7">
                 <h1 style="text-align: left;">
@@ -43,38 +44,38 @@
                       </ul>
                 <div class="row g-2" style="text-align: left;">
                      <div class="col-md-6 col-sm-6 col-lg-6">
-                        <div class="card cadre-1">
+                        <div class="card cadre-1" style="animation-delay: 0.4s;">
                           <i class="material-icons">search</i>
                           <p>Recherche intelligente</p>
                           <p>Trouvez facilement des trajets corrrrespondants a vos besoins grace a notre algorithme de matching avance</p>
                         </div>
                     </div>
                      <div class="col-md-6 col-sm-6 col-lg-6">
-                        <div class="card cadre-2">
+                        <div class="card cadre-2" style="animation-delay: 0.1s;">
                             <img src="{% static 'core/img/Location review-bro.png' %}" alt="Voiture" class="img-fluid">
                         </div>
                      </div>
                      <div class="col-md-6 col-sm-6 col-lg-6">
-                        <div  class="card cadre-3">
+                        <div  class="card cadre-3" style="animation-delay: 0.1;">
                           <img src="{%static 'core/img/People talking-rafiki.png' %}" alt="">
                         </div>
                      </div>
                      <div class="col-md-6 col-sm-6 col-lg-6">
-                        <div class="card cadre-4">
+                        <div class="card cadre-4" style="animation-delay: 0.5s;">
                           <i class="material-icons">group</i>
                           <p>Communaute engagee</p>
                           <p>Rejoignez une communaute de covoituriers actifs et bienveillants, prets a partager leurs trajets</p>
                         </div>    
                      </div>
                      <div class="col-md-6 col-sm-6 col-lg-6">
-                        <div class="card cadre-5">
+                        <div class="card cadre-5" style="animation-delay: 0.3s;">
                             <i class="material-icons">security</i>
                             <p>Securite renforcee</p>
                             <p>Voyagez en toute securite grace a nos mesures de securite, incluant verification des profils et le suivi des trajets</p>
                         </div>
                     </div>
                      <div class="col-md-6 col-sm-6 col-lg-6">
-                        <div class="card cadre-6">
+                        <div class="card cadre-6" style="animation-delay: 0.3s;">
                             <img src="{%static 'core/img/Safe-pana.png' %}" alt=""> 
                         </div>
                     </div>

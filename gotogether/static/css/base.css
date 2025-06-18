@@ -147,3 +147,21 @@ ion-icon {
         transform: translateY(0);
     }
 }
+
+
+
+.results-container {
+  display: block !important;
+  position: absolute !important;
+  background: white;
+  z-index: 9999 !important;
+  border: 2px solid red; /* juste pour visualiser */
+  padding: 5px 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+.results-container li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+

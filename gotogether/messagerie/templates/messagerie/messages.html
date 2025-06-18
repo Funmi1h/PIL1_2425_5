@@ -1,87 +1,92 @@
 {% extends 'base.html' %}
 
 {% block head %}
-
-
-
 <style>
-  .container {
-    max-width: 700px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  .suggestions {
+    margin-top: 3rem;
   }
-
-  h1 {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    color: #666;
-    margin-bottom: 2rem;
-  }
-
-  .all_users {
-    list-style: none;
-    padding-left: 0;
-  }
-
-  .each_user {
-    padding: 1rem 1.2rem;
+  .suggestion_user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
     border: 1px solid #e5e5e5;
     border-radius: 6px;
-    transition: background 0.2s ease, box-shadow 0.2s ease;
-    color: #333;
+    margin-bottom: 12px;
     text-decoration: none;
+    color: inherit;
+    transition: background-color 0.2s ease;
   }
-
-  .each_user:hover {
+  .suggestion_user:hover {
     background-color: #f8f9fa;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   }
-
-  .each_user strong {
-    font-size: 1.1rem;
-    display: block;
-    color: #212529;
+  .suggestion_user img, .suggestion_user ion-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
   }
-
-  .each_user small {
-    font-size: 0.9rem;
+  .suggestion_user .info {
+    display: flex;
+    flex-direction: column;
+  }
+  .suggestion_user .info strong {
+    font-weight: 600;
+  }
+  .suggestion_user .info small {
     color: #6c757d;
   }
 </style>
-
 {% endblock %}
+
 {% block content %}
 <div class="container">
   <h1>Vos Messages</h1>
   <p>Commencez par discuter avec d'autres utilisateurs</p>
 
-  <ul class="all_users">
-    {% for item in user_data %}
-      <a href="{% url 'chat_room' item.user.id %}" class="each_user d-block mb-3">
-        <strong>{{ item.user.first_name }} {{ item.user.last_name }}</strong><br>
-        {% if item.last_message %}
-          <small class="text-muted">{{ item.last_message.content|truncatechars:50 }}</small>
+  {% if user_data %}
+    <ul class="all_users">
+      {% for item in user_data %}
+        <a href="{% url 'chat_room' item.user.id %}" class="each_user d-block mb-3">
+          <strong>{{ item.user.first_name }} {{ item.user.last_name }}</strong><br>
+          {% if item.last_message %}
+            <small class="text-muted">{{ item.last_message.content|truncatechars:50 }}</small><br>
+            <small class="text-muted fst-italic">{{ item.last_message.timestamp|date:"d/m/Y H:i" }}</small>
+          {% else %}
+            <small class="text-muted">Aucun message</small>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">Vous n'avez pas encore de conversations.</p>
+  {% endif %}
+
+  {% if suggested_users %}
+  <div class="suggestions">
+    <h2>Suggestions d’utilisateurs avec qui discuter</h2>
+    {% for user in suggested_users %}
+      <a href="{% url 'chat_room' user.id %}" class="suggestion_user">
+        {% if user.photo_profil %}
+          <img src="{{ user.photo_profil.url }}" alt="{{ user.first_name }} {{ user.last_name }}">
         {% else %}
-          <small class="text-muted">Aucun message</small>
+          <ion-icon name="person-circle-outline"></ion-icon>
         {% endif %}
+        <div class="info">
+          <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+          <small>{{ user.role }}</small>
+        </div>
       </a>
     {% endfor %}
-  </ul>
+  </div>
+  {% endif %}
 </div>
 
-
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-  const badge = document.getElementById('message-notif-badge');
-  if (badge) badge.classList.add('d-none');
-});
-
+  document.addEventListener('DOMContentLoaded', () => {
+    const badge = document.getElementById('message-notif-badge');
+    if (badge) badge.classList.add('d-none');
+  });
 </script>
 {% endblock %}
