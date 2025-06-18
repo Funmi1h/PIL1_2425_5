@@ -28,15 +28,16 @@
                     <h1>Bienvenue sur Go Together</h1>
                     <p>Votre plateforme de covoiturage étudiant </p>
                 </div>
-                <img src="{%static 'core/img/Location review-cuate.png' %}" alt="" class="img-fluid mag1">
-                <img src="{%static 'core/img/City-driver-pana.png'%}" alt="" class="img-fluid mag2">
-                <div class="mag5">
+                <img src="{%static 'core/img/Location review-cuate.png' %}" alt="" class="img-fluid mag1 animate-left">
+                <img src="{%static 'core/img/City-driver-pana.png'%}" alt="" class="img-fluid mag2 animate-right">
+                   <div class="mag5">
                     <div class="mag51">
-                        <p>Rejoignez-nous dès aujourd'hui.</p>
-                        <button> <a href="{% url 'login' %}">Se connecter</a></button>
-                        <button> <a href="{% url 'sign_up' %}">Inscription</a></button>
+                        <p class="mb-3">Rejoignez-nous dès aujourd'hui.</p>
+                        <a href="{% url 'login' %}" class="text-white my-2">Se connecter</a>
+                        <a href="{% url 'sign_up' %}" class="text-white my-2">Inscription</a>
                     </div>
-                </div>
+                    </div>
+
             </div>
             <div class="col-md-6 col-sm-12 mag7">
                 <h1 style="text-align: left;">

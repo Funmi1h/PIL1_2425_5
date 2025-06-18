@@ -39,6 +39,10 @@ class LoginView(LoginView):
             user = authenticate(request, username=identifiant, password=password)
             if user:
                 login(request, user)
+                if user.first_login:
+                    user.first_login = False
+                    user.save()
+
                 return redirect('dashboard')  
             else:
                 return render(request, self.template_name, {
@@ -72,7 +76,8 @@ def signup(request):
             user.set_password(password)
             user.save()
             login(request, user)
-            return redirect('profil_user')
+            
+            return redirect('dashboard')
         else:
             return render(request, 'authentication/sign_up.html', {
                 'form': form,

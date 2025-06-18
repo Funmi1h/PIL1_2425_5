@@ -55,7 +55,7 @@
 
 
 <body class="d-flex flex-column min-vh-100 col-lg-11 text-center mx-auto" data-user-id = '{{ user.id }}'>
-
+<div class="content">
     <!--Header -->
     {% if request.path != '/auth/login/' and request.path != '/auth/signup/' and request.path != '/' and request.path != '/auth/sign_up/' and request.path != '/auth/logout/' %}
 
@@ -115,40 +115,13 @@
 
 
 
-                                <li class="nav-item search-dropdown" style="position: relative;">
-                                        <a href="#" class="nav-link" aria-label="Rechercher">
-                                            <i class="bi bi-search"></i>
-                                        </a>
-                                        <div class="search-bar" style="display:none; position: relative;">
-                                                <input type="text" class="form-control" placeholder="Rechercher des utilisateurs...">
-                                                <!-- Résultats de recherche ici -->
-                                                <ul class="results-container" style="
-                                                position: absolute; 
-                                                top: 100%; 
-                                                left: 0; 
-                                                right: 0; 
-                                                background: white; 
-                                                border: 1px solid #ccc; 
-                                                max-height: 200px; 
-                                                overflow-y: auto; 
-                                                z-index: 1000; 
-                                                margin: 0; 
-                                                padding: 0; 
-                                                list-style: none;
-                                                display: none;
-                                                "></ul>
-
-                                                <!-- Zone affichage profil détaillé -->
-                                                <div id="user-profile-display" style="
-                                                margin-top: 10px;
-                                                padding: 10px;
-                                                border: 1px solid #ccc;
-                                                background: #f9f9f9;
-                                                display: none;
-                                                border-radius: 5px;
-                                                box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
-                                                "></div>
-                                            </div>
+                                    <li class="nav-item search-dropdown" style="position: relative;">
+                                        <a href="#" class="nav-link"><i class="bi bi-search"></i></a>
+                                        <div class="search-bar" style="display:none; position:absolute;">
+                                            <input class="form-control" placeholder="Rechercher des utilisateurs..." />
+                                            <ul class="results-container" style="display:none; position:absolute; list-style:none; margin:0; padding:0;"></ul>
+                                            <div id="user-profile-display" style="display:none; margin-top:10px; background:#f9f9f9; padding:10px; border-radius:5px;"></div>
+                                </div>
                                 </li>
 
 
@@ -184,7 +157,7 @@
 
        </main>
 
-
+</div>
         <footer>
             <div class="container text-center bottom-0 text-muted text-gray">
                 <p> 2025 Go Together. All rights reserved.</p>
@@ -203,7 +176,7 @@
 
 
     <!--Le toast pour la premiere connexion -->
-{% if user.is_authenticated and user.first_login %}
+{% if user.is_authenticated and user.first_login and not is_homepage %}
     {% url 'changer_profil' as changer_profil_url %}
     {% if request.path != changer_profil_url %}
         <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
@@ -232,7 +205,8 @@
 
 
 
- 
- 
+ <!--Afficher les résultats de recherche dans la barre de code -->
+ <ul id="global-results-container" class="results-container" style="display: none;"></ul>
+
 </body>
 </html>

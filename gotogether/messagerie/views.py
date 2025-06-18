@@ -16,29 +16,44 @@ def get_last_message(user1, user2):
         Message.objects.filter(sender=user2, recipient=user1)
     ).order_by('-timestamp').first()
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Conversation, Message
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 @login_required
 def message_accueil(request):
     user = request.user
-    all_users = User.objects.exclude(id=user.id)
+
+    # Toutes les conversations où l'utilisateur est participant
+    user_conversations = Conversation.objects.filter(participants=user).distinct()
+
+    # Tous les autres utilisateurs avec qui l'utilisateur a une conversation
+    other_users = User.objects.filter(
+        conversations__in=user_conversations
+    ).exclude(id=user.id).distinct()
 
     user_data = []
-    for other_user in all_users:
-        conv = Conversation.objects.filter(participants=user).filter(participants=other_user).distinct().first()
-        if conv:
-            last_message = Message.objects.filter(conversation=conv).order_by('-timestamp').first()
-        else:
-            last_message = None
+
+    for other_user in other_users:
+        conv = user_conversations.filter(participants=other_user).first()
+        last_message = Message.objects.filter(conversation=conv).order_by('-timestamp').first() if conv else None
         user_data.append({
             'user': other_user,
             'last_message': last_message
         })
 
+    # Suggestions : utilisateurs avec qui il n’a jamais discuté
+    suggested_users = User.objects.exclude(
+        id__in=other_users.values_list('id', flat=True)
+    ).exclude(id=user.id).order_by('?')[:5]  # suggestions aléatoires
+
     return render(request, 'messagerie/messages.html', {
-        'user_data': user_data
+        'user_data': user_data,
+        'suggested_users': suggested_users
     })
-
-
 
 
 @login_required

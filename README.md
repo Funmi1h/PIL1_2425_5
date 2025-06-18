@@ -16,9 +16,9 @@ Chaque année, les élèves de la premiere année de l'Institut de Formation et 
 * Récupération de mot de passe : Les utilisateurs peuvent récuperer leurs mots de passe en cas d'oubli.
 * Profil Utilisateur : Chaque utilisateur a un profil contenant ses informations personnelles qu'il eut modifier à tout moment.
 * Mise en correspondance des conducteurs et passagers: Des offres et des demandes de covoiturage sont publiés. Un algorithme de matching est utilisé pour proposer des combinaisons conducteur-passager et les résultats de ce dernier affiche des informations pertinentes pour aider au covoiturage.
-* Messagerie Instantanée : Les utilisateurs peuvent discuter en temps réel pour affiner les détails du trajet.
+* Messagerie Instantanée : Les utilisateurs peuvent discuter en temps réel entre eux pour affiner les détails du trajet. Des suggestions deconducteurs ou de passagers sont faites àchaque utilisateur
 * Liste des Discussions : Visualisez et accédez rapidement à vos discussions récentes.
-* Suggestions de passagers ou de conducteurs : Découvrez en fonction de votre rôle des suggestions de trajets proposés par de conducteur ou des trajets demandés par des passagers.
+* Suggestions de trajets : Découvrez en fonction de votre rôle des suggestions de trajets proposés par de conducteur ou des trajets demandés par des passagers.
 
 ## Installation 
 - [Python](https://www.python.org/downloads/)
