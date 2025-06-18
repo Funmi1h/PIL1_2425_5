@@ -141,9 +141,9 @@ body{
   width: 100%;
   height: 400px;
   animation: slideDown 1s ease-out forwards;
-  display: none; /* Masquer la carte initialement */
+  /*display: none;  Masquer la carte initialement */
 }
-div.card.profile-details p{
+div.card.profile-details.got{
         border: 2px solid #007bff;       
         padding: 10px;                    
         margin: 20px auto;                

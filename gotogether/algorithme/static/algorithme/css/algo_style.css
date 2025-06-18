@@ -4,7 +4,7 @@
 /* Police principale */
 body {
     font-family: 'Averia Libre', cursive;
-    background-color: #f4f6f8;
+    background-color: #c7d0ec;
     padding: 20px;
 }
 
@@ -78,7 +78,7 @@ body {
 .mb-3 {
     margin-bottom: 1rem !important;
 }
-.cadre1 ,.cadre2 ,.cadre3 ,.cadre4 {
+.cadre1 ,.cadre2 ,.cadre3 ,.cadre4 ,.cadre5 ,.cadre6 ,.cadre7{
     border: 2px solid #007bff;       
     padding: 10px;                    
     margin: 20px auto;                
@@ -88,6 +88,9 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
     align-items: center;
     color: black;
+}
+.cadre4 ,.cadre5 ,.cadre6 ,.cadre7{
+    display: none;
 }
 
 

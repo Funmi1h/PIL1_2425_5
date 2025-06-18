@@ -55,12 +55,12 @@
             <p><strong>Rôle:</strong>{{ user.role }}</p>
 
             <a href="{% url 'update_role' %}" class="edit-profile-btn" id="ru">Modifier votre rôle </a>
-
-            <p><strong>Adresse :</strong> {% if user.adresse %}{{ user.adresse }}{% else %}Vous n'avez spécifié aucune adresse.{% endif %}</p>
-            <p><strong>Horaires :</strong></p>
-            <p><strong>Départ :</strong> {% if user.heure_depart %}{{ user.heure_depart }}{% else %}Non spécifié{% endif %}</p>
-            <p><strong>Arrivée :</strong> {% if user.heure_arrivee %}{{ user.heure_arrivee }}{% else %}Non spécifié{% endif %}</p>
-           
+           <div class="got">
+                <p><strong>Adresse :</strong> {% if user.adresse %}{{ user.adresse }}{% else %}Vous n'avez spécifié aucune adresse.{% endif %}</p>
+                <p><strong>Horaires :</strong></p>
+                <p><strong>Départ :</strong> {% if user.heure_depart %}{{ user.heure_depart }}{% else %}Non spécifié{% endif %}</p>
+                <p><strong>Arrivée :</strong> {% if user.heure_arrivee %}{{ user.heure_arrivee }}{% else %}Non spécifié{% endif %}</p>
+           </div>
            
            
             {% if user.role == "conducteur" %}

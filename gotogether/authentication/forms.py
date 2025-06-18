@@ -116,6 +116,40 @@ class SignUpForm(forms.ModelForm):
                 Conducteur.objects.create(user=user)
         return user
 
+    def clean_numero_telephone(self):
+        numero = self.cleaned_data.get('numero_telephone', '').strip()
+        
+        
+        numero = re.sub(r'[\s\-\.\(\)]', '', numero)
+
+        pattern = re.compile(r'^(?:\+229|00229|229|0)?(\d{9,10})$')
+        match = pattern.match(numero)
+
+        if not match:
+            raise forms.ValidationError("Entrez un numéro béninois valide au format : +22901XXXXXXXX.")
+
+        numero_core = match.group(1)
+
+        # Si l'utilisateur a entré seulement 9 chiffres (sans le zéro initial), on le rajoute
+        if len(numero_core) == 9:
+            numero_core = '0' + numero_core
+
+        if len(numero_core) != 10:
+            raise forms.ValidationError("Le numéro doit contenir 10 chiffres après l'indicatif.")
+
+        numero_formatte = f'+229{numero_core}'
+
+        # Vérifier l'unicité du numéro
+        if get_user_model().objects.filter(numero_telephone=numero_formatte).exists():
+            raise forms.ValidationError("Ce numéro est déjà utilisé.")
+
+        return numero_formatte
+
+
+
+
+
+
 
    
     # Formulaire pour changer la photo de profil
