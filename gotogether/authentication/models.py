@@ -54,16 +54,41 @@ class User(AbstractUser):
         verbose_name='Rôle',
         default='passager'  # Valeur par défaut
     )
-    latitude = models.FloatField(
+    latitude = models.DecimalField(
+        max_digits=30,
+        decimal_places=20,
         verbose_name='Latitude',
         null=True,
         blank=True
     
     )
-    longitude = models.FloatField(
+    longitude = models.DecimalField(
         verbose_name='Longitude',
         null=True,
+        blank=True,
+        max_digits=30,
+        decimal_places=20
+    )
+
+    latitude_arrivee = models.DecimalField(
+        verbose_name='Latitude_arrivee',
+        null=True,
+        blank=True,
+        max_digits=30,
+        decimal_places=20
+    )
+    longitude_arrivee = models.DecimalField(
+        verbose_name='Longitude_arrivee',
+        null=True,
+        blank=True,
+        max_digits=30,
+        decimal_places=20)
+    
+    date_depart = models.DateField(
+        verbose_name='Date de depart', 
+        null=True, 
         blank=True
+
     )
     nb_places = models.IntegerField(
         verbose_name='Nombre de places',
@@ -76,9 +101,17 @@ class User(AbstractUser):
          blank= True
     )
 
+    adresse_arrivee = models.CharField(max_length=255 ,
+         verbose_name='Adresse_arrivee',
+         null= True, 
+         blank= True
+        )
+
     marque_voiture = models.CharField(max_length= 100,
          null= True, 
          blank = True)
+    
+    
 
 
     USERNAME_FIELD = 'email'

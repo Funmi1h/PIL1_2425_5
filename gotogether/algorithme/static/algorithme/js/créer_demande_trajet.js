@@ -1,5 +1,3 @@
-
-
 document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ DOM chargé pour la demande de trajet (avec deux cartes Leaflet)!");
 
@@ -11,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let mapArrivee = null;
     let markerArrivee = null;
 
-    
+    // Constantes pour les IDs des champs de formulaire
     const ID_ADRESSE_DEPART = "id_adresse_depart";
     const ID_LATITUDE_DEPART = "id_latitude_depart";
     const ID_LONGITUDE_DEPART = "id_longitude_depart";
@@ -20,46 +18,57 @@ document.addEventListener("DOMContentLoaded", function () {
     const ID_LATITUDE_ARRIVEE = "id_latitude_arrivee";
     const ID_LONGITUDE_ARRIVEE = "id_longitude_arrivee";
 
-    
+    // Variables pour les timers de recherche automatique (pour éviter les requêtes excessives)
+    let searchDepartTimeout = null;
+    let searchArriveeTimeout = null;
+    const SEARCH_DELAY_MS = 800; // Délai avant de lancer la recherche après la dernière frappe
+
     function initializeMaps() {
-        
+        // Initialisation de la carte de départ
         const mapDepartDiv = document.getElementById('map_demande_depart');
         if (mapDepartDiv) {
-            if (mapDepart !== null) mapDepart.remove(); 
+            if (mapDepart !== null) mapDepart.remove();
             mapDepart = L.map('map_demande_depart').setView(defaultCoords, defaultZoom);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapDepart);
             console.log("Map de départ initialisée.");
 
-            
+            // MODIFICATION: Géocodage inverse au clic sur la carte de départ
             mapDepart.on('click', function (e) {
-                updateMarkerAndFields(mapDepart, 'depart', e.latlng.lat, e.latlng.lng, 
-                    `<b>Point de Départ</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`);
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                updateMarkerAndFields(mapDepart, 'depart', lat, lng,
+                    `<b>Point de Départ</b>`);
+                reverseGeocode(lat, lng, 'depart'); // Ajout de l'appel au géocodage inverse
             });
         } else {
             console.error("❌ Élément 'map_demande_depart' introuvable. La carte de départ ne peut pas être initialisée.");
         }
 
-        
+        // Initialisation de la carte d'arrivée
         const mapArriveeDiv = document.getElementById('map_demande_arrivee');
         if (mapArriveeDiv) {
-            if (mapArrivee !== null) mapArrivee.remove(); 
+            if (mapArrivee !== null) mapArrivee.remove();
             mapArrivee = L.map('map_demande_arrivee').setView(defaultCoords, defaultZoom);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(mapArrivee);
             console.log("Map d'arrivée initialisée.");
 
-            
+            // MODIFICATION: Géocodage inverse au clic sur la carte d'arrivée
             mapArrivee.on('click', function (e) {
-                updateMarkerAndFields(mapArrivee, 'arrivee', e.latlng.lat, e.latlng.lng, 
-                    `<b>Point d'Arrivée</b><br>Lat: ${e.latlng.lat.toFixed(6)}<br>Lng: ${e.latlng.lng.toFixed(6)}`);
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                updateMarkerAndFields(mapArrivee, 'arrivee', lat, lng,
+                    `<b>Point d'Arrivée</b>`);
+                reverseGeocode(lat, lng, 'arrivee'); // Ajout de l'appel au géocodage inverse
             });
         } else {
             console.error("❌ Élément 'map_demande_arrivee' introuvable. La carte d'arrivée ne peut pas être initialisée.");
         }
 
+        // Récupération des valeurs initiales si elles existent dans les champs cachés
         const initialLatDepart = parseFloat(document.getElementById(ID_LATITUDE_DEPART)?.value);
         const initialLngDepart = parseFloat(document.getElementById(ID_LONGITUDE_DEPART)?.value);
         if (!isNaN(initialLatDepart) && !isNaN(initialLngDepart) && mapDepart) {
@@ -74,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
             mapArrivee.setView([initialLatArrivee, initialLngArrivee], defaultZoom);
         }
     }
-// --- FONCTIONS DE GESTION DES MARQUEURS ET CHAMPS ---
+    // --- FONCTIONS DE GESTION DES MARQUEURS ET CHAMPS ---
 
     /**
      * Ajoute ou met à jour un marqueur sur la carte spécifiée et met à jour les champs de coordonnées.
@@ -90,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
             currentMarkerRef = markerDepart;
             latField = document.getElementById(ID_LATITUDE_DEPART);
             lngField = document.getElementById(ID_LONGITUDE_DEPART);
-        } else { 
+        } else {
             currentMarkerRef = markerArrivee;
             latField = document.getElementById(ID_LATITUDE_ARRIVEE);
             lngField = document.getElementById(ID_LONGITUDE_ARRIVEE);
@@ -105,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
             mapInstance.removeLayer(currentMarkerRef);
         }
 
-        
+
         const newMarker = L.marker([lat, lng]).addTo(mapInstance);
         newMarker.bindPopup(popupContent).openPopup();
 
@@ -115,11 +124,11 @@ document.addEventListener("DOMContentLoaded", function () {
             markerArrivee = newMarker;
         }
 
-       
+
         latField.value = lat;
         lngField.value = lng;
-        
-        
+
+
         const errorDiv = document.getElementById(`error_${type === 'depart' ? 'adresse_depart' : 'adresse_arrivee'}`);
         if (errorDiv) errorDiv.textContent = '';
         const addressField = document.getElementById(type === 'depart' ? ID_ADRESSE_DEPART : ID_ADRESSE_ARRIVEE);
@@ -133,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let mapInstance;
         if (type === 'depart') {
             mapInstance = mapDepart;
-        } else { 
+        } else {
             mapInstance = mapArrivee;
         }
 
@@ -145,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const popupContent = "Votre Position Actuelle";
                 updateMarkerAndFields(mapInstance, type, lat, lng, popupContent);
-                
+
                 reverseGeocode(lat, lng, type);
 
             }, function (error) {
@@ -157,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-  
+
     function reverseGeocode(lat, lng, type) {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
             .then(response => response.json())
@@ -172,22 +181,24 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Erreur lors du géocodage inverse:", error);
+                // Optionnel: Afficher un message à l'utilisateur si le géocodage inverse échoue
+                // alert("Impossible de trouver une adresse pour ce point. Veuillez réessayer ou entrer une adresse manuellement.");
             });
     }
 
-   
+
     function searchLocation(addressFieldId, type) {
         const addressInput = document.getElementById(addressFieldId);
         if (!addressInput) {
             console.error(`❌ Champ d'adresse '${addressFieldId}' introuvable.`);
-            alert("Erreur interne: champ d'adresse manquant.");
+            // alert("Erreur interne: champ d'adresse manquant."); // Désactivé car la recherche est automatique
             return;
         }
 
         const address = addressInput.value;
         if (!address.trim()) {
-            alert("Veuillez entrer une adresse.");
-            return;
+            // alert("Veuillez entrer une adresse."); // Désactivé pour la recherche automatique (peut être vide temporairement)
+            return; // Ne pas rechercher si le champ est vide
         }
 
         let mapInstance;
@@ -198,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (!mapInstance) {
-            alert(`La carte pour le ${type} n'est pas initialisée.`);
+            console.warn(`La carte pour le ${type} n'est pas initialisée. Impossible de rechercher.`);
             return;
         }
 
@@ -215,23 +226,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.length > 0) {
                     const lat = parseFloat(data[0].lat);
                     const lon = parseFloat(data[0].lon);
-                    mapInstance.setView([lat, lon], 15); 
+                    mapInstance.setView([lat, lon], 15); // Centre la carte sur le résultat
 
                     const popupContent = `Adresse trouvée: ${data[0].display_name}`;
                     updateMarkerAndFields(mapInstance, type, lat, lon, popupContent);
-                    addressInput.value = data[0].display_name; 
+                    // Laissez le champ d'adresse avec la valeur que l'utilisateur a tapée ou la valeur normalisée si différente
+                    // addressInput.value = data[0].display_name; // Optionnel: mettez à jour avec le nom affiché par l'API
                 } else {
-                    alert(`Aucune adresse trouvée pour "${address}".`);
+                    // MODIFICATION: Gérer l'absence de résultats de manière plus silencieuse pour la recherche automatique
+                    // alert(`Aucune adresse trouvée pour "${address}".`);
+                    console.log(`🔎 Aucune adresse trouvée pour "${address}" pour le ${type}.`);
+                    // Optionnel: Effacer le marqueur si la recherche ne donne rien
+                    if (type === 'depart' && markerDepart) {
+                        mapDepart.removeLayer(markerDepart);
+                        markerDepart = null;
+                        document.getElementById(ID_LATITUDE_DEPART).value = '';
+                        document.getElementById(ID_LONGITUDE_DEPART).value = '';
+                    } else if (type === 'arrivee' && markerArrivee) {
+                        mapArrivee.removeLayer(markerArrivee);
+                        markerArrivee = null;
+                        document.getElementById(ID_LATITUDE_ARRIVEE).value = '';
+                        document.getElementById(ID_LONGITUDE_ARRIVEE).value = '';
+                    }
                 }
             })
             .catch(error => {
                 console.error("Erreur lors de la recherche d'adresse:", error);
-                alert("Erreur lors de la recherche d'adresse. Vérifiez votre connexion internet.");
+                // alert("Erreur lors de la recherche d'adresse. Vérifiez votre connexion internet."); // Désactivé
             });
     }
 
-   
-    initializeMaps(); 
+
+    initializeMaps();
 
     const demandeTrajetForm = document.getElementById('demandeTrajetForm');
     if (!demandeTrajetForm) {
@@ -239,24 +265,43 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    // MODIFICATION: Suppression des écouteurs de clic sur les boutons de recherche
+    // const searchDepartButton = document.getElementById('search_depart_button');
+    // if (searchDepartButton) searchDepartButton.addEventListener('click', () => searchLocation(ID_ADRESSE_DEPART, 'depart'));
+    // const searchArriveeButton = document.getElementById('search_arrivee_button');
+    // if (searchArriveeButton) searchArriveeButton.addEventListener('click', () => searchLocation(ID_ADRESSE_ARRIVEE, 'arrivee'));
 
-    const searchDepartButton = document.getElementById('search_depart_button');
-    if (searchDepartButton) searchDepartButton.addEventListener('click', () => searchLocation(ID_ADRESSE_DEPART, 'depart'));
-    const searchArriveeButton = document.getElementById('search_arrivee_button');
-    if (searchArriveeButton) searchArriveeButton.addEventListener('click', () => searchLocation(ID_ADRESSE_ARRIVEE, 'arrivee'));
+    // NOUVEAU: Ajout des écouteurs d'événements 'input' pour la recherche automatique
+    const adresseDepartInput = document.getElementById(ID_ADRESSE_DEPART);
+    if (adresseDepartInput) {
+        adresseDepartInput.addEventListener('input', function () {
+            clearTimeout(searchDepartTimeout); // Réinitialise le timer à chaque frappe
+            searchDepartTimeout = setTimeout(() => {
+                searchLocation(ID_ADRESSE_DEPART, 'depart');
+            }, SEARCH_DELAY_MS);
+        });
+    }
 
-  
+    const adresseArriveeInput = document.getElementById(ID_ADRESSE_ARRIVEE);
+    if (adresseArriveeInput) {
+        adresseArriveeInput.addEventListener('input', function () {
+            clearTimeout(searchArriveeTimeout); // Réinitialise le timer à chaque frappe
+            searchArriveeTimeout = setTimeout(() => {
+                searchLocation(ID_ADRESSE_ARRIVEE, 'arrivee');
+            }, SEARCH_DELAY_MS);
+        });
+    }
+
     const geolocationDepartButton = document.getElementById('geolocation_depart_button');
     if (geolocationDepartButton) geolocationDepartButton.addEventListener('click', () => window.getUserPosition('depart'));
     const geolocationArriveeButton = document.getElementById('geolocation_arrivee_button');
     if (geolocationArriveeButton) geolocationArriveeButton.addEventListener('click', () => window.getUserPosition('arrivee'));
 
 
-   
     demandeTrajetForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        
+
         const latDepartField = document.getElementById(ID_LATITUDE_DEPART);
         const lngDepartField = document.getElementById(ID_LONGITUDE_DEPART);
         const adresseDepartField = document.getElementById(ID_ADRESSE_DEPART);
@@ -265,28 +310,29 @@ document.addEventListener("DOMContentLoaded", function () {
         const lngArriveeField = document.getElementById(ID_LONGITUDE_ARRIVEE);
         const adresseArriveeField = document.getElementById(ID_ADRESSE_ARRIVEE);
 
-        clearFormErrors(); 
+        clearFormErrors();
 
         let formIsValid = true;
 
-        
+
         if (!latDepartField.value || !lngDepartField.value || isNaN(parseFloat(latDepartField.value)) || isNaN(parseFloat(lngDepartField.value)) || !adresseDepartField.value.trim()) {
             displayFieldError(ID_ADRESSE_DEPART, "Veuillez définir un point de départ sur la carte (clic ou recherche).");
             formIsValid = false;
         }
 
-        
+
         if (adresseArriveeField.value.trim()) {
             if (!latArriveeField.value || !lngArriveeField.value || isNaN(parseFloat(latArriveeField.value)) || isNaN(parseFloat(lngArriveeField.value))) {
                 displayFieldError(ID_ADRESSE_ARRIVEE, "Si vous avez entré une adresse d'arrivée, veuillez la sélectionner sur la carte ou utiliser le bouton de recherche.");
                 formIsValid = false;
             }
         } else {
-           
+            // Si le champ d'adresse d'arrivée est vide mais qu'un marqueur ou des coords sont là
             if (latArriveeField.value || lngArriveeField.value) {
-               
-                displayFieldError(ID_ADRESSE_ARRIVEE, "Si vous avez défini un point d'arrivée sur la carte, veuillez renseigner l'adresse d'arrivée ou effacer le point.");
-        
+                // MODIFICATION: Le message est plus précis maintenant que la recherche est automatique
+                displayFieldError(ID_ADRESSE_ARRIVEE, "Vous avez un point d'arrivée sur la carte sans adresse. Veuillez effacer le point ou taper une adresse.");
+
+                // Réinitialise le marqueur et les champs si l'adresse est vide pour forcer une correction
                 latArriveeField.value = '';
                 lngArriveeField.value = '';
                 if (markerArrivee) {
@@ -308,7 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.forEach((value, key) => {
             jsonData[key] = value;
         });
-        console.log("Données JSON envoyées:", jsonData); 
+        console.log("Données JSON envoyées:", jsonData);
 
         const submitButton = this.querySelector('button[type="submit"]');
         if (submitButton) {
@@ -338,15 +384,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 displayGeneralSuccess(data.message || 'Votre demande de trajet a été soumise avec succès !');
 
                 demandeTrajetForm.reset();
-               
+                // Effacer explicitement les valeurs des champs cachés et supprimer les marqueurs
                 document.getElementById(ID_LATITUDE_DEPART).value = '';
                 document.getElementById(ID_LONGITUDE_DEPART).value = '';
                 document.getElementById(ID_LATITUDE_ARRIVEE).value = '';
                 document.getElementById(ID_LONGITUDE_ARRIVEE).value = '';
                 if (markerDepart) { mapDepart.removeLayer(markerDepart); markerDepart = null; }
                 if (markerArrivee) { mapArrivee.removeLayer(markerArrivee); markerArrivee = null; }
-                
-             
+
+                // Recentrer les cartes sur les coordonnées par défaut après soumission
                 mapDepart.setView(defaultCoords, defaultZoom);
                 mapArrivee.setView(defaultCoords, defaultZoom);
 
@@ -377,7 +423,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-
     function displayGeneralSuccess(message) {
         const successDiv = document.getElementById('message_success');
         const errorDiv = document.getElementById('message_error');
@@ -392,7 +437,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const successDiv = document.getElementById('message_success');
         const errorDiv = document.getElementById('message_error');
         if (errorDiv) {
-            errorDiv.innerHTML = message; 
+            errorDiv.innerHTML = message;
             errorDiv.style.display = 'block';
         }
         if (successDiv) successDiv.style.display = 'none';
@@ -404,10 +449,10 @@ document.addEventListener("DOMContentLoaded", function () {
             field.classList.add('is-invalid');
             let feedbackDiv = document.getElementById(`error_${fieldId.replace('id_', '')}`);
             if (!feedbackDiv) {
-                 feedbackDiv = document.createElement('div');
-                 feedbackDiv.classList.add('invalid-feedback');
-                 feedbackDiv.id = `error_${fieldId.replace('id_', '')}`;
-                 field.parentNode.insertBefore(feedbackDiv, field.nextSibling);
+                feedbackDiv = document.createElement('div');
+                feedbackDiv.classList.add('invalid-feedback');
+                feedbackDiv.id = `error_${fieldId.replace('id_', '')}`;
+                field.parentNode.insertBefore(feedbackDiv, field.nextSibling);
             }
             feedbackDiv.textContent = message;
         } else {
@@ -427,16 +472,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         for (const fieldName in errors) {
             if (errors.hasOwnProperty(fieldName)) {
-                const fieldErrors = errors[fieldName]; 
-                
+                const fieldErrors = errors[fieldName];
+
                 if (fieldName === '__all__') {
                     displayGeneralError(fieldErrors.join('<br>'));
                 } else {
                     const field = document.getElementById(`id_${fieldName}`);
                     if (field) {
                         field.classList.add('is-invalid');
-                        let feedbackDiv = document.getElementById(`error_${fieldName}`); 
-                        if (!feedbackDiv) { 
+                        let feedbackDiv = document.getElementById(`error_${fieldName}`);
+                        if (!feedbackDiv) {
                             feedbackDiv = document.createElement('div');
                             feedbackDiv.classList.add('invalid-feedback');
                             feedbackDiv.id = `error_${fieldName}`;

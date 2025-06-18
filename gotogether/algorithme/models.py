@@ -1,10 +1,11 @@
 from django.db import models
-from django.core.validators import MinValueValidator , MaxValueValidator
+from django.conf import settings 
+
 from django.contrib.auth import get_user_model 
 from django.utils import timezone  
 from django.dispatch import receiver
 from authentication.models import User
-import datetime
+
 
 # Create your models here.
 
@@ -12,9 +13,14 @@ User = get_user_model()
 
 
 class Passager(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='passager_profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='passager_profile')
 
-    infos_recomandations = models.CharField(null= True, blank= True, max_length= 155, unique=True, default='RAS')
+    infos_recomandations = models.CharField(null= True, blank= True, max_length= 155, default='RAS')
+
+    date_depart_passager = models.DateField(null=True )
+
+    heure_arrivee_passager = models.TimeField(null=True , blank=True)
+    heure_depart_passager = models.TimeField(null=True , blank=True)
 
 
 
@@ -23,8 +29,8 @@ class Passager(models.Model):
 
 
 class Conducteur(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='conducteur_profile')
-    infos_recomandations = models.CharField(null= True, blank= True, max_length= 155, unique=True , default='RAS')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='conducteur_profile')
+    infos_recomandations = models.CharField(null= True, blank= True, max_length= 155, default='RAS')
 
     def _str_(self):
         return f"Profil Conducteur de {self.user.username} ({self.marque_voiture})"
@@ -51,8 +57,8 @@ class TrajetOffert(models.Model):
     latitude_arrivee = models.FloatField(null=True, blank=True)
     longitude_arrivee = models.FloatField(null=True, blank=True)
     heure_arrivee_prevue = models.DateTimeField(null=True, blank=True) 
-    nb_places_disponibles = models.IntegerField(default=1) 
-    
+    nb_places_disponibles = models.IntegerField(default=1)
+    date_depart = models.DateField(null=True)    
    
     est_actif = models.BooleanField(default=True)
     

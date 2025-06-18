@@ -1,6 +1,6 @@
 from django import forms
-from authentication.models import User
-from algorithme.models import TrajetOffert , DemandeTrajet
+from authentication.models import User 
+from algorithme.models import TrajetOffert , DemandeTrajet , Passager
 from datetime import datetime
 from django.utils import timezone
 
@@ -39,6 +39,7 @@ class UserForm(forms.ModelForm):
 
         
 class RechercheConducteurForm(forms.Form):
+    
     adresse_depart = forms.CharField(
         label="Votre adresse de départ",
         max_length=255,
@@ -57,16 +58,20 @@ class RechercheConducteurForm(forms.Form):
         widget=forms.HiddenInput(attrs={'step': 'any',  'id' : 'id_longitude_depart_search'})
     )
 
-    heure_depart = forms.TimeField(
+    heure_depart_passager = forms.TimeField(
         label="Heure de départ souhaitée",
         required=False,
         widget=forms.TimeInput(attrs={'type': 'time' , 'class': 'form-control'})
     )
-    heure_arrivee = forms.TimeField(
+    heure_arrivee_passager = forms.TimeField(
         label="Heure d'arrivée souhaitée (optionnel)",
         required=False,
         widget=forms.TimeInput(attrs={'type': 'time' , 'class': 'form-control'})
     )
+
+    date_depart_passager = forms.DateField(label="Date de départ" , 
+        required=False , 
+        widget=forms.DateInput(attrs={'type': 'date'}))
 
     adresse_arrivee = forms.CharField(
         label="Votre adresse d'arrivée (optionnel)",

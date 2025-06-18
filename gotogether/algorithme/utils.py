@@ -23,9 +23,9 @@ def find_conducteurs_les_plus_proches(client_latitude, client_longitude, conduct
     Trouve les conducteurs les plus proches du client.
     """
     conducteurs_proches = []
-    top_5_conducteurs = []      # Nombre de conducteurs à retourner
+
     for conducteur in conducteurs:
-        distance = Haversine(client_latitude, client_longitude, float(conducteur.latitude) , float(conducteur.longitude))
+        distance = Haversine(client_latitude, client_longitude, float(conducteur.latitude_depart) , float(conducteur.longitude_depart))
 
         conducteurs_proches.append({'user' : conducteur, 'distance' : distance})
     # Trier les conducteurs par distance
