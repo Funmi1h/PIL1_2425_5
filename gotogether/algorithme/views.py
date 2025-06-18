@@ -21,10 +21,7 @@ from  datetime import timedelta , datetime
 import datetime
 import json
 
-# Create your views here.
 
-#passager = User.objects.filter(role='passager') 
-#conducteur = User.objects.filter(role='conducteur') 
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +32,7 @@ def is_conducteur(user):
     return user.is_authenticated and user.role == 'conducteur'
 
 
-@login_required # S'assurer que l'utilisateur est connecté
+@login_required
 
 def formulaire_view(request):
 
@@ -68,6 +65,21 @@ def formulaire_view(request):
         # Le formulaire est pré-rempli avec les données de l'utilisateur connecté
         form = UserForm(instance=user_instance)
     return render(request, "algorithme/formulaire_role.html", {"user_form": form , "is_conducteur":is_conducteur })
+
+
+
+@login_required
+def action_button_redirect(request):
+    
+    user = request.user 
+
+    if user.role == 'passager':
+        return redirect('creer_demande_trajet')
+    elif user.role == 'conducteur':
+        return redirect('proposer_trajet')
+    else:
+        messages.error(request, "Votre rôle n'est pas défini ou n'est pas reconnu. Veuillez contacter les developpeurs.")
+        return redirect('changer_profil') 
 
 
 @login_required

@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                                     Téléphone: <a href="tel:${trajet.conducteur_phone}">${trajet.conducteur_phone || 'N/A'}</a>
                                                 </p>
                                                 <div class="mt-auto">
-                                                    <button class="btn btn-primary btn-sm">Contacter</button>
+                                                    <button class="btn btn-primary btn-sm"  href = >Contacter</button>
                                                 </div>
                                             </div>
                                         </div>

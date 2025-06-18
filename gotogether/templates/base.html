@@ -88,7 +88,12 @@
                                 <a href="{% url 'rechercher_trajets_existants' %}" class="nav-link mx-4">Trouver des trajets </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'creer_demande_trajet' %}" class="nav-link mx-4">Proposer des trajets </a>
+                                <a href="{% url 'action_button_redirect' %}" class="nav-link mx-4">{% if user.role == 'passager' %}
+        Soumettre un Trajet
+    {% else  %}
+        Proposer une Offre
+   
+    {% endif %} </a>
                             </li>
                             
                             
