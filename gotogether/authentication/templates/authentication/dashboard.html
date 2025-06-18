@@ -9,99 +9,101 @@
 {% endblock %}
 
 {% block content %}
-<div class="dashboard row">
-    <div class=" col-lg-6">
-        <h1 class="color-bleu-principal">Bienvenue dans ton coin personnel, {{ user.first_name }} 👋</h1>
-        <h5 class="text-muted">Partages tes trajets, trouves des compagnons de route, et restes connecté.</h5>
+<div class="container">
+    <div class="dashboard row">
+        <div class=" col-lg-6">
+            <h1 class="color-bleu-principal">Bienvenue dans ton coin personnel, {{ user.first_name }} 👋</h1>
+            <h5 class="text-muted">Partages tes trajets, trouves des compagnons de route, et restes connecté.</h5>
 
-        <!-- Actions principales -->
-        <div class="mb-4">
-            <a href="#" class="btn btn-primary me-2 mb-3" id="got1"><i class="material-icons">search</i>Rechercher un trajet</a><br>
-            
-            <a href="#" class="btn btn-primary me-2 mb-3" id="got2"><i class="material-icons">add</i>Proposer un trajet</a>
-        </div>
-
-        <!-- Trajets à venir -->
-        <div class="card mb-5">
-            <div class="card-header bg-primary text-white">🛣️ Mes trajets à venir</div>
-            <div class="card-body">
-                {% if upcoming_trips %}
-                    <ul class="list-group">
-                        {% for trip in upcoming_trips %}
-                            <li class="list-group-item">
-                                <strong>{{ trip.depart }}</strong> → <strong>{{ trip.arrivee }}</strong>
-                                le {{ trip.date|date:"d/m/Y" }} à {{ trip.heure }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="alert alert-info">Aucun trajet prévu pour le moment.</div>
-                {% endif %}
+            <!-- Actions principales -->
+            <div class="mb-4">
+                <a href="#" class="btn btn-primary me-2 mb-3" id="got1"><i class="material-icons">search</i>Rechercher un trajet</a><br>
+                
+                <a href="#" class="btn btn-primary me-2 mb-3" id="got2"><i class="material-icons">add</i>Proposer un trajet</a>
             </div>
-        </div>
-    </div>
 
-    <div id="got3" class=" col-lg-6">
-        <!-- Suggestions de trajets -->
-         {% if user.role == 'passager' %}
-           <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
+            <!-- Trajets à venir -->
+            <div class="card mb-5">
+                <div class="card-header bg-primary text-white">🛣️ Mes trajets à venir</div>
                 <div class="card-body">
-                    {% if suggestions_passagers %}
+                    {% if upcoming_trips %}
                         <ul class="list-group">
-                            {% for suggestion in suggestions_passagers %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        {{ suggestion.conducteur.user.first_name }} propose un trajet 
-                                        <strong>{{ suggestion.adresse_depart }}</strong> → 
-                                        <strong>{{ suggestion.adresse_arrivee }}</strong><br>
-                                        le {{ suggestion.heure_depart_prevue|date:"d/m/Y" }} à 
-                                        {{ suggestion.heure_depart_prevue|time:"H:i" }}
-                                    </div>
-                                    <a href="{% url 'chat_room' suggestion.conducteur.user.id %}" class="btn btn-sm btn-outline-primary">
-                                        Message
-                                    </a>
+                            {% for trip in upcoming_trips %}
+                                <li class="list-group-item">
+                                    <strong>{{ trip.depart }}</strong> → <strong>{{ trip.arrivee }}</strong>
+                                    le {{ trip.date|date:"d/m/Y" }} à {{ trip.heure }}
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <div class="alert alert-warning">Pas encore de trajets proposés autour de toi.</div>
+                        <div class="alert alert-info">Aucun trajet prévu pour le moment.</div>
                     {% endif %}
                 </div>
             </div>
+        </div>
 
-        {% endif %}
-
-
-         {% if user.role == 'conducteur' %}
-           <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
-                <div class="card-body">
-                    {% if suggestions_conducteur %}
-                        <ul class="list-group">
-                            {% for suggestion in suggestions_conducteur %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        {{ suggestion.passager.user.first_name }} recherche un trajet 
-                                        <strong>{{ suggestion.adresse_depart }}</strong> → 
-                                        <strong>{{ suggestion.adresse_arrivee }}</strong><br>
-                                        le {{ suggestion.heure_depart_prevue|date:"d/m/Y" }} à 
-                                        {{ suggestion.heure_depart_prevue|time:"H:i" }}
-                                    </div>
-                                    <a href="{% url 'chat_room' suggestion.passager.user.id %}" class="btn btn-sm btn-outline-primary">
-                                        Message
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <div class="alert alert-warning">Pas encore de trajets proposés autour de toi.</div>
-                    {% endif %}
+        <div id="got3" class=" col-lg-6">
+            <!-- Suggestions de trajets -->
+            {% if user.role == 'passager' %}
+            <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
+                    <div class="card-body">
+                        {% if suggestions_passagers %}
+                            <ul class="list-group">
+                                {% for suggestion in suggestions_passagers %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            {{ suggestion.conducteur.user.first_name }} propose un trajet 
+                                            <strong>{{ suggestion.adresse_depart }}</strong> → 
+                                            <strong>{{ suggestion.adresse_arrivee }}</strong><br>
+                                            le {{ suggestion.heure_depart_prevue|date:"d/m/Y" }} à 
+                                            {{ suggestion.heure_depart_prevue|time:"H:i" }}
+                                        </div>
+                                        <a href="{% url 'chat_room' suggestion.conducteur.user.id %}" class="btn btn-sm btn-outline-primary">
+                                            Message
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-warning">Pas encore de trajets proposés autour de toi.</div>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
 
-        {% endif %}
+            {% endif %}
+
+
+            {% if user.role == 'conducteur' %}
+            <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">📍 Suggestions proches de toi</div>
+                    <div class="card-body">
+                        {% if suggestions_conducteur %}
+                            <ul class="list-group">
+                                {% for suggestion in suggestions_conducteur %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            {{ suggestion.passager.user.first_name }} recherche un trajet 
+                                            <strong>{{ suggestion.adresse_depart }}</strong> → 
+                                            <strong>{{ suggestion.adresse_arrivee }}</strong><br>
+                                            le {{ suggestion.heure_depart_prevue|date:"d/m/Y" }} à 
+                                            {{ suggestion.heure_depart_prevue|time:"H:i" }}
+                                        </div>
+                                        <a href="{% url 'chat_room' suggestion.passager.user.id %}" class="btn btn-sm btn-outline-primary">
+                                            Message
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-warning">Pas encore de trajets proposés autour de toi.</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            {% endif %}
+        </div>
+
     </div>
-
 </div>
 {% endblock %}
