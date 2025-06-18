@@ -21,9 +21,9 @@ Chaque année, les élèves de la premiere année de l'Institut de Formation et 
 * Suggestions de passagers ou de conducteurs : Découvrez en fonction de votre rôle des suggestions de trajets proposés par de conducteur ou des trajets demandés par des passagers.
 
 ## Installation 
-* [Python] 
-* [Django] 
-* Autres dépendances listés dans le fichier requirements.txt
+- [Python
+- [Django
+- Autres dépendances listés dans le fichier requirements.txt
 
      ## Installation
 1.  Créer un dossier et l'ouvrir dans l'éditeur de code
@@ -42,57 +42,39 @@ Chaque année, les élèves de la premiere année de l'Institut de Formation et 
      <pre>
        (env) git clone https://github.com/Funmi1h/PIL1_2425_5.git
      </pre>
-  4. Naviguer dans le répertoire du projet
+  4. Naviguer dans le répertoire du projet PIL1_2425_5 et aller dans le sous dossier gotogether
      <pre>
           (env) cd PIL1_2425_5
+          (env) cd gotogether
      </pre>
 
   5. Installer les dépendances
      <pre>
           (env) pip install -r requirements.txt
      </pre>
-   6. Configurer la base de données dans le fichier [settings.py](https://github.com/Funmi1h/PIL1_2425_5/blob/main/gotogether/gotogether/settings.py)
-      * Avec MySQL
-         
-      <pre>
-                     DATABASES = {
-            'default': {
-              'ENGINE': 'django.db.backends.mysql',
-              'NAME': 'your_db_name',
-              'USER': 'your_db_user',
-              'PASSWORD': 'your_db_password',
-              'HOST': 'your_db_host',  # Mettre à '127.0.0.1' ou 'localhost'
-              'PORT': '3306',          # Port par défaut de mysql
-              }
-          }
-  
-      </pre>
-
-        * Avec Postgre SQL
+   6. Configurer les variables d'environnements 
+       *  Copier le fichier '.env.example' dans le repertoire gotogether en fichier '.env'
           <pre>
-                         DATABASES = {
-              'default': {
-                  'ENGINE': 'django.db.backends.postgresql',
-                  'NAME': 'your_db_name',
-                  'USER': 'your_db_user',
-                  'PASSWORD': 'your_db_password',
-                  'HOST': 'localhost',
-                  'PORT': '5432', #Port par défaut de PostegreSQL
-              }
-          }
+               (env) cd gotogether
+               (env) cp .env.example .env
           </pre>
+          
+       * Ouvrez le fichier .env et remplissez avec vos propres informations:
+         - Les identifiants de votre base de données (your_db_name, your_db_user, your_secure_password )
+         - L'adresse email d'envoi et le mot de passe d'application
+     ⚠️ N'oubliez pas de remplir toutes les variables sinon il pourrait y avoir des bugs
+
 7. Effectuer les migrations
+
+   
    <pre>
         (env) python manage.py  makemigrations
         (env) python manage.py migrate
    </pre>
-8. Démarrer le serveur de développement
-   * Démarrer le serveur sans vouloir tester le fonctionnement de la messagerie
-   <pre>
-        (env) python manage.py runserver 
-   </pre>
 
-   * Démarrer le serveur pour tout expérimenté en temps réel
+   
+8. Démarrer le serveur de développement
+   
    <pre>
         (env) daphne gotogether.asgi:application 
    </pre>
