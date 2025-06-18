@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from authentication.models import User
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from .models import Message, Conversation
 from django.http import JsonResponse
 
-
+from django.core.exceptions import ObjectDoesNotExist
 
 
 @login_required
@@ -99,27 +100,38 @@ def edit_message(request, message_id):
     return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 
 @login_required
+@require_POST
 def reply_message(request):
-    if request.method == 'POST':
-        content = request.POST.get('content')
-        reply_to_id = request.POST.get('reply_to_id')
-        recipient_id = request.POST.get('recipient_id')
+    content = request.POST.get('content', '').strip()
+    reply_to_id = request.POST.get('reply_to_id')
+    recipient_id = request.POST.get('recipient_id')
 
+    if not content:
+        return JsonResponse({'error': 'Le message ne peut pas être vide.'}, status=400)
+
+    try:
+        recipient = User.objects.get(id=recipient_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Destinataire introuvable.'}, status=404)
+
+    reply_to_msg = None
+    if reply_to_id:
         try:
-            recipient = User.objects.get(id=recipient_id)
-            reply_to_msg = Message.objects.get(id=reply_to_id) if reply_to_id else None
+            reply_to_msg = Message.objects.get(id=reply_to_id)
+        except Message.DoesNotExist:
+            return JsonResponse({'error': 'Message auquel répondre introuvable.'}, status=404)
 
-            Message.objects.create(
-                sender=request.user,
-                recipient=recipient,
-                content=content,
-                reply_to=reply_to_msg
-            )
-            return JsonResponse({'status': 'replied'})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-        
+    message = Message.objects.create(
+        sender=request.user,
+        recipient=recipient,
+        content=content,
+        reply_to=reply_to_msg
+    )
 
-
-
-
+    return JsonResponse({
+        'status': 'replied',
+        'message': message.content,
+        'timestamp': message.timestamp.strftime('%H:%M'),
+        'is_sender_current_user': True,
+        'reply_to_content': reply_to_msg.content if reply_to_msg else ''
+    })

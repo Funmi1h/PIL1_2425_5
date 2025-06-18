@@ -1,136 +1,155 @@
+body {
+  background-color: #cbd5f0;
+  font-family: 'Averia Libre', cursive;
+  margin: 0;
+  padding: 0;
+}
+
 .profile-container {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px 40px;
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.profile-section {
   display: flex;
-  gap: 40px;
-  background: #f9f9f9;
-  padding: 30px;
-  border-radius: 12px;
-  max-width: 900px;
-  margin: 20px auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.profile-left, .profile-right {
-  flex: 1;
-}
-
-.profile-photo {
-  position: relative;
-  width: 180px;
-  height: 180px;
+.profile-info p.card {
   margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #007bff;
+  border-radius: 8px;
 }
 
-.profile-photo img.profile-pic-preview {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid #0400ff;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
-}
-
-.profile-photo ion-icon {
-  font-size: 180px;
-  color: #ccc;
-  display: block;
-  text-align: center;
-}
-
-.edit-photo-btn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: #1100ff;
-  color: #222;
-  padding: 8px 12px;
-  border-radius: 20px;
-  font-weight: 600;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
-  transition: background 0.3s ease;
-}
-
-.edit-photo-btn:hover {
-  background: #0023e6;
-}
-
-.profile-info p {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
-}
-
-.profile-details p {
-  font-size: 1rem;
-  margin-bottom: 12px;
-}
-
-.profile-details strong {
-  color: #555;
-}
-
-input[type="text"], input[type="hidden"] {
+input[type="text"],
+input[type="password"],
+select,
+textarea {
   width: 100%;
-  padding: 8px 10px;
-  margin-top: 6px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
 }
 
-input[type="text"]:focus {
-  border-color: #1100ff;
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px #007bff;
   outline: none;
-  box-shadow: 0 0 6px #001affaa;
 }
 
 .profile-actions {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  text-align: center;
+  margin-top: 20px;
 }
 
-.change-password-btn, .edit-profile-btn button {
-  background-color: #3700ff;
-  color: #222;
-  padding: 12px 18px;
-  font-weight: 700;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
-  transition: background-color 0.3s ease;
+.enregistrermodif {
+  background-color: #fff;
+  border: 2px solid #007bff;
+  color: #007bff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.enregistrermodif:hover {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.change-password-btn {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.change-password-btn:hover {
+  text-decoration: underline;
+}
+
+.profile-photo {
   text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-pic-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+}
+
+.edit-photo-btn {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #007bff;
   text-decoration: none;
 }
 
-.change-password-btn:hover, .edit-profile-btn button:hover {
-  background-color: #3d00e6;
+.edit-photo-btn:hover {
+  text-decoration: underline;
 }
 
 #map {
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgb(0 0 0 / 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-#validerEmplacement {
-  background-color: #1100ff;
+/* Carte emplacement bouton */
+button.empl {
+  background-color: #007bff;
+  color: white;
   border: none;
-  border-radius: 20px;
-  padding: 10px 15px;
-  cursor: pointer;
-  font-weight: 600;
-  color: #222;
-  box-shadow: 0 3px 8px rgb(0 0 0 / 0.1);
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+button.empl:hover {
+  background-color: #0056b3;
+}
+/* --- Style de la carte Leaflet --- */
+#map {
+  border: 2px solid #007bff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+}
+
+.leaflet-container {
+  font-family: 'Averia Libre', cursive;
+  border-radius: 10px;
+}
+
+/* Bouton rechercher + valider emplacement */
+button[type="button"] {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: bold;
+  margin-top: 8px;
   transition: background-color 0.3s ease;
 }
 
-#validerEmplacement:hover {
-  background-color: #000fe6;
+button[type="button"]:hover {
+  background-color: #0056b3;
 }

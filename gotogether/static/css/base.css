@@ -3,6 +3,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
+
   
   text-align: left;
 }
@@ -109,4 +110,40 @@ ion-icon {
 
 .showed{
     display: block;
+}
+
+
+
+.search-dropdown {
+    position: relative; /* Nécessaire pour le positionnement absolu de la barre */
+    display: inline-block;
+}
+
+.search-bar {
+    display: none;
+    position: absolute;
+    top: 100%;  /* juste en dessous de l'icône */
+    left: 0;
+    min-width: 250px;
+    z-index: 1000;
+    background: white;
+    padding: 8px;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.search-dropdown:hover .search-bar {
+    display: block;
+    animation: fadeInSlide 0.3s ease-in-out;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

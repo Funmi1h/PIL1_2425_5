@@ -1,6 +1,6 @@
 from math import radians, sin, cos, sqrt, atan2 ,asin
 from datetime import datetime, timedelta
-
+from . import models
 from .models import TrajetOffert
 # Formule de haversine pour le calcul de la distance entre deux points géographiques
 def Haversine(lat1, lon1, lat2, lon2):
@@ -23,9 +23,9 @@ def find_conducteurs_les_plus_proches(client_latitude, client_longitude, conduct
     Trouve les conducteurs les plus proches du client.
     """
     conducteurs_proches = []
-    top_5_conducteurs = []      # Nombre de conducteurs à retourner
+
     for conducteur in conducteurs:
-        distance = Haversine(client_latitude, client_longitude, float(conducteur.latitude) , float(conducteur.longitude))
+        distance = Haversine(client_latitude, client_longitude, float(conducteur.latitude_depart) , float(conducteur.longitude_depart))
 
         conducteurs_proches.append({'user' : conducteur, 'distance' : distance})
     # Trier les conducteurs par distance
@@ -41,13 +41,39 @@ def find_conducteurs_les_plus_proches(client_latitude, client_longitude, conduct
 
 
 # Pour générer les suggestions
-
+# pour les passagers
 def generate_suggestions_passagers(user, rayon_km, tolerance_minutes =30):
     if user.role != 'passager' or not user.latitude or not user.longitude:
         return []
     
 
     trajets_actifs = TrajetOffert.objects.filter(est_actif=True, nb_places_disponibles__gt=0)
+    suggestions = []
+
+    for trajet in trajets_actifs:
+        dist_depart = Haversine(user.latitude, user.longitude, trajet.latitude_depart, trajet.longitude_depart)
+
+        if dist_depart <= rayon_km:
+            if user.heure_depart :
+                heure_depart_hab = datetime.combine(datetime.today(), user.heure_depart)
+                tolerance = timedelta(minutes= tolerance_minutes)
+
+            if abs(trajet.heure_depart_prevue - heure_depart_hab)<= tolerance:
+                suggestions.append(trajet)
+    
+
+    return suggestions
+
+
+
+# pour les conducteurs 
+
+def generate_suggestions_conducteurs(user, rayon_km, tolerance_minutes =30):
+    if user.role != 'conducteur' or not user.latitude or not user.longitude:
+        return []
+    
+
+    trajets_actifs = models.DemandeTrajet.objects.filter(est_actif=True)
     suggestions = []
 
     for trajet in trajets_actifs:

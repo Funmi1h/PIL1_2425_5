@@ -37,6 +37,11 @@
             <a href="{% url 'update_photo_profil' %}" class="edit-photo-btn">
                 <i class="fa-solid fa-camera"></i> Modifier
             </a>
+
+            <a href="{% url 'delete_photo_profil' %}" class="delete-photo-btn" onclick="return confirm('Supprimer la photo de profil ?');">
+                <i class="fa-solid fa-trash text-danger"></i> Supprimer
+            </a>
+
         </div>
         <div class="profile-info">
             <p><strong>Nom :</strong> {{ user.last_name }}</p>
@@ -72,7 +77,9 @@
             <a href="{% url 'upload_password' %}" class="change-password-btn">
                 <i id="cp" class="fa-solid fa-lock"></i> Changer le mot de passe
             </a>
+
         </div>
+
     </div>
 </div>
 

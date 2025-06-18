@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, redirect
 from . import forms
 from django.contrib.auth.views import LoginView
@@ -8,32 +9,69 @@ from .models import User
 import requests
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from algorithme.utils import generate_suggestions_passagers
+from algorithme.utils import generate_suggestions_passagers, generate_suggestions_conducteurs
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+
+from django.db import models
+
 class LoginView(LoginView):
     template_name = 'authentication/login.html'
     form_class = forms.LoginForm
     redirect_authenticated_user = True
-    def get(self, request):
-        if request.method == 'GET':
-            form = self.form_class()
-            return render(request, self.template_name, {'form': form})
-        
-    def post(self, request):
 
-        if request.method == 'POST':
-            form = self.form_class(request.POST)
-            if form.is_valid():
-                identifiant = form.cleaned_data.get('identifiant')# on recupere l'identifiant de l'utilisateur
-                password = form.cleaned_data.get('password')
-                user = authenticate(request, username=identifiant, password=password)
+    def get(self, request, *args, **kwargs):
+        # Si utilisateur déjà connecté, redirige directement (optionnel)
+        if request.user.is_authenticated:
+            return redirect('dashboard')  # adapter la redirection
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            identifiant = form.cleaned_data['identifiant'].strip()
+            password = form.cleaned_data['password']
+
+            # Normaliser identifiant : email ou téléphone
+            if re.match(r"[^@]+@[^@]+\.[^@]+", identifiant):  # c'est un email
+                try:
+                    user_obj = User.objects.get(email=identifiant)
+                    username = user_obj.email
+                except User.DoesNotExist:
+                    username = None
+            else:
+                # Formatage numéro téléphone au format +229xxxxxxxx
+                clean_num = identifiant.replace(" ", "").replace("-", "")
+                if clean_num.startswith("0"):
+                    clean_num = "+229" + clean_num[1:]
+                elif clean_num.startswith("229") and not clean_num.startswith("+229"):
+                    clean_num = "+229" + clean_num[3:]
+                elif not clean_num.startswith("+229"):
+                    clean_num = "+229" + clean_num
+                try:
+                    user_obj = User.objects.get(numero_telephone=clean_num)
+                    username = user_obj.email  # toujours s'authentifier via email (USERNAME_FIELD)
+                except User.DoesNotExist:
+                    username = None
+
+            if username:
+                user = authenticate(request, username=username, password=password)
                 if user is not None:
                     login(request, user)
-                    return render(request, 'authentication/dashboard.html', {'user': user})
+                    return redirect('dashboard')  # remplacer par ta vue cible
                 else:
-                    return render(request, self.template_name, {'form': form, 'message': 'Identifiant ou mot de passe incorrect.'})
+                    messages.error(request, "Mot de passe incorrect.")
             else:
-                return render(request, self.template_name, {'form': form})
+                messages.error(request, "Utilisateur introuvable avec ces identifiants.")
+        else:
+            messages.error(request, "Formulaire invalide.")
+
+        return render(request, self.template_name, {'form': form})
+
+
+
+
 
 
 # vue pour inscription des utilisateurs
@@ -116,6 +154,11 @@ def upload_profile_photo(request):
 def modifier_profil(request):
     user = request.user
 
+    if user.first_login and request.method == 'GET':
+        user.first_login = False
+        user.save()
+
+
     if request.method == 'POST':
         form = forms.ProfilForm(request.POST, request.FILES, instance = user)
         if form.is_valid():
@@ -126,9 +169,8 @@ def modifier_profil(request):
             if user.first_login:
                 user.first_login = False
                 user.save()
-                messages.success(request, " Rendez-vous sur votre Go Board pour découvrir des trajets en fonction de votre emplacement et vos horaires habituels  habituel !")
-
-            return redirect('profil_user')
+                
+            return redirect('dashboard')
     else:
         form = forms.ProfilForm(instance=user)
 
@@ -175,3 +217,49 @@ def suggestions_pour_passager(request):
     user = request.user
     suggestions_passagers = generate_suggestions_passagers(user)
     return render (request, 'authentication/dashboard.html', {'suggestions_passagers': suggestions_passagers})
+
+
+@login_required
+def suggestions_pour_conducteur(request):
+    user = request.user
+    suggestions_conducteur = generate_suggestions_conducteurs(user)
+    return render (request, 'authentication/dashboard.html', {'suggestions_conducteur': suggestions_conducteur})
+
+@login_required
+def delete_photo_profil(request):
+    user = request.user
+    if user.photo_profil:
+        user.photo_profil.delete(save= False)
+        user.save()
+    return redirect ('profil_user')
+
+
+
+
+
+@login_required
+@require_GET
+def search_users(request):
+    query = request.GET.get('q', '').strip()
+    if len(query) < 2:
+        return JsonResponse([], safe=False)
+
+    User = get_user_model()
+    users = User.objects.filter(
+        models.Q(first_name__icontains=query) |
+        models.Q(last_name__icontains=query) |
+        models.Q(email__icontains=query) |
+        models.Q(numero_telephone__icontains=query)
+    )[:10]  # Limite à 10 résultats
+
+    data = [
+        {
+            'id': u.id,
+            'first_name': u.first_name,
+            'last_name': u.last_name,
+            'email': u.email,
+            'numero_telephone': u.numero_telephone,
+        }
+        for u in users
+    ]
+    return JsonResponse(data, safe=False)

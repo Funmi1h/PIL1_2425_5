@@ -5,4 +5,4 @@ function toggleIcon(){
     } else{
         burgerIcon.setAttribute("name", "filter-outline")
     }
-}
+} 

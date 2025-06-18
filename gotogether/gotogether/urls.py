@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('core.urls')),
     path('messages/', include('messagerie.urls')),
     path('algorithme/', include('algorithme.urls')),
+    path('search-users/', views.search_users, name='search_users'),
 
 
 ]

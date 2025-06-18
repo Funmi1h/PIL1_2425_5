@@ -335,13 +335,13 @@ for (let pair of formData.entries()) {
                                             <h5 class="card-title">${trajet.conducteur_username}</h5>
                                             <h6 class="card-subtitle mb-2 text-muted">${trajet.conducteur_marque_voiture || 'Véhicule'} - ${trajet.nb_places_disponibles_trajet || 'N/A'} places disponibles</h6>
                                             <p class="card-text">
-                                                Distance de votre départ au point de départ du conducteur: <strong>${trajet.distance_depart ? trajet.distance_depart.toFixed(2) : 'N/A'} km</strong><br>
-                                                ${trajet.distance_arrivee !== null && data.adresse_arrivee_passager ? `Distance de votre arrivée au point d'arrivée du conducteur: <strong>${trajet.distance_arrivee.toFixed(2)} km</strong><br>` : ''}
-                                                Départ du conducteur: <strong>${trajet.adresse_depart_trajet || 'Non spécifiée'}</strong> à ${trajet.heure_depart_trajet || 'N/A'}<br>
-                                                Arrivée du conducteur: <strong>${trajet.adresse_arrivee_trajet || 'Non spécifiée'}</strong> à ${trajet.heure_arrivee_trajet || 'N/A'}<br>
-                                                Prix: <strong>${trajet.prix_par_passager ? trajet.prix_par_passager + ' FCFA' : 'N/A'}</strong><br>
-                                                Téléphone: <a href="tel:${trajet.conducteur_phone}">${trajet.conducteur_phone || 'N/A'}</a>
-                                            </p>
+                                Distance de votre départ au point de départ du conducteur: <strong>${trajet.distance ? trajet.distance.toFixed(2) : 'N/A'} km</strong><br>
+                                ${trajet.distance_arrivee !== null && data.adresse_arrivee_passager ? `Distance de votre arrivée au point d'arrivée du conducteur: <strong>${trajet.distance_arrivee.toFixed(2)} km</strong><br>` : ''}
+                                Départ du conducteur: <strong>${trajet.adresse_depart_trajet || 'Non spécifiée'}</strong> à ${trajet.heure_depart_trajet || 'N/A'}<br>
+                                Arrivée du conducteur: <strong>${trajet.adresse_arrivee_trajet || 'Non spécifiée'}</strong> à ${trajet.heure_arrivee_trajet || 'N/A'}<br>
+                                
+                                Téléphone: <a href="tel:${trajet.conducteur_phone}">${trajet.conducteur_phone || 'N/A'}</a>
+                            </p>
                                             <div class="mt-auto">
                                                 <button class="btn btn-primary btn-sm">Contacter</button>
                                             </div>

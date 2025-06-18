@@ -60,6 +60,7 @@ class User(AbstractUser):
         verbose_name='Latitude',
         null=True,
         blank=True
+    
     )
     longitude = models.DecimalField(
         verbose_name='Longitude',

@@ -9,7 +9,11 @@ from .forms import UserForm , RechercheConducteurForm , ProposerTrajetForm
 
 from algorithme.forms import RechercheConducteurForm
 
+
 from algorithme.forms import  DemandeTrajetForm 
+
+from algorithme.forms import  DemandeTrajetForm , ProposerTrajetForm
+
 
 import logging
 from django.contrib.auth.decorators import *
@@ -44,8 +48,8 @@ def formulaire_view(request):
         # Instanciez le formulaire avec les données POST et l'instance de l'utilisateur Cela permet à form.save() de Mettre à Jour l'utilisateur existant
         form = UserForm(request.POST, instance=user_instance)
 
-        print("🧪 Utilisateur connecté :", request.user.username)
-        print("🧪 Données reçues (POST) :", request.POST)
+        print(" Utilisateur connecté :", request.user.username)
+        print(" Données reçues (POST) :", request.POST)
         if form.is_valid():
             try :
                 form.save()
@@ -91,26 +95,34 @@ def rechercher_trajets_view(request):
             heure_depart_passager_obj = form.cleaned_data.get('heure_depart_passager') 
             heure_arrivee_passager_obj = form.cleaned_data.get('heure_arrivee_passager')
 
+            
+
             if client_latitude is None or client_longitude is None:
                 form.add_error(None, "Veuillez sélectionner une adresse de départ valide qui peut être géolocalisée.")
                 return JsonResponse({'success': False, 'errors': form.errors.as_json()}, status=400)
             
             try:
+                initial_queryset = TrajetOffert.objects.all()
+                trajets_final = initial_queryset 
+
+                print(f"\n--- 2. Construction de la requête Django ---")
+                print(f"  QuerySet initial: {trajets_final.count()} trajets avant tout filtre.")
                 heure_actuelle = timezone.now() 
                 trajets_filtres_base = TrajetOffert.objects.filter(
                     est_actif=True, 
                     nb_places_disponibles__gt=0,
                     latitude_depart__isnull=False,
                     longitude_depart__isnull=False,
-                    # Les trajets qui n'ont pas commencé il y a plus de 30 minutes
+                    
                     heure_depart_prevue__gte=heure_actuelle - timedelta(minutes=30), 
                 ).select_related('conducteur', 'conducteur__user')
                 trajets_final = trajets_filtres_base
+                print(f" trajets dispo : {trajets_filtres_base}" )
 
                 if date_depart_passager_obj:
                 
                     trajets_final = trajets_final.filter(
-                        date_depart_prevue__date=date_depart_passager_obj
+                        date_depart=date_depart_passager_obj
                     )
                 else:
                     today = timezone.localdate()
@@ -143,12 +155,20 @@ def rechercher_trajets_view(request):
                             datetime.datetime.combine(timezone.localdate(), heure_arrivee_passager_obj)
                         )
                     trajets_final = trajets_final.filter(heure_arrivee_prevue__lte=end_datetime_filter)
-
+                print(f"  QuerySet avant distance: {trajets_final.count()} trajets avant filtre distance.")
+                print(f" trajets dispo a ce niveau : {trajets_final}" )
                 trajets_trouves_avec_distance = find_conducteurs_les_plus_proches(
                     client_latitude, 
                     client_longitude, 
                     list(trajets_final) 
                 )
+                for i, res_item in enumerate(trajets_trouves_avec_distance[:3]): # Afficher les 3 premiers
+                    print(f"  Item {i+1}: {res_item}")
+                    if isinstance(res_item, dict) and 'distance' in res_item:
+                        print(f"    Distance trouvée: {res_item['distance']}")
+                    else:
+                        print("    AVERTISSEMENT: L'élément n'est pas un dictionnaire ou ne contient pas la clé 'distance'.")
+
                 
              
                 trajets_proposés = []
@@ -160,8 +180,8 @@ def rechercher_trajets_view(request):
                     trajets_proposés.append({
                         'trajet_id': trajet_obj.id,
                         'conducteur_username': conducteur_user_obj.username,
-                        'conducteur_phone': conducteur_profile_obj.numero_telephone, 
-                        'conducteur_marque_voiture': conducteur_profile_obj.marque_voiture, 
+                        'conducteur_phone': conducteur_user_obj.numero_telephone, 
+                        'conducteur_marque_voiture': conducteur_user_obj.marque_voiture, 
                         'nb_places_disponibles_trajet': trajet_obj.nb_places_disponibles, 
                         'distance': round(item['distance'], 2), 
                         'adresse_depart_trajet': trajet_obj.adresse_depart,
@@ -190,6 +210,10 @@ def rechercher_trajets_view(request):
 
     # Pour les requêtes GET (affichage initial du formulaire)
     return render(request, "algorithme/rechercher_trajets.html", context)
+
+
+
+
 
 @login_required 
 def créer_demande_trajet_view(request):

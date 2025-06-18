@@ -1,9 +1,8 @@
 body {
-  font-family: 'Manrope', sans-serif;
-  font-size: 1rem;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;  font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  
+  background-color: #c7d0ec;
   text-align: left;
 }
 nav{
@@ -87,3 +86,4 @@ ion-icon {
 .dropdown-item:hover{
     background-color: transparent;
 }
+

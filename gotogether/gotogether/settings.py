@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv() # Cette ligne charge votre fichier .env
+load_dotenv() # Cette ligne charge le fichier .env
 
 """
 Django settings for gotogether project.

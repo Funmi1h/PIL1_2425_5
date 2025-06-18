@@ -247,3 +247,24 @@ body {
     width: 250px;
     height: 80px;
 }
+
+
+
+.password-field {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #555;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 13px;
+        margin-top: 5px;
+    }
