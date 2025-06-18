@@ -10,65 +10,7 @@
 
 {% block content %}
 
-<h2>Modifier mon profil</h2>
 
-<form method="post" class="profile-container" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="profile-left">
-        <div class="profile-photo">
-            {% if user.photo_profil %}
-                <img src="{{ user.photo_profil.url }}" alt="Photo de profil" class="profile-pic-preview">
-            {% else %}
-                <ion-icon name="person-circle-outline" class="text-white"></ion-icon>
-            {% endif %}
-            <a href="{% url 'update_photo_profil' %}" class="edit-photo-btn">
-                <i class="fa-solid fa-camera"></i> Modifier
-            </a>
-        </div>
-
-
-        <div class="profile-info">
-            <p><strong>Nom :</strong> {{ form.last_name }}</p>
-            <p><strong>Prénom :</strong> {{ form.first_name }}</p>
-            <p><strong>Email :</strong> {{ form.email }}</p>
-        </div>
-
-
-    </div>
-    
-    <div class="profile-right">
-        <div class="profile-details">
-            <p><strong>Rôle:</strong>{{form.role}}</p>
-
-            <p><strong>Adresse :</strong> 
-                <input type="text" id="id_adresse" placeholder="Votre emplacement habituel">
-                <input type="hidden" id="id_latitude" name="latitude" />
-                <input type="hidden" id="id_longitude" name="longitude" />
-                 <button type="button" onclick="searchLocation()">Rechercher l'emplacement sur la carte </button>
-            </p>
-
-            <div id="map" style="display: none; width: 100%; height: 400px; margin-top: 10px;"></div>
-            <button type="button" id="validerEmplacement" style="display: none; margin-top: 10px;">Valider l'emplacement</button>
-
-            <p><strong>Horaires :</strong></p>
-            <p><strong>Départ :</strong> {{ form.heure_depart }}</p>
-            <p><strong>Arrivée :</strong> {{ form.heure_arrivee }}</p>
-
-            {% if user.role == "conducteur" %}
-                <p><strong>Véhicule :</strong> {{ form.marque_voiture }}</p>
-                <p><strong>Places disponibles :</strong> {{ form.nb_places }}</p>
-            {% endif %}
-        </div>
-
-        <div class="profile-actions">
-            <a href="{% url 'upload_password' %}" class="change-password-btn">
-                <i class="fa-solid fa-lock"></i> Changer le mot de passe
-            </a>
-            <br>
-            <button type="submit"  class="enregistrermodif edit-profile-btn">Enregistrer les modifications</button>
-        </div>
-    </div>
-=======
 <h2>Modifier votre profil</h2>
 <form method="post" class="profile-container">
     <section class="profile-section row justify-content-center">
@@ -145,8 +87,6 @@
                 </div>
         </div>
     </section>
->>>>>>> d5e9e00 (style de la page de profil)
-
 
 </form>
 
